@@ -54,9 +54,12 @@ body{
 
 /* --- hero image --- */
 .hero{
-  margin: 0;
+  margin: 0 auto;
   display: flex;
   justify-content: center;
+  align-items: flex-end;
+  gap: 24px;
+  max-width: 1100px;
 }
 
 .hero__img{
@@ -65,25 +68,21 @@ body{
   display: block;
 }
 
-/* --- project row --- */
-.project{
-  margin-top: 32px;
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: 28px;
-  align-items: end;
+/* --- view link --- */
+.hero__view{
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
 }
 
 .project__text{
   margin: 0;
 }
-
-.project__view{
-  color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  white-space: nowrap;
-  align-self: end;
+ 
+/* --- project row --- */
+.project{
+  margin-top: 32px;
 }
 
 /* --- responsive --- */
@@ -96,12 +95,9 @@ body{
     gap: 16px;
   }
 
-  .project{
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .project__view{
-    justify-self: start;
+  .hero{
+    max-width: none;
+    flex-wrap: wrap;
+    justify-content: flex-start;
   }
 }
