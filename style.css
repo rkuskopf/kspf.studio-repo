@@ -28,7 +28,6 @@ body{
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  max-width: var(--nav-max);
   width: 100%;
 }
 
@@ -51,7 +50,6 @@ body{
 
 .intro{
   margin: 20px 0 48px;
-  max-width: 1040px;
 }
 
 /* --- hero image --- */
@@ -78,7 +76,6 @@ body{
 
 .project__text{
   margin: 0;
-  max-width: 980px;
 }
 
 .project__view{
