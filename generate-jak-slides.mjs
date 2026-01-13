@@ -10,18 +10,7 @@ const slides = entries
   .filter((e) => e.isFile())
   .map((e) => e.name)
   .filter((name) => ALLOWED_EXT.has(path.extname(name).toLowerCase()))
-  .map((name) => {
-    const match = name.match(/\d+/);
-    return { name, index: match ? Number.parseInt(match[0], 10) : null };
-  })
-  .sort((a, b) => {
-    if (a.index == null && b.index == null) return a.name.localeCompare(b.name);
-    if (a.index == null) return 1;
-    if (b.index == null) return -1;
-    if (a.index !== b.index) return a.index - b.index;
-    return a.name.localeCompare(b.name);
-  })
-  .map((item) => item.name)
+  .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
   .map((name) => path.posix.join("assets/images/jakslideshow", name));
 
 await writeFile(OUT_FILE, JSON.stringify(slides, null, 2) + "\n", "utf8");
