@@ -56,9 +56,6 @@ body.grid-overlay{
   grid-row: 1;
 }
 
-.nav__link.is-active{
-  text-decoration-thickness: 2px;
-}
 
 .nav__link--home{ grid-column: 1 / span 2; }
 .nav__link--info{ grid-column: 4 / span 2; }
