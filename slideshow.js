@@ -28,15 +28,6 @@
     const next = root.querySelector(".hero__hit--next");
     if (!img || !prev || !next) return;
 
-    const setActive = (active) => {
-      root.classList.toggle("is-active", active);
-    };
-
-    root.addEventListener("pointerenter", () => setActive(true));
-    root.addEventListener("pointerleave", () => setActive(false));
-    root.addEventListener("focusin", () => setActive(true));
-    root.addEventListener("focusout", () => setActive(false));
-
     if (slides.length <= 1) {
       root.classList.add("is-single");
       return;

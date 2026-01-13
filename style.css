@@ -116,7 +116,7 @@ body.grid-overlay{
   text-underline-offset: 3px;
   white-space: nowrap;
   position: relative;
-  z-index: 1001;
+  z-index: 2;
 }
 
 .hero.is-single .hero__hit{
@@ -124,20 +124,15 @@ body.grid-overlay{
 }
 
 .hero__hit{
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
-  width: 50vw;
+  width: 50%;
   background: transparent;
   border: 0;
   padding: 0;
   margin: 0;
-  z-index: 1000;
-  display: none;
-}
-
-.hero.is-active .hero__hit{
-  display: block;
+  z-index: 2;
 }
 
 .hero__hit--prev{
