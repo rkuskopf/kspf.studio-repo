@@ -2,7 +2,7 @@
 * { box-sizing: border-box; }
 
 :root{
-  --page-pad: 56px;
+  --page-pad: 20px;
   --max: 1160px;
   --nav-max: 560px;
 }
