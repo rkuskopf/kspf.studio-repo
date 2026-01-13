@@ -1,0 +1,108 @@
+/* --- base --- */
+* { box-sizing: border-box; }
+
+:root{
+  --page-pad: 56px;
+  --max: 1160px;
+  --nav-max: 560px;
+}
+
+body{
+  margin: 0;
+  padding: var(--page-pad);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  line-height: 1.55;
+  color: #000;
+  background: #fff;
+}
+
+/* --- top nav --- */
+.top{
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.nav{
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  max-width: var(--nav-max);
+  width: 100%;
+}
+
+.nav__link{
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.nav__link.is-active{
+  text-decoration-thickness: 2px;
+}
+
+/* --- layout --- */
+.wrap{
+  max-width: var(--max);
+  margin: 32px auto 0;
+}
+
+.intro{
+  margin: 20px 0 48px;
+  max-width: 1040px;
+}
+
+/* --- hero image --- */
+.hero{
+  margin: 0;
+  display: flex;
+  justify-content: center;
+}
+
+.hero__img{
+  width: min(1000px, 100%);
+  height: auto;
+  display: block;
+}
+
+/* --- project row --- */
+.project{
+  margin-top: 32px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 28px;
+  align-items: end;
+}
+
+.project__text{
+  margin: 0;
+  max-width: 980px;
+}
+
+.project__view{
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
+  align-self: end;
+}
+
+/* --- responsive --- */
+@media (max-width: 720px){
+  :root{ --page-pad: 20px; }
+
+  .nav{
+    max-width: none;
+    justify-content: flex-start;
+    gap: 16px;
+  }
+
+  .project{
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .project__view{
+    justify-self: start;
+  }
+}
