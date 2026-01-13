@@ -42,6 +42,10 @@ body.grid-overlay{
   width: 100%;
   max-width: none;
   margin: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 15px;
 }
 
 .nav{
@@ -49,6 +53,7 @@ body.grid-overlay{
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   width: 100%;
+  grid-column: 1 / -1;
 }
 
 .nav__link{
