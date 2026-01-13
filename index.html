@@ -6,6 +6,7 @@
   <title>kspf.studio</title>
   <meta name="description" content="kspf is a digital practice." />
   <link rel="stylesheet" href="style.css" />
+  <script src="assets/images/jakslideshow/slides.js" defer></script>
   <script src="slideshow.js" defer></script>
 </head>
 
@@ -24,25 +25,27 @@
       We craft digital experiences beyond aesthetics—designed to reflect each brand’s story and ambitions.
     </p>
 
-    <figure class="hero js-slideshow" tabindex="0" data-slides-src="assets/images/jakslideshow/slides.json">
-      <button
-        class="hero__hit hero__hit--prev"
-        type="button"
-        aria-label="Previous image"
-        data-label="Previous"
-      ></button>
-      <button
-        class="hero__hit hero__hit--next"
-        type="button"
-        aria-label="Next image"
-        data-label="Next"
-      ></button>
-      <img
-        class="hero__img"
-        src="assets/images/jakslideshow/jak-image-slideshow-1.png"
-        alt="Jak Architecture website preview"
-        loading="eager"
-      />
+    <figure class="hero js-slideshow" tabindex="0" data-slides-global="__JAK_SLIDES__">
+      <div class="hero__media">
+        <button
+          class="hero__hit hero__hit--prev"
+          type="button"
+          aria-label="Previous image"
+          data-label="Previous"
+        ></button>
+        <button
+          class="hero__hit hero__hit--next"
+          type="button"
+          aria-label="Next image"
+          data-label="Next"
+        ></button>
+        <img
+          class="hero__img"
+          src="assets/images/jakslideshow/jak-image-slideshow-1.png"
+          alt="Jak Architecture website preview"
+          loading="eager"
+        />
+      </div>
       <a class="hero__view" href="/case-studies/jak.html">view</a>
     </figure>
 

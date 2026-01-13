@@ -64,6 +64,12 @@
   const isStringArray = (value) =>
     Array.isArray(value) && value.every((item) => typeof item === "string");
 
+  const getSlidesFromGlobal = (name) => {
+    if (!name) return [];
+    const value = globalThis?.[name];
+    return isStringArray(value) ? value : [];
+  };
+
   const loadSlidesFromJson = async (src) => {
     const res = await fetch(src, { cache: "no-cache" });
     if (!res.ok) return [];
@@ -72,11 +78,24 @@
   };
 
   document.querySelectorAll(".js-slideshow").forEach((root) => {
+    const slidesGlobal = root.dataset.slidesGlobal;
+    if (slidesGlobal) {
+      const globalSlides = getSlidesFromGlobal(slidesGlobal).filter(Boolean);
+      if (globalSlides.length) {
+        initSlideshow(root, globalSlides);
+        return;
+      }
+    }
+
     const slidesSrc = root.dataset.slidesSrc;
     if (slidesSrc) {
       loadSlidesFromJson(slidesSrc)
         .then((slides) => initSlideshow(root, slides.filter(Boolean)))
-        .catch(() => initSlideshow(root, parseSlides(root.dataset.slides).filter(Boolean)));
+        .catch(() => {
+          const fallbackGlobal = getSlidesFromGlobal(slidesGlobal).filter(Boolean);
+          if (fallbackGlobal.length) return initSlideshow(root, fallbackGlobal);
+          return initSlideshow(root, parseSlides(root.dataset.slides).filter(Boolean));
+        });
       return;
     }
 
