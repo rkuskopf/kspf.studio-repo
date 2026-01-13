@@ -79,6 +79,14 @@ body.grid-overlay{
   row-gap: 24px;
 }
 
+.projects{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 24px;
+}
+
 .project-block{
   grid-column: 1 / -1;
   display: grid;
@@ -186,6 +194,7 @@ body.grid-overlay{
   .nav__link--case{ grid-column: 1 / -1; }
 
   .wrap{ grid-template-columns: 1fr; }
+  .projects{ grid-template-columns: 1fr; }
   .project-block{ grid-template-columns: 1fr; }
   .intro{ grid-column: 1 / -1; }
 

@@ -11,11 +11,24 @@
     "alt": "Jak Architecture website preview"
   },
   {
-    "title": "Project Title",
+    "title": "Christopher Myles Henderson",
     "description": "Project description goes here. Duplicate and edit this block for each new project.",
     "viewUrl": "#",
     "slides": [
-      "assets/images/jakslideshow/jak-image-slideshow-1.png"
+      "assets/images/chrisslideshow/chris_image_1.png",
+      "assets/images/chrisslideshow/chris_image_2.png",
+      "assets/images/chrisslideshow/chris_image_3.png"
+    ],
+    "alt": "Project preview"
+  },
+  {
+    "title": "Albus Lumen",
+    "description": "Project description goes here. Duplicate and edit this block for each new project.",
+    "viewUrl": "#",
+    "slides": [
+      "assets/images/albusslideshow/Albus 1.png",
+      "assets/images/albusslideshow/Albus 2.png",
+      "assets/images/albusslideshow/Albus 3.png"
     ],
     "alt": "Project preview"
   }
