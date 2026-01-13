@@ -7,6 +7,7 @@
   --nav-max: 560px;
   --grid-cols: 12;
   --gutter: 24px;
+  --hero-width: 480px;
   --cursor-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='22' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
   --cursor-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='22' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
 }
@@ -72,7 +73,7 @@ body.grid-overlay{
 .wrap{
   width: 100%;
   max-width: none;
-  margin: 50px 0 0;
+  margin: 70px 0 0;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
@@ -204,4 +205,12 @@ body.grid-overlay{
 
   .project{ grid-template-columns: 1fr; }
   .project__text{ grid-column: 1 / -1; }
+}
+
+@media (min-width: 721px){
+  .hero__img{
+    width: var(--hero-width);
+    max-width: none;
+    justify-self: center;
+  }
 }

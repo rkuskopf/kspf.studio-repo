@@ -1,4 +1,15 @@
 [
+    {
+    "title": "Albus Lumen",
+    "description": "Project description goes here. Duplicate and edit this block for each new project.",
+    "viewUrl": "#",
+    "slides": [
+      "assets/images/albusslideshow/Albus 1.png",
+      "assets/images/albusslideshow/Albus 2.png",
+      "assets/images/albusslideshow/Albus 3.png"
+    ],
+    "alt": "Project preview"
+  },
   {
     "title": "Jak Architecture",
     "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
@@ -12,23 +23,12 @@
   },
   {
     "title": "Christopher Myles Henderson",
-    "description": "Project description goes here. Duplicate and edit this block for each new project.",
+    "description": "Porrtfolio website for Chris Henderson – multidiciplinary artist. The site provides a minimal canvas allowing the diversity and eccentricity of his work to take centre stage.",
     "viewUrl": "#",
     "slides": [
       "assets/images/chrisslideshow/chris_image_1.png",
       "assets/images/chrisslideshow/chris_image_2.png",
       "assets/images/chrisslideshow/chris_image_3.png"
-    ],
-    "alt": "Project preview"
-  },
-  {
-    "title": "Albus Lumen",
-    "description": "Project description goes here. Duplicate and edit this block for each new project.",
-    "viewUrl": "#",
-    "slides": [
-      "assets/images/albusslideshow/Albus 1.png",
-      "assets/images/albusslideshow/Albus 2.png",
-      "assets/images/albusslideshow/Albus 3.png"
     ],
     "alt": "Project preview"
   }
