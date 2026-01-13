@@ -11,8 +11,8 @@ body{
   margin: 0;
   padding: var(--page-pad);
   font-family: "Times New Roman", Times, serif;
-  font-size: 17px;
-  line-height: 1.55;
+  font-size: 14px;
+  line-height: 1.2;
   color: #000;
   background: #fff;
 }
