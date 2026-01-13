@@ -141,14 +141,12 @@ body.grid-overlay{
   content: attr(data-label);
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  left: 50%;
+  transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 120ms linear;
   font: inherit;
 }
-
-.hero__hit--prev::after{ left: var(--page-pad); }
-.hero__hit--next::after{ right: var(--page-pad); }
 
 .hero__hit:hover::after,
 .hero__hit:focus-visible::after{
