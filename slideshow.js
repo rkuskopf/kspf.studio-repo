@@ -22,7 +22,10 @@
     img.src = src;
   };
 
-  document.querySelectorAll(".js-slideshow").forEach((root) => {
+  const initSlideshow = (root) => {
+    if (root.dataset.slideshowInit === "1") return;
+    root.dataset.slideshowInit = "1";
+
     const img = root.querySelector(".hero__img");
     const prev = root.querySelector(".hero__hit--prev");
     const next = root.querySelector(".hero__hit--next");
@@ -33,6 +36,15 @@
       root.classList.add("is-single");
       return;
     }
+
+    const setActive = (active) => {
+      root.classList.toggle("is-active", active);
+    };
+
+    root.addEventListener("pointerenter", () => setActive(true));
+    root.addEventListener("pointerleave", () => setActive(false));
+    root.addEventListener("focusin", () => setActive(true));
+    root.addEventListener("focusout", () => setActive(false));
 
     const initialSrc = img.getAttribute("src");
     let index = slides.indexOf(initialSrc);
@@ -60,5 +72,12 @@
     });
 
     preload(slides[(index + 1) % slides.length]);
-  });
+  };
+
+  const setupSlideshows = (scope = document) => {
+    scope.querySelectorAll(".js-slideshow").forEach(initSlideshow);
+  };
+
+  window.initSlideshows = setupSlideshows;
+  setupSlideshows();
 })();

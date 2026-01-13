@@ -6,6 +6,7 @@
   <title>kspf.studio</title>
   <meta name="description" content="kspf is a digital practice." />
   <link rel="stylesheet" href="style.css" />
+  <script src="render-projects.js" defer></script>
   <script src="slideshow.js" defer></script>
 </head>
 
@@ -23,35 +24,7 @@
   </header>
 
   <main class="wrap">
-    <figure class="hero js-slideshow" tabindex="0" data-slides='["assets/images/jakslideshow/jak-image-slideshow-1.png","assets/images/jakslideshow/jak_slideshow_2.png","assets/images/jakslideshow/jak_slideshow_3.png"]'>
-      <button
-        class="hero__hit hero__hit--prev"
-        type="button"
-        aria-label="Previous image"
-        data-label="Previous"
-      ></button>
-      <button
-        class="hero__hit hero__hit--next"
-        type="button"
-        aria-label="Next image"
-        data-label="Next"
-      ></button>
-      <img
-        class="hero__img"
-        src="assets/images/jakslideshow/jak-image-slideshow-1.png"
-        alt="Jak Architecture website preview"
-        loading="eager"
-      />
-      <a class="hero__view" href="https://www.jakarchitecture.com" target="_blank" rel="noopener">view</a>
-    </figure>
-
-    <section class="project">
-      <p class="project__text">
-        New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local
-        architecture firm whose work strengthens the connection between people, place, and context. The site
-        extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.
-      </p>
-    </section>
+    <div id="projects" class="projects" aria-live="polite"></div>
   </main>
 </body>
 </html>
