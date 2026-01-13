@@ -43,8 +43,9 @@ body{
 
 /* --- layout --- */
 .wrap{
-  max-width: var(--max);
-  margin: 32px auto 0;
+  width: 100%;
+  max-width: none;
+  margin: 32px 0 0;
 }
 
 .intro{
