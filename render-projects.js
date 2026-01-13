@@ -24,14 +24,18 @@
     img.alt = project.alt || project.title || "Project image";
     img.loading = index === 0 ? "eager" : "lazy";
 
+    const meta = document.createElement("div");
+    meta.className = "hero__meta";
+
     const view = document.createElement("a");
     view.className = "hero__view";
     view.href = project.viewUrl || "#";
     view.target = "_blank";
     view.rel = "noopener";
-    view.textContent = "view";
+    view.textContent = "visit site";
 
-    figure.append(prev, next, img, view);
+    meta.appendChild(view);
+    figure.append(prev, next, img, meta);
     return figure;
   };
 

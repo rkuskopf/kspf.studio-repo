@@ -31,9 +31,39 @@
     if (activeRoot) activeRoot.classList.add("is-active");
   };
 
+  const roots = [];
+
+  const pickClosestToCenter = () => {
+    if (!roots.length) return;
+    const centerY = window.innerHeight / 2;
+    let closest = roots[0];
+    let bestDistance = Infinity;
+
+    roots.forEach((root) => {
+      const rect = root.getBoundingClientRect();
+      const distance = Math.abs(rect.top + rect.height / 2 - centerY);
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        closest = root;
+      }
+    });
+
+    setActiveRoot(closest);
+  };
+
+  let rafId = 0;
+  const schedulePickClosest = () => {
+    if (rafId) return;
+    rafId = window.requestAnimationFrame(() => {
+      rafId = 0;
+      pickClosestToCenter();
+    });
+  };
+
   const initSlideshow = (root) => {
     if (root.dataset.slideshowInit === "1") return;
     root.dataset.slideshowInit = "1";
+    roots.push(root);
 
     const img = root.querySelector(".hero__img");
     const prev = root.querySelector(".hero__hit--prev");
@@ -89,4 +119,8 @@
 
   window.initSlideshows = setupSlideshows;
   setupSlideshows();
+
+  window.addEventListener("scroll", schedulePickClosest, { passive: true });
+  window.addEventListener("resize", schedulePickClosest);
+  schedulePickClosest();
 })();
