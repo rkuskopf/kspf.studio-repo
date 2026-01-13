@@ -1,4 +1,6 @@
 (() => {
+  let activeRoot = null;
+
   const parseSlides = (raw) => {
     if (!raw) return [];
     const trimmed = raw.trim();
@@ -22,6 +24,13 @@
     img.src = src;
   };
 
+  const setActiveRoot = (root) => {
+    if (activeRoot === root) return;
+    if (activeRoot) activeRoot.classList.remove("is-active");
+    activeRoot = root;
+    if (activeRoot) activeRoot.classList.add("is-active");
+  };
+
   const initSlideshow = (root) => {
     if (root.dataset.slideshowInit === "1") return;
     root.dataset.slideshowInit = "1";
@@ -37,14 +46,8 @@
       return;
     }
 
-    const setActive = (active) => {
-      root.classList.toggle("is-active", active);
-    };
-
-    root.addEventListener("pointerenter", () => setActive(true));
-    root.addEventListener("pointerleave", () => setActive(false));
-    root.addEventListener("focusin", () => setActive(true));
-    root.addEventListener("focusout", () => setActive(false));
+    root.addEventListener("pointerenter", () => setActiveRoot(root));
+    root.addEventListener("focusin", () => setActiveRoot(root));
 
     const initialSrc = img.getAttribute("src");
     let index = slides.indexOf(initialSrc);
@@ -57,8 +60,14 @@
       preload(slides[(index - 1 + slides.length) % slides.length]);
     };
 
-    prev.addEventListener("click", () => show(index - 1));
-    next.addEventListener("click", () => show(index + 1));
+    prev.addEventListener("click", () => {
+      setActiveRoot(root);
+      show(index - 1);
+    });
+    next.addEventListener("click", () => {
+      setActiveRoot(root);
+      show(index + 1);
+    });
 
     root.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft") {
