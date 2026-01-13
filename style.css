@@ -93,18 +93,13 @@ body.grid-overlay{
   position: relative;
 }
 
-.hero__media{
-  grid-column: 4 / span 6;
-  position: relative;
-  z-index: 1;
-}
-
 .hero__img{
+  grid-column: 4 / span 6;
   width: 100%;
   height: auto;
   display: block;
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 /* --- view link --- */
@@ -116,7 +111,7 @@ body.grid-overlay{
   text-underline-offset: 3px;
   white-space: nowrap;
   position: relative;
-  z-index: 2;
+  z-index: 3;
 }
 
 .hero.is-single .hero__hit{
@@ -132,7 +127,7 @@ body.grid-overlay{
   border: 0;
   padding: 0;
   margin: 0;
-  z-index: 2;
+  z-index: 1;
 }
 
 .hero__hit--prev{
@@ -200,7 +195,7 @@ body.grid-overlay{
   .intro{ grid-column: 1 / -1; }
 
   .hero{ grid-template-columns: 1fr; row-gap: 12px; }
-  .hero__media{ grid-column: 1 / -1; }
+  .hero__img{ grid-column: 1 / -1; }
   .hero__view{ grid-column: 1 / -1; }
 
   .project{ grid-template-columns: 1fr; }

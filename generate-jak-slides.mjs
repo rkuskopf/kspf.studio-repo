@@ -2,8 +2,7 @@ import { readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const SLIDES_DIR = path.join("assets", "images", "jakslideshow");
-const OUT_JSON = path.join(SLIDES_DIR, "slides.json");
-const OUT_JS = path.join(SLIDES_DIR, "slides.js");
+const OUT_FILE = path.join(SLIDES_DIR, "slides.json");
 const ALLOWED_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".avif"]);
 
 const entries = await readdir(SLIDES_DIR, { withFileTypes: true });
@@ -25,11 +24,5 @@ const slides = entries
   .map((item) => item.name)
   .map((name) => path.posix.join("assets/images/jakslideshow", name));
 
-await writeFile(OUT_JSON, JSON.stringify(slides, null, 2) + "\n", "utf8");
-await writeFile(
-  OUT_JS,
-  `globalThis.__JAK_SLIDES__ = ${JSON.stringify(slides, null, 2)};\n`,
-  "utf8",
-);
-
-console.log(`Wrote ${slides.length} slide(s) to ${OUT_JSON} and ${OUT_JS}`);
+await writeFile(OUT_FILE, JSON.stringify(slides, null, 2) + "\n", "utf8");
+console.log(`Wrote ${slides.length} slide(s) to ${OUT_FILE}`);
