@@ -19,7 +19,7 @@ body{
   font-size: 14px;
   line-height: 1.2;
   color: #000;
-  background: #fff;
+  background: #000;
 }
 
 /* optional column overlay (like your screenshot) */
@@ -254,7 +254,9 @@ body.grid-overlay{
 
 @media (max-width: 1155px) and (min-width: 721px){
   .hero{
-    grid-template-rows: auto auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   .hero .hero__meta{
@@ -262,9 +264,7 @@ body.grid-overlay{
     right: auto;
     bottom: auto;
     width: var(--hero-width);
-    grid-column: 1 / -1;
-    justify-self: end;
-    align-self: start;
+    align-self: center;
     justify-content: flex-end;
     margin-top: 10px;
   }
