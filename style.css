@@ -251,3 +251,14 @@ body.grid-overlay{
     justify-self: center;
   }
 }
+
+@media (max-width: 1155px) and (min-width: 721px){
+  .hero__meta{
+    position: static;
+    right: auto;
+    bottom: auto;
+    width: var(--hero-width);
+    justify-content: flex-end;
+    margin: 10px auto 0;
+  }
+}
