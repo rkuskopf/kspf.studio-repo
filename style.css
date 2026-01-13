@@ -79,7 +79,7 @@ body.grid-overlay{
 
 .intro{
   margin: 0;
-  grid-column: 1 / span 6;
+  grid-column: 1 / span 12;
 }
 
 /* --- hero image --- */
@@ -147,7 +147,7 @@ body.grid-overlay{
 
 .project__text{
   margin: 0;
-  grid-column: 1 / span 9;
+  grid-column: 1 / span 12;
 }
  
 /* --- project row --- */
