@@ -34,8 +34,9 @@
       return;
     }
 
-    let index = Math.max(0, slides.indexOf(img.getAttribute("src")));
-    if (index === -1) index = 0;
+    const initialSrc = img.getAttribute("src");
+    let index = slides.indexOf(initialSrc);
+    if (index < 0) index = 0;
 
     const show = (nextIndex) => {
       index = (nextIndex + slides.length) % slides.length;
