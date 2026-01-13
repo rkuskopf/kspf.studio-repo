@@ -6,6 +6,7 @@
   <title>kspf.studio</title>
   <meta name="description" content="kspf is a digital practice." />
   <link rel="stylesheet" href="style.css" />
+  <script src="slideshow.js" defer></script>
 </head>
 
 <body class="grid-overlay">
@@ -23,7 +24,19 @@
       We craft digital experiences beyond aesthetics—designed to reflect each brand’s story and ambitions.
     </p>
 
-    <figure class="hero">
+    <figure class="hero js-slideshow" tabindex="0" data-slides='["assets/images/jak_image_gallery.png"]'>
+      <button
+        class="hero__hit hero__hit--prev"
+        type="button"
+        aria-label="Previous image"
+        data-label="Previous"
+      ></button>
+      <button
+        class="hero__hit hero__hit--next"
+        type="button"
+        aria-label="Next image"
+        data-label="Next"
+      ></button>
       <img
         class="hero__img"
         src="assets/images/jak_image_gallery.png"
