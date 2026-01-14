@@ -1,46 +1,88 @@
 (() => {
-  const overlay = document.getElementById("clientsOverlay");
-  if (!overlay) return;
+  const configs = [
+    {
+      name: "clients",
+      overlayId: "clientsOverlay",
+      toggleSelector: ".js-clients-toggle",
+      closeSelector: ".js-clients-close",
+      bodyClass: "clients-open",
+    },
+    {
+      name: "info",
+      overlayId: "infoOverlay",
+      toggleSelector: ".js-info-toggle",
+      closeSelector: ".js-info-close",
+      bodyClass: "info-open",
+    },
+  ];
 
-  const toggles = document.querySelectorAll(".js-clients-toggle");
-  const closeBtn = document.querySelector(".js-clients-close");
+  const overlays = configs
+    .map((config) => {
+      const overlay = document.getElementById(config.overlayId);
+      if (!overlay) return null;
+      return {
+        ...config,
+        overlay,
+        toggles: document.querySelectorAll(config.toggleSelector),
+        closeBtn: document.querySelector(config.closeSelector),
+      };
+    })
+    .filter(Boolean);
+
+  if (!overlays.length) return;
+
   let lastActive = null;
 
-  const isOpen = () => overlay.classList.contains("is-open");
+  const isOpen = (config) => config.overlay.classList.contains("is-open");
 
-  const setOpen = (open) => {
-    overlay.classList.toggle("is-open", open);
-    overlay.setAttribute("aria-hidden", open ? "false" : "true");
-    document.body.classList.toggle("clients-open", open);
+  const setOpen = (config, open, restoreFocus = true) => {
+    config.overlay.classList.toggle("is-open", open);
+    config.overlay.setAttribute("aria-hidden", open ? "false" : "true");
+    document.body.classList.toggle(config.bodyClass, open);
 
-    toggles.forEach((btn) => {
+    config.toggles.forEach((btn) => {
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
     if (open) {
       lastActive = document.activeElement;
-      if (closeBtn) closeBtn.focus();
-    } else if (lastActive && typeof lastActive.focus === "function") {
+      if (config.closeBtn) config.closeBtn.focus();
+    } else if (restoreFocus && lastActive && typeof lastActive.focus === "function") {
       lastActive.focus();
     }
   };
 
-  toggles.forEach((btn) => {
-    btn.addEventListener("click", (event) => {
-      event.preventDefault();
-      setOpen(!isOpen());
+  const closeOthers = (activeConfig) => {
+    overlays.forEach((config) => {
+      if (config !== activeConfig && isOpen(config)) {
+        setOpen(config, false, false);
+      }
+    });
+  };
+
+  overlays.forEach((config) => {
+    config.toggles.forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        event.preventDefault();
+        const nextOpen = !isOpen(config);
+        if (nextOpen) closeOthers(config);
+        setOpen(config, nextOpen);
+      });
+    });
+
+    if (config.closeBtn) {
+      config.closeBtn.addEventListener("click", () => setOpen(config, false));
+    }
+
+    config.overlay.addEventListener("click", (event) => {
+      if (event.target === config.overlay) setOpen(config, false);
     });
   });
 
-  if (closeBtn) {
-    closeBtn.addEventListener("click", () => setOpen(false));
-  }
-
-  overlay.addEventListener("click", (event) => {
-    if (event.target === overlay) setOpen(false);
-  });
-
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && isOpen()) setOpen(false);
+    if (event.key !== "Escape") return;
+    overlays.forEach((config) => {
+      if (isOpen(config)) setOpen(config, false);
+    });
   });
 })();

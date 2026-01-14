@@ -15,9 +15,10 @@
   <header class="top">
     <nav class="nav" aria-label="Primary">
       <a class="nav__link nav__link--home is-active" href="/">kspf</a>
-      <a class="nav__link nav__link--info" href="/information.html">info</a>
+      <button class="nav__link nav__link--info js-info-toggle" type="button" aria-expanded="false" aria-controls="infoOverlay">info</button>
       <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
-      <button class="nav__link nav__link--close js-clients-close" type="button" aria-label="Close clients list">x</button>
+      <button class="nav__link nav__link--close nav__link--close-info js-info-close" type="button" aria-label="Close information overlay">x</button>
+      <button class="nav__link nav__link--close nav__link--close-clients js-clients-close" type="button" aria-label="Close clients list">x</button>
     </nav>
     <p class="intro">
       kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives.
@@ -25,7 +26,25 @@
     </p>
   </header>
 
-  <section class="clients-overlay" id="clientsOverlay" aria-hidden="true">
+  <section class="overlay info-overlay" id="infoOverlay" aria-hidden="true">
+    <div class="info-overlay__inner">
+      <p class="info-overlay__location">Melbourne</p>
+      <div class="info-overlay__contact">
+        <p>For a free consultation and quote please get in touch</p>
+        <a href="mailto:hello@kspf.au">hello@kspf.au</a>
+      </div>
+      <div class="info-overlay__services">
+        <p class="info-overlay__services-title">Services</p>
+        <ul class="info-overlay__services-list">
+          <li>Art Direction</li>
+          <li>UX</li>
+          <li>Web Development</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay clients-overlay" id="clientsOverlay" aria-hidden="true">
     <div class="clients-overlay__inner">
       <ul class="clients-overlay__list">
         <li><span class="clients-overlay__name">Aesop</span></li>
