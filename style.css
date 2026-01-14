@@ -61,6 +61,17 @@ body.grid-overlay{
   align-items: center;
 }
 
+.nav__group{
+  grid-column: 3 / 10;
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  align-items: center;
+  column-gap: 160px;
+  justify-content: space-between;
+  justify-self: end;
+  margin-left: 0;
+}
+
 .nav__link{
   color: inherit;
   text-decoration: underline;
@@ -75,8 +86,11 @@ body.grid-overlay{
 
 
 .nav__link--home{ grid-column: 1 / span 2; }
-.nav__link--info{ grid-column: 4 / span 2; }
-.nav__link--case{ grid-column: 6 / span 2; }
+
+.nav__link--info,
+.nav__link--case{
+  grid-column: auto;
+}
 .nav__link--close{
   display: none;
   text-decoration: none;
@@ -87,14 +101,10 @@ body.grid-overlay{
   align-self: center;
 }
 
-.nav__link--close-info{
-  grid-column: 6 / span 1;
-  justify-self: start;
-}
-
+.nav__link--close-info,
 .nav__link--close-clients{
-  grid-column: 8 / span 1;
-  justify-self: start;
+  grid-column: auto;
+  justify-self: end;
 }
 
 .clients-open .nav__link--close-clients{
@@ -370,14 +380,15 @@ body.grid-overlay{
   }
 
   .nav__link--home{ grid-column: 1 / span 2; }
-  .nav__link--info{ grid-column: 4 / span 2; }
-  .nav__link--case{
-    grid-column: 6 / span 1;
-    justify-self: end;
-  }
+  .nav__link--info{ grid-column: auto; }
+  .nav__link--case{ grid-column: auto; }
 
-  .nav__link--close{
-    grid-column: 6 / span 1;
+  .nav__group{
+    grid-column: 3 / -1;
+    grid-template-columns: repeat(3, auto);
+    column-gap: 24px;
+    margin-left: 0;
+    justify-self: end;
   }
 
   .clients-overlay__list{
@@ -398,25 +409,6 @@ body.grid-overlay{
 }
 
 @media (min-width: 721px){
-  .nav__link--info{
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-left: max(80px, calc(50% - (var(--hero-effective) / 2)));
-  }
-
-  .nav__link--case{
-    margin-left: 100px;
-    justify-self: start;
-  }
-
-  .nav__link--close-info{
-    grid-column: 1 / -1;
-    justify-self: start;
-    margin-left: calc(
-      max(80px, calc(50% - (var(--hero-effective) / 2))) + var(--col) + var(--gutter)
-    );
-  }
-
   .clients-overlay__list{
     margin-left: 100px;
   }
