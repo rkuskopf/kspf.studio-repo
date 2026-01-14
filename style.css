@@ -65,12 +65,90 @@ body.grid-overlay{
   text-decoration: underline;
   text-underline-offset: 3px;
   grid-row: 1;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 
 .nav__link--home{ grid-column: 1 / span 2; }
 .nav__link--info{ grid-column: 4 / span 2; }
 .nav__link--case{ grid-column: 6 / span 2; }
+
+/* --- clients overlay --- */
+.clients-overlay{
+  position: fixed;
+  inset: 0;
+  padding: var(--page-pad);
+  background: #fff;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-2vh);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  z-index: 3000;
+}
+
+.clients-overlay.is-open{
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.clients-overlay__inner{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  row-gap: 70px;
+}
+
+.clients-overlay__nav{
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
+  column-gap: var(--gutter);
+  align-items: start;
+}
+
+.clients-overlay__label{
+  grid-column: 6 / span 2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.clients-overlay__close{
+  grid-column: -2 / -1;
+  justify-self: end;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
+
+.clients-overlay__list{
+  grid-column: 6 / span 2;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.clients-overlay__name{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.clients-open{
+  overflow: hidden;
+}
 
 /* --- layout --- */
 .wrap{
@@ -221,6 +299,23 @@ body.grid-overlay{
   .nav__link--case{
     grid-column: 6 / span 1;
     justify-self: end;
+  }
+
+  .clients-overlay__label{
+    grid-column: 5 / span 2;
+  }
+
+  .clients-overlay__list{
+    grid-column: 1 / -1;
+    align-items: center;
+  }
+
+  .clients-overlay__nav{
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
+  .clients-overlay__close{
+    grid-column: 6 / span 1;
   }
 
   .wrap{ grid-template-columns: 1fr; }

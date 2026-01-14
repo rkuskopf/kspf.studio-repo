@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css" />
   <script src="render-projects.js" defer></script>
   <script src="slideshow.js" defer></script>
+  <script src="clients-overlay.js" defer></script>
 </head>
 
 <body class="grid-overlay">
@@ -15,13 +16,31 @@
     <nav class="nav" aria-label="Primary">
       <a class="nav__link nav__link--home is-active" href="/">kspf</a>
       <a class="nav__link nav__link--info" href="/information.html">info</a>
-      <a class="nav__link nav__link--case" href="/case-studies.html">clients</a>
+      <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
     </nav>
     <p class="intro">
       kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives.
       We craft digital experiences beyond aesthetics. Designed to reflect each brand’s story and ambitions.
     </p>
   </header>
+
+  <section class="clients-overlay" id="clientsOverlay" aria-hidden="true">
+    <div class="clients-overlay__inner">
+      <nav class="clients-overlay__nav" aria-label="Clients">
+        <a class="nav__link nav__link--home" href="/">home</a>
+        <a class="nav__link nav__link--info" href="/information.html">information</a>
+        <span class="clients-overlay__label">Clients</span>
+        <button class="clients-overlay__close js-clients-close" type="button" aria-label="Close clients list">x</button>
+      </nav>
+      <ul class="clients-overlay__list">
+        <li><span class="clients-overlay__name">Aesop</span></li>
+        <li><span class="clients-overlay__name">AP-REPS</span></li>
+        <li><span class="clients-overlay__name">Chemist Warehouse</span></li>
+        <li><span class="clients-overlay__name">Albus Lumen</span></li>
+        <li><span class="clients-overlay__name">Jak Architecture</span></li>
+      </ul>
+    </div>
+  </section>
 
   <main class="wrap">
     <div id="projects" class="projects" aria-live="polite"></div>
