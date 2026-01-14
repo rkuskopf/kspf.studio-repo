@@ -3,7 +3,7 @@
   if (!overlay) return;
 
   const toggles = document.querySelectorAll(".js-clients-toggle");
-  const closeBtn = overlay.querySelector(".js-clients-close");
+  const closeBtn = document.querySelector(".js-clients-close");
   let lastActive = null;
 
   const isOpen = () => overlay.classList.contains("is-open");
