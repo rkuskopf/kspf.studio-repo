@@ -412,6 +412,12 @@ body.grid-overlay{
     margin-left: 100px;
   }
 
+  .info-overlay__contact,
+  .info-overlay__services{
+    grid-column: 1 / -1;
+    margin-left: max(80px, calc(50% - (var(--hero-effective) / 2)));
+  }
+
   .hero__img{
     width: var(--hero-effective);
     max-width: none;
