@@ -243,6 +243,11 @@ body.grid-overlay{
     margin-left: max(80px, calc(50% - (var(--hero-effective) / 2)));
   }
 
+  .nav__link--case{
+    margin-left: 100px;
+    justify-self: start;
+  }
+
   .hero__img{
     width: var(--hero-effective);
     max-width: none;
