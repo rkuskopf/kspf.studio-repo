@@ -12,6 +12,7 @@
 	    (var(--viewport-w) - (var(--page-pad) * 2) - (var(--grid-cols) - 1) * var(--gutter)) / var(--grid-cols)
 	  );
 	  --grid-step: calc(var(--grid-col-w) + var(--gutter));
+	  --nav-shift: calc(var(--grid-col-w) * 0.5);
 	  --hero-width: 800px;
 	  --hero-height: 65vh;
 	  --info-services-gap: 150px;
@@ -96,11 +97,11 @@ body.grid-overlay{
 .nav__pair--info{ grid-column: 5; }
 .nav__pair--clients{
   grid-column: 6;
-  margin-left: calc(var(--grid-step) * 0.5);
+  margin-left: calc(var(--nav-shift) + (var(--grid-step) * 0.5));
 }
 
 .nav__link{
-	  color: inherit;
+		  color: inherit;
 	  text-decoration: underline;
 	  text-underline-offset: 3px;
   grid-row: 1;
@@ -420,7 +421,7 @@ body.grid-overlay{
 	  }
 
 	  .nav__link--home{ grid-column: 1 / span 2; }
-	  .nav__pair--info{ grid-column: 3; }
+	  .nav__pair--info{ grid-column: 3; margin-left: 0; }
 	  .nav__pair--clients{
 	    grid-column: 4;
 	    margin-left: 0;
@@ -444,19 +445,22 @@ body.grid-overlay{
 }
 
 @media (min-width: 721px){
+	  .nav__pair--info{ margin-left: var(--nav-shift); }
+
 	  .info-overlay__location{
 	    grid-column: 1 / span 3;
 	  }
 
-  .info-overlay__contact{
-    grid-column: 5 / span 4;
-  }
-
-	  .clients-overlay__list{
-	    grid-column: 6 / span 4;
-	    justify-self: start;
-	    margin-left: calc(var(--grid-step) * 0.5);
+	  .info-overlay__contact{
+	    grid-column: 5 / span 4;
+	    margin-left: var(--nav-shift);
 	  }
+
+		  .clients-overlay__list{
+		    grid-column: 6 / span 4;
+		    justify-self: start;
+		    margin-left: calc(var(--nav-shift) + (var(--grid-step) * 0.5));
+		  }
 
   .hero__img{
     width: auto;
