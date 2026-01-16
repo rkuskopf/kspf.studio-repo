@@ -6,9 +6,9 @@
   --max: 1160px;
   --nav-max: 560px;
   --grid-cols: 12;
-  --gutter: 24px;
+  --gutter: 50px;
   --hero-width: 800px;
-  --hero-height: 50vh;
+  --hero-height: 60vh;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(
     calc(var(--hero-height) * var(--nav-hero-aspect)),
@@ -26,6 +26,7 @@ body{
   font-size: 14px;
   line-height: 1.2;
   color: #000;
+  letter-spacing: 5px;
   background: #fff;
 }
 
@@ -119,7 +120,7 @@ body.grid-overlay{
 .overlay{
   position: fixed;
   inset: 0;
-  padding: calc(var(--page-pad) + 50px) var(--page-pad) var(--page-pad);
+  padding: calc(var(--page-pad) + 45px) var(--page-pad) var(--page-pad);
   background: #fff;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
