@@ -33,28 +33,6 @@
 
   let lastActive = null;
 
-  const updateOverlayAnchors = () => {
-    const infoOverlay = document.getElementById("infoOverlay");
-    const clientsOverlay = document.getElementById("clientsOverlay");
-
-    if (infoOverlay) {
-      infoOverlay.style.removeProperty("--info-anchor");
-      infoOverlay
-        .querySelectorAll(
-          ".info-overlay__location, .info-overlay__contact, .info-overlay__services"
-        )
-        .forEach((node) => {
-          node.style.marginLeft = "";
-        });
-    }
-
-    if (clientsOverlay) {
-      clientsOverlay.style.removeProperty("--clients-anchor");
-      const list = clientsOverlay.querySelector(".clients-overlay__list");
-      if (list) list.style.marginLeft = "";
-    }
-  };
-
   const isOpen = (config) => config.overlay.classList.contains("is-open");
 
   const setOpen = (config, open, restoreFocus = true) => {
@@ -89,7 +67,6 @@
         const nextOpen = !isOpen(config);
         if (nextOpen) closeOthers(config);
         setOpen(config, nextOpen);
-        if (nextOpen) updateOverlayAnchors();
       });
     });
 
@@ -109,11 +86,4 @@
     });
   });
 
-  window.updateOverlayAnchors = updateOverlayAnchors;
-  updateOverlayAnchors();
-  window.addEventListener("resize", updateOverlayAnchors);
-  window.addEventListener("load", updateOverlayAnchors);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(updateOverlayAnchors);
-  }
 })();

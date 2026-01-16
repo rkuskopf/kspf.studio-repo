@@ -11,15 +11,19 @@
   <script src="clients-overlay.js" defer></script>
 </head>
 
-<body class="grid-overlay">
+<body>
   <header class="top">
     <nav class="nav" aria-label="Primary">
       <a class="nav__link nav__link--home is-active" href="/">kspf</a>
       <div class="nav__group">
-        <button class="nav__link nav__link--info js-info-toggle" type="button" aria-expanded="false" aria-controls="infoOverlay">info</button>
-        <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
-        <button class="nav__link nav__link--close nav__link--close-info js-info-close" type="button" aria-label="Close information overlay">x</button>
-        <button class="nav__link nav__link--close nav__link--close-clients js-clients-close" type="button" aria-label="Close clients list">x</button>
+        <div class="nav__pair nav__pair--info">
+          <button class="nav__link nav__link--info js-info-toggle" type="button" aria-expanded="false" aria-controls="infoOverlay">info</button>
+          <button class="nav__link nav__link--close nav__link--close-info js-info-close" type="button" aria-label="Close information overlay">x</button>
+        </div>
+        <div class="nav__pair nav__pair--clients">
+          <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
+          <button class="nav__link nav__link--close nav__link--close-clients js-clients-close" type="button" aria-label="Close clients list">x</button>
+        </div>
       </div>
     </nav>
     <p class="intro">
