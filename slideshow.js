@@ -64,9 +64,6 @@
       if (!doc.dataset.navHeroAspect) {
         doc.style.setProperty("--nav-hero-aspect", value);
         doc.dataset.navHeroAspect = "1";
-        if (typeof window.updateOverlayAnchors === "function") {
-          window.updateOverlayAnchors();
-        }
       }
     });
   };
