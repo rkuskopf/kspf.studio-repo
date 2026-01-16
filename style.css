@@ -68,16 +68,7 @@ body.grid-overlay{
 }
 
 .nav__group{
-  grid-column: 1 / -1;
-  grid-row: 1;
-  display: grid;
-  grid-template-columns: repeat(3, auto);
-  align-items: center;
-  column-gap: 160px;
-  justify-content: space-between;
-  justify-self: start;
-  width: min(700px, calc(100vw - (var(--page-pad) * 2)));
-  margin-left: calc(50% - (var(--nav-hero-frame) / 2));
+  display: contents;
 }
 
 .nav__link{
@@ -85,6 +76,7 @@ body.grid-overlay{
   text-decoration: underline;
   text-underline-offset: 3px;
   grid-row: 1;
+  justify-self: start;
   background: none;
   border: 0;
   padding: 0;
@@ -95,10 +87,8 @@ body.grid-overlay{
 
 .nav__link--home{ grid-column: 1 / span 2; }
 
-.nav__link--info,
-.nav__link--case{
-  grid-column: auto;
-}
+.nav__link--info{ grid-column: 4; }
+.nav__link--case{ grid-column: 5; }
 .nav__link--close{
   display: none;
   text-decoration: none;
@@ -111,9 +101,11 @@ body.grid-overlay{
 
 .nav__link--close-info,
 .nav__link--close-clients{
-  grid-column: auto;
-  justify-self: end;
+  justify-self: start;
 }
+
+.nav__link--close-info{ grid-column: 6; }
+.nav__link--close-clients{ grid-column: 6; }
 
 .clients-open .nav__link--close-clients{
   display: inline;
@@ -151,6 +143,7 @@ body.grid-overlay{
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   row-gap: 70px;
+  justify-items: start;
 }
 
 .clients-overlay__list{
@@ -195,12 +188,15 @@ body.grid-overlay{
   column-gap: var(--gutter);
   row-gap: 0;
   align-items: start;
+  justify-items: start;
 }
 
 .info-overlay__location{
   grid-column: 1 / -1;
   margin: 0;
   align-self: start;
+  justify-self: start;
+  text-align: left;
 }
 
 .info-overlay__contact{
@@ -210,6 +206,8 @@ body.grid-overlay{
   flex-direction: column;
   gap: 15px;
   align-self: start;
+  justify-self: start;
+  text-align: left;
 }
 
 .info-overlay__contact p{
@@ -223,11 +221,13 @@ body.grid-overlay{
 
 .info-overlay__services{
   grid-column: 1 / -1;
-  margin: 100px 0 0;
+  margin: 150px 0 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-self: start;
+  justify-self: start;
+  text-align: left;
 }
 
 .info-overlay__services-title{
@@ -396,16 +396,8 @@ body.grid-overlay{
   }
 
   .nav__link--home{ grid-column: 1 / span 2; }
-  .nav__link--info{ grid-column: auto; }
-  .nav__link--case{ grid-column: auto; }
-
-  .nav__group{
-    grid-column: 3 / -1;
-    grid-template-columns: repeat(3, auto);
-    column-gap: 24px;
-    margin-left: 0;
-    justify-self: end;
-  }
+  .nav__link--info{ grid-column: 4; }
+  .nav__link--case{ grid-column: 5; }
 
   .clients-overlay__list{
     grid-column: 1 / -1;
@@ -425,14 +417,17 @@ body.grid-overlay{
 }
 
 @media (min-width: 721px){
-  .info-overlay__location,
+  .info-overlay__location{
+    grid-column: 1 / span 3;
+  }
+
   .info-overlay__contact,
   .info-overlay__services{
-    grid-column: 5 / span 3;
+    grid-column: 4 / span 3;
   }
 
   .clients-overlay__list{
-    grid-column: 8 / span 3;
+    grid-column: 5 / span 2;
   }
 
   .hero__img{

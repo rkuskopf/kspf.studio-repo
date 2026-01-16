@@ -34,38 +34,24 @@
   let lastActive = null;
 
   const updateOverlayAnchors = () => {
-    const infoToggle = document.querySelector(".js-info-toggle");
-    const clientsToggle = document.querySelector(".js-clients-toggle");
     const infoOverlay = document.getElementById("infoOverlay");
     const clientsOverlay = document.getElementById("clientsOverlay");
 
-    if (infoToggle && infoOverlay) {
-      const overlayRect = infoOverlay.getBoundingClientRect();
-      const paddingLeft = parseFloat(getComputedStyle(infoOverlay).paddingLeft) || 0;
-      const left = Math.max(
-        0,
-        Math.round(infoToggle.getBoundingClientRect().left - overlayRect.left - paddingLeft)
-      );
-      infoOverlay.style.setProperty("--info-anchor", `${left}px`);
+    if (infoOverlay) {
+      infoOverlay.style.removeProperty("--info-anchor");
       infoOverlay
         .querySelectorAll(
           ".info-overlay__location, .info-overlay__contact, .info-overlay__services"
         )
         .forEach((node) => {
-          node.style.marginLeft = `${left}px`;
+          node.style.marginLeft = "";
         });
     }
 
-    if (clientsToggle && clientsOverlay) {
-      const overlayRect = clientsOverlay.getBoundingClientRect();
-      const paddingLeft = parseFloat(getComputedStyle(clientsOverlay).paddingLeft) || 0;
-      const left = Math.max(
-        0,
-        Math.round(clientsToggle.getBoundingClientRect().left - overlayRect.left - paddingLeft)
-      );
-      clientsOverlay.style.setProperty("--clients-anchor", `${left}px`);
+    if (clientsOverlay) {
+      clientsOverlay.style.removeProperty("--clients-anchor");
       const list = clientsOverlay.querySelector(".clients-overlay__list");
-      if (list) list.style.marginLeft = `${left}px`;
+      if (list) list.style.marginLeft = "";
     }
   };
 
