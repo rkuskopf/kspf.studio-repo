@@ -6,6 +6,7 @@
       toggleSelector: ".js-clients-toggle",
       closeSelector: ".js-clients-close",
       bodyClass: "clients-open",
+      cssLeftVar: "--clients-toggle-left",
     },
     {
       name: "info",
@@ -13,6 +14,7 @@
       toggleSelector: ".js-info-toggle",
       closeSelector: ".js-info-close",
       bodyClass: "info-open",
+      cssLeftVar: "--info-toggle-left",
     },
   ];
 
@@ -35,6 +37,18 @@
 
   const isOpen = (config) => config.overlay.classList.contains("is-open");
 
+  const updateToggleLeftVar = (config) => {
+    if (!config.cssLeftVar) return;
+    const firstToggle = config.toggles && config.toggles[0];
+    if (!firstToggle) return;
+    const { left } = firstToggle.getBoundingClientRect();
+    document.documentElement.style.setProperty(config.cssLeftVar, `${Math.round(left)}px`);
+  };
+
+  const updateAllToggleLeftVars = () => {
+    overlays.forEach(updateToggleLeftVar);
+  };
+
   const setOpen = (config, open, restoreFocus = true) => {
     config.overlay.classList.toggle("is-open", open);
     config.overlay.setAttribute("aria-hidden", open ? "false" : "true");
@@ -44,11 +58,19 @@
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
+    requestAnimationFrame(updateAllToggleLeftVars);
+
     if (open) {
       lastActive = document.activeElement;
-      if (config.closeBtn) config.closeBtn.focus();
+      if (config.closeBtn) {
+        config.closeBtn.disabled = false;
+        requestAnimationFrame(() => config.closeBtn.focus());
+      }
     } else if (restoreFocus && lastActive && typeof lastActive.focus === "function") {
+      if (config.closeBtn) config.closeBtn.disabled = true;
       lastActive.focus();
+    } else if (config.closeBtn) {
+      config.closeBtn.disabled = true;
     }
   };
 
@@ -61,6 +83,8 @@
   };
 
   overlays.forEach((config) => {
+    if (config.closeBtn) config.closeBtn.disabled = true;
+
     config.toggles.forEach((btn) => {
       btn.addEventListener("click", (event) => {
         event.preventDefault();
@@ -85,5 +109,8 @@
       if (isOpen(config)) setOpen(config, false);
     });
   });
+
+  updateAllToggleLeftVars();
+  window.addEventListener("resize", () => requestAnimationFrame(updateAllToggleLeftVars));
 
 })();
