@@ -20,13 +20,6 @@
     }
   };
 
-  const slugify = (value) =>
-    String(value || "")
-      .trim()
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)+/g, "");
-
   const createHero = (project, index) => {
     const figure = document.createElement("figure");
     figure.className = "hero js-slideshow";
@@ -93,8 +86,6 @@
     projects.forEach((project, index) => {
       const block = document.createElement("section");
       block.className = "project-block";
-      const slug = slugify(project.title);
-      if (slug) block.dataset.project = slug;
       block.append(createHero(project, index), createProjectText(project));
       container.appendChild(block);
     });

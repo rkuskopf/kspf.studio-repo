@@ -454,11 +454,6 @@ body.grid-overlay{
   column-gap: var(--gutter);
 }
 
-.project-block[data-project="ap-reps"] .hero{
-  --hero-frame: var(--hero-effective);
-  --hero-height: calc(var(--hero-effective) / var(--hero-aspect, 1.6));
-}
-
 /* --- responsive --- */
 @media (max-width: 720px){
 	  :root{
