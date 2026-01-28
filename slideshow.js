@@ -33,11 +33,16 @@
     img.src = src;
   };
 
+  const playbackUpdaters = new Map();
+
   const setActiveRoot = (root) => {
     if (activeRoot === root) return;
+    const previous = activeRoot;
     if (activeRoot) activeRoot.classList.remove("is-active");
     activeRoot = root;
     if (activeRoot) activeRoot.classList.add("is-active");
+    if (previous && playbackUpdaters.has(previous)) playbackUpdaters.get(previous)();
+    if (activeRoot && playbackUpdaters.has(activeRoot)) playbackUpdaters.get(activeRoot)();
   };
 
   const loadAspect = (src) =>
@@ -137,8 +142,27 @@
     root.addEventListener("focusin", () => setActiveRoot(root));
 
     let index = 0;
+    let isInView = false;
+    let currentIsVideo = false;
+    let currentSrc = null;
+    const shouldPlay = () => isInView && activeRoot === root;
+
+    const updatePlayback = () => {
+      if (!currentIsVideo) return;
+      if (shouldPlay()) {
+        if (video.src !== currentSrc) {
+          video.src = currentSrc;
+        }
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+    playbackUpdaters.set(root, updatePlayback);
 
     const showImage = (src) => {
+      currentIsVideo = false;
+      currentSrc = null;
       video.pause();
       video.removeAttribute("src");
       video.load();
@@ -148,12 +172,22 @@
     };
 
     const showVideo = (src) => {
+      currentIsVideo = true;
+      currentSrc = src;
       img.classList.add("is-hidden");
       video.classList.remove("is-hidden");
-      if (video.src !== src) {
-        video.src = src;
+      if (shouldPlay()) {
+        if (video.src !== src) {
+          video.src = src;
+        }
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+        if (video.src) {
+          video.removeAttribute("src");
+          video.load();
+        }
       }
-      video.play().catch(() => {});
     };
 
     const show = (nextIndex) => {
@@ -195,6 +229,18 @@
     });
 
     preload(slides[(index + 1) % slides.length]);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target !== root) return;
+          isInView = entry.isIntersecting;
+          updatePlayback();
+        });
+      },
+      { root: null, threshold: 0.35 }
+    );
+    observer.observe(root);
   };
 
   const setupSlideshows = (scope = document) => {
