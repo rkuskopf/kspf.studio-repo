@@ -237,7 +237,7 @@ body.grid-overlay{
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 20px;
   align-self: start;
   justify-self: start;
   text-align: left;
@@ -253,7 +253,9 @@ body.grid-overlay{
 
 .information-overlay__contact a{
   color: inherit;
-  text-decoration: none;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
 }
 
 .information-overlay__services{
@@ -261,7 +263,7 @@ body.grid-overlay{
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 20px;
   align-self: start;
   justify-self: start;
   text-align: left;
@@ -277,7 +279,13 @@ body.grid-overlay{
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 50px;
+}
+
+.information-overlay__services-list li{
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
 }
 
 /* --- layout --- */
@@ -370,7 +378,7 @@ body.grid-overlay{
 }
 
 .hero__hit{
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
   width: 50vw;
