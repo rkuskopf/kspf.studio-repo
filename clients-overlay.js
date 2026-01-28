@@ -7,6 +7,7 @@
       closeSelector: ".js-clients-close",
       bodyClass: "clients-open",
       cssLeftVar: "--clients-toggle-left",
+      cssRightVar: "--clients-toggle-right",
     },
     {
       name: "information",
@@ -15,6 +16,7 @@
       closeSelector: ".js-information-close",
       bodyClass: "information-open",
       cssLeftVar: "--information-toggle-left",
+      cssCloseLeftVar: "--information-close-left",
     },
   ];
 
@@ -41,8 +43,15 @@
     if (!config.cssLeftVar) return;
     const firstToggle = config.toggles && config.toggles[0];
     if (!firstToggle) return;
-    const { left } = firstToggle.getBoundingClientRect();
+    const { left, right } = firstToggle.getBoundingClientRect();
     document.documentElement.style.setProperty(config.cssLeftVar, `${Math.round(left)}px`);
+    if (config.cssRightVar) {
+      document.documentElement.style.setProperty(config.cssRightVar, `${Math.round(right)}px`);
+    }
+    if (config.cssCloseLeftVar && config.closeBtn) {
+      const { left: closeLeft } = config.closeBtn.getBoundingClientRect();
+      document.documentElement.style.setProperty(config.cssCloseLeftVar, `${Math.round(closeLeft)}px`);
+    }
   };
 
   const updateAllToggleLeftVars = () => {
