@@ -9,12 +9,12 @@
       cssLeftVar: "--clients-toggle-left",
     },
     {
-      name: "info",
-      overlayId: "infoOverlay",
-      toggleSelector: ".js-info-toggle",
-      closeSelector: ".js-info-close",
-      bodyClass: "info-open",
-      cssLeftVar: "--info-toggle-left",
+      name: "information",
+      overlayId: "informationOverlay",
+      toggleSelector: ".js-information-toggle",
+      closeSelector: ".js-information-close",
+      bodyClass: "information-open",
+      cssLeftVar: "--information-toggle-left",
     },
   ];
 
