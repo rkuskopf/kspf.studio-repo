@@ -18,8 +18,17 @@
       .filter(Boolean);
   };
 
+  const videoExtensions = new Set(["mp4", "mov", "webm", "m4v"]);
+
+  const isVideo = (src) => {
+    if (!src) return false;
+    const clean = src.split("?")[0];
+    const ext = clean.slice(clean.lastIndexOf(".") + 1).toLowerCase();
+    return videoExtensions.has(ext);
+  };
+
   const preload = (src) => {
-    if (!src) return;
+    if (!src || isVideo(src)) return;
     const img = new Image();
     img.src = src;
   };
@@ -35,6 +44,20 @@
     new Promise((resolve) => {
       if (!src) {
         resolve(null);
+        return;
+      }
+      if (isVideo(src)) {
+        const probe = document.createElement("video");
+        const finalize = () => {
+          if (probe.videoWidth && probe.videoHeight) {
+            resolve(probe.videoWidth / probe.videoHeight);
+          } else {
+            resolve(null);
+          }
+        };
+        probe.onloadedmetadata = finalize;
+        probe.onerror = () => resolve(null);
+        probe.src = src;
         return;
       }
       const probe = new Image();
@@ -103,30 +126,53 @@
     roots.push(root);
 
     const img = root.querySelector(".hero__img");
+    const video = root.querySelector(".hero__video");
     const prev = root.querySelector(".hero__hit--prev");
     const next = root.querySelector(".hero__hit--next");
-    if (!img || !prev || !next) return;
+    if (!img || !video || !prev || !next) return;
 
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
     setHeroAspect(root, slides, img.getAttribute("src"));
+    root.addEventListener("pointerenter", () => setActiveRoot(root));
+    root.addEventListener("focusin", () => setActiveRoot(root));
+
+    let index = 0;
+
+    const showImage = (src) => {
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.classList.add("is-hidden");
+      img.classList.remove("is-hidden");
+      img.src = src;
+    };
+
+    const showVideo = (src) => {
+      img.classList.add("is-hidden");
+      video.classList.remove("is-hidden");
+      if (video.src !== src) {
+        video.src = src;
+      }
+      video.play().catch(() => {});
+    };
+
+    const show = (nextIndex) => {
+      index = (nextIndex + slides.length) % slides.length;
+      const current = slides[index];
+      if (isVideo(current)) {
+        showVideo(current);
+      } else {
+        showImage(current);
+      }
+      preload(slides[(index + 1) % slides.length]);
+      preload(slides[(index - 1 + slides.length) % slides.length]);
+    };
+
+    show(index);
     if (slides.length <= 1) {
       root.classList.add("is-single");
       return;
     }
-
-    root.addEventListener("pointerenter", () => setActiveRoot(root));
-    root.addEventListener("focusin", () => setActiveRoot(root));
-
-    const initialSrc = img.getAttribute("src");
-    let index = slides.indexOf(initialSrc);
-    if (index < 0) index = 0;
-
-    const show = (nextIndex) => {
-      index = (nextIndex + slides.length) % slides.length;
-      img.src = slides[index];
-      preload(slides[(index + 1) % slides.length]);
-      preload(slides[(index - 1 + slides.length) % slides.length]);
-    };
 
     prev.addEventListener("click", () => {
       setActiveRoot(root);

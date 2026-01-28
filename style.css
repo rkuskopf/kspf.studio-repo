@@ -44,11 +44,11 @@ body{
 	  margin: 0;
 	  padding: var(--page-pad);
 	  font-family: "Times New Roman", Times, serif;
-	  font-size: 15px;
+	  font-size: 14px;
   line-height: 1.2;
   font-weight: 300;
   color: #000;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.21px;
   background: #fff;
 }
 
@@ -119,6 +119,7 @@ body.grid-overlay{
 		  color: inherit;
 	  text-decoration: underline;
 	  text-underline-offset: 3px;
+	  text-decoration-thickness: 0.5px;
   grid-row: 1;
   justify-self: start;
   background: none;
@@ -158,8 +159,11 @@ body.grid-overlay{
 /* --- overlays --- */
 .overlay{
   position: fixed;
-  inset: 0;
-  padding: 75px var(--page-pad) var(--page-pad);
+  left: 0;
+  right: 0;
+  top: calc(var(--header-height, 0px) + 10px);
+  bottom: 0;
+  padding: 130px var(--page-pad) var(--page-pad);
   background: #fff;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
@@ -204,6 +208,7 @@ body.grid-overlay{
 .clients-overlay__name{
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
   white-space: nowrap;
 }
 
@@ -211,17 +216,11 @@ body.grid-overlay{
   overflow: hidden;
 }
 
-.clients-open .intro{
-  visibility: hidden;
-}
 
 .information-open{
   overflow: hidden;
 }
 
-.information-open .intro{
-  visibility: hidden;
-}
 
 .information-overlay__inner{
   grid-column: 1 / -1;
@@ -323,14 +322,16 @@ body.grid-overlay{
   column-gap: var(--gutter);
   align-items: end;
   position: relative;
+  min-height: var(--hero-height);
   --hero-frame: min(
     calc(var(--hero-height) * var(--hero-aspect, 1.6)),
     calc(100vw - (var(--page-pad) * 2))
   );
 }
 
-.hero__img{
+.hero__media{
   grid-column: 1 / -1;
+  grid-row: 1;
   max-height: var(--hero-height);
   width: auto;
   height: auto;
@@ -339,6 +340,10 @@ body.grid-overlay{
   position: relative;
   z-index: 2;
   margin: 0;
+}
+
+.hero__media.is-hidden{
+  display: none;
 }
 
 /* --- hero meta --- */
@@ -356,6 +361,7 @@ body.grid-overlay{
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
   white-space: nowrap;
 }
 
@@ -399,6 +405,17 @@ body.grid-overlay{
   margin: 10px 0 0;
   min-height: calc(var(--project-text-lines) * 1.2em);
   grid-column: 1 / span 12;
+}
+
+.project__view{
+  grid-column: 1 / span 12;
+  justify-self: start;
+  margin: 0;
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
+  white-space: nowrap;
 }
 
 /* --- footer --- */
@@ -447,7 +464,7 @@ body.grid-overlay{
   .intro{ grid-column: 1 / -1; }
 
   .hero{ grid-template-columns: 1fr; row-gap: 12px; }
-  .hero__img{ grid-column: 1 / -1; }
+  .hero__media{ grid-column: 1 / -1; }
 
 
   .project{ grid-template-columns: 1fr; }
@@ -499,14 +516,14 @@ body.grid-overlay{
     }
 
 	  .clients-overlay__list{
-      justify-self: end;
-      margin-left: 0;
-      margin-right: calc((100vw - var(--page-pad)) - var(--clients-toggle-right));
-      text-align: right;
-      align-items: flex-end;
+      justify-self: start;
+      margin-left: calc(var(--clients-toggle-left) - var(--page-pad));
+      margin-right: 0;
+      text-align: left;
+      align-items: flex-start;
     }
 
-  .hero__img{
+  .hero__media{
     width: auto;
     justify-self: center;
   }

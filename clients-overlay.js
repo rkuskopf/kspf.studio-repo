@@ -58,6 +58,13 @@
     overlays.forEach(updateToggleLeftVar);
   };
 
+  const updateHeaderHeight = () => {
+    const header = document.querySelector(".top");
+    if (!header) return;
+    const { height } = header.getBoundingClientRect();
+    document.documentElement.style.setProperty("--header-height", `${Math.round(height)}px`);
+  };
+
   const setOpen = (config, open, restoreFocus = true) => {
     config.overlay.classList.toggle("is-open", open);
     config.overlay.setAttribute("aria-hidden", open ? "false" : "true");
@@ -67,7 +74,10 @@
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
-    requestAnimationFrame(updateAllToggleLeftVars);
+    requestAnimationFrame(() => {
+      updateAllToggleLeftVars();
+      updateHeaderHeight();
+    });
 
     if (open) {
       lastActive = document.activeElement;
@@ -120,6 +130,20 @@
   });
 
   updateAllToggleLeftVars();
-  window.addEventListener("resize", () => requestAnimationFrame(updateAllToggleLeftVars));
+  updateHeaderHeight();
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(() => {
+      updateAllToggleLeftVars();
+      updateHeaderHeight();
+    });
+  });
+
+  if ("ResizeObserver" in window) {
+    const header = document.querySelector(".top");
+    if (header) {
+      const observer = new ResizeObserver(() => updateHeaderHeight());
+      observer.observe(header);
+    }
+  }
 
 })();
