@@ -8,20 +8,51 @@
   <link rel="stylesheet" href="style.css" />
   <script src="render-projects.js" defer></script>
   <script src="slideshow.js" defer></script>
+  <script src="clients-overlay.js" defer></script>
 </head>
 
-<body class="grid-overlay">
+<body>
   <header class="top">
     <nav class="nav" aria-label="Primary">
       <a class="nav__link nav__link--home is-active" href="/">kspf</a>
-      <a class="nav__link nav__link--info" href="/information.html">info</a>
-      <a class="nav__link nav__link--case" href="/case-studies.html">clients</a>
+      <div class="nav__group">
+        <div class="nav__pair nav__pair--info">
+          <button class="nav__link nav__link--info js-info-toggle" type="button" aria-expanded="false" aria-controls="infoOverlay">info</button>
+          <button class="nav__link nav__link--close nav__link--close-info js-info-close" type="button" aria-label="Close information overlay">x</button>
+        </div>
+        <div class="nav__pair nav__pair--clients">
+          <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
+          <button class="nav__link nav__link--close nav__link--close-clients js-clients-close" type="button" aria-label="Close clients list">x</button>
+        </div>
+      </div>
     </nav>
-    <p class="intro">
+    <p class="intro" title="kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives. We craft digital experiences beyond aesthetics. Designed to reflect each brand’s story and ambitions.">
       kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives.
       We craft digital experiences beyond aesthetics. Designed to reflect each brand’s story and ambitions.
     </p>
   </header>
+
+  <section class="overlay info-overlay" id="infoOverlay" aria-hidden="true">
+    <div class="info-overlay__inner">
+      <p class="info-overlay__location">Melbourne</p>
+      <div class="info-overlay__contact">
+        <p>For a free consultation and quote please get in touch</p>
+        <a href="mailto:hello@kspf.au">hello@kspf.au</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="overlay clients-overlay" id="clientsOverlay" aria-hidden="true">
+    <div class="clients-overlay__inner">
+      <ul class="clients-overlay__list">
+        <li><span class="clients-overlay__name">Aesop</span></li>
+        <li><span class="clients-overlay__name">AP-REPS</span></li>
+        <li><span class="clients-overlay__name">Chemist Warehouse</span></li>
+        <li><span class="clients-overlay__name">Albus Lumen</span></li>
+        <li><span class="clients-overlay__name">Jak Architecture</span></li>
+      </ul>
+    </div>
+  </section>
 
   <main class="wrap">
     <div id="projects" class="projects" aria-live="polite"></div>

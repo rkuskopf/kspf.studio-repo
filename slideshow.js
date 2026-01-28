@@ -31,6 +31,43 @@
     if (activeRoot) activeRoot.classList.add("is-active");
   };
 
+  const loadAspect = (src) =>
+    new Promise((resolve) => {
+      if (!src) {
+        resolve(null);
+        return;
+      }
+      const probe = new Image();
+      const finalize = () => {
+        if (probe.naturalWidth && probe.naturalHeight) {
+          resolve(probe.naturalWidth / probe.naturalHeight);
+        } else {
+          resolve(null);
+        }
+      };
+      probe.onload = finalize;
+      probe.onerror = () => resolve(null);
+      probe.src = src;
+      if (probe.complete) finalize();
+    });
+
+  const setHeroAspect = (root, slides, fallbackSrc) => {
+    const sources = (slides && slides.length ? slides : [fallbackSrc]).filter(Boolean);
+    if (!sources.length) return;
+    const unique = Array.from(new Set(sources));
+    Promise.all(unique.map(loadAspect)).then((aspects) => {
+      const maxAspect = Math.max(...aspects.filter(Boolean));
+      if (!Number.isFinite(maxAspect) || maxAspect <= 0) return;
+      const value = maxAspect.toFixed(4);
+      root.style.setProperty("--hero-aspect", value);
+      const doc = document.documentElement;
+      if (!doc.dataset.navHeroAspect) {
+        doc.style.setProperty("--nav-hero-aspect", value);
+        doc.dataset.navHeroAspect = "1";
+      }
+    });
+  };
+
   const roots = [];
 
   const pickClosestToCenter = () => {
@@ -71,6 +108,7 @@
     if (!img || !prev || !next) return;
 
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
+    setHeroAspect(root, slides, img.getAttribute("src"));
     if (slides.length <= 1) {
       root.classList.add("is-single");
       return;

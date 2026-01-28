@@ -45,6 +45,7 @@
     const p = document.createElement("p");
     p.className = "project__text";
     p.textContent = project.description || "";
+    if (project.description) p.title = project.description;
     section.appendChild(p);
     return section;
   };
