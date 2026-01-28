@@ -7,14 +7,16 @@
       closeSelector: ".js-clients-close",
       bodyClass: "clients-open",
       cssLeftVar: "--clients-toggle-left",
+      cssRightVar: "--clients-toggle-right",
     },
     {
-      name: "info",
-      overlayId: "infoOverlay",
-      toggleSelector: ".js-info-toggle",
-      closeSelector: ".js-info-close",
-      bodyClass: "info-open",
-      cssLeftVar: "--info-toggle-left",
+      name: "information",
+      overlayId: "informationOverlay",
+      toggleSelector: ".js-information-toggle",
+      closeSelector: ".js-information-close",
+      bodyClass: "information-open",
+      cssLeftVar: "--information-toggle-left",
+      cssCloseLeftVar: "--information-close-left",
     },
   ];
 
@@ -41,12 +43,26 @@
     if (!config.cssLeftVar) return;
     const firstToggle = config.toggles && config.toggles[0];
     if (!firstToggle) return;
-    const { left } = firstToggle.getBoundingClientRect();
+    const { left, right } = firstToggle.getBoundingClientRect();
     document.documentElement.style.setProperty(config.cssLeftVar, `${Math.round(left)}px`);
+    if (config.cssRightVar) {
+      document.documentElement.style.setProperty(config.cssRightVar, `${Math.round(right)}px`);
+    }
+    if (config.cssCloseLeftVar && config.closeBtn) {
+      const { left: closeLeft } = config.closeBtn.getBoundingClientRect();
+      document.documentElement.style.setProperty(config.cssCloseLeftVar, `${Math.round(closeLeft)}px`);
+    }
   };
 
   const updateAllToggleLeftVars = () => {
     overlays.forEach(updateToggleLeftVar);
+  };
+
+  const updateHeaderHeight = () => {
+    const header = document.querySelector(".top");
+    if (!header) return;
+    const { height } = header.getBoundingClientRect();
+    document.documentElement.style.setProperty("--header-height", `${Math.round(height)}px`);
   };
 
   const setOpen = (config, open, restoreFocus = true) => {
@@ -58,7 +74,10 @@
       btn.setAttribute("aria-expanded", open ? "true" : "false");
     });
 
-    requestAnimationFrame(updateAllToggleLeftVars);
+    requestAnimationFrame(() => {
+      updateAllToggleLeftVars();
+      updateHeaderHeight();
+    });
 
     if (open) {
       lastActive = document.activeElement;
@@ -111,6 +130,20 @@
   });
 
   updateAllToggleLeftVars();
-  window.addEventListener("resize", () => requestAnimationFrame(updateAllToggleLeftVars));
+  updateHeaderHeight();
+  window.addEventListener("resize", () => {
+    requestAnimationFrame(() => {
+      updateAllToggleLeftVars();
+      updateHeaderHeight();
+    });
+  });
+
+  if ("ResizeObserver" in window) {
+    const header = document.querySelector(".top");
+    if (header) {
+      const observer = new ResizeObserver(() => updateHeaderHeight());
+      observer.observe(header);
+    }
+  }
 
 })();

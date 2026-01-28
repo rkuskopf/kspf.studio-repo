@@ -16,9 +16,9 @@
     <nav class="nav" aria-label="Primary">
       <a class="nav__link nav__link--home is-active" href="/">kspf</a>
       <div class="nav__group">
-        <div class="nav__pair nav__pair--info">
-          <button class="nav__link nav__link--info js-info-toggle" type="button" aria-expanded="false" aria-controls="infoOverlay">info</button>
-          <button class="nav__link nav__link--close nav__link--close-info js-info-close" type="button" aria-label="Close information overlay">x</button>
+        <div class="nav__pair nav__pair--information">
+          <button class="nav__link nav__link--information js-information-toggle" type="button" aria-expanded="false" aria-controls="informationOverlay">information</button>
+          <button class="nav__link nav__link--close nav__link--close-information js-information-close" type="button" aria-label="Close information overlay">x</button>
         </div>
         <div class="nav__pair nav__pair--clients">
           <button class="nav__link nav__link--case js-clients-toggle" type="button" aria-expanded="false" aria-controls="clientsOverlay">clients</button>
@@ -28,16 +28,25 @@
     </nav>
     <p class="intro">
       kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives.
-      We craft digital experiences beyond aesthetics. Designed to reflect each brand’s story and ambitions.
+      We craft digital experiences beyond aesthetics, designed to reflect each brand’s story and ambitions.
     </p>
   </header>
 
-  <section class="overlay info-overlay" id="infoOverlay" aria-hidden="true">
-    <div class="info-overlay__inner">
-      <p class="info-overlay__location">Melbourne</p>
-      <div class="info-overlay__contact">
+  <section class="overlay information-overlay" id="informationOverlay" aria-hidden="true">
+    <div class="information-overlay__inner">
+      <div class="information-overlay__contact">
+        <p class="information-overlay__contact-title">Contact</p>
         <p>For a free consultation and quote please get in touch</p>
         <a href="mailto:hello@kspf.au">hello@kspf.au</a>
+      </div>
+      <div class="information-overlay__services">
+        <p class="information-overlay__services-title">Services</p>
+        <ul class="information-overlay__services-list">
+          <li>Web Development</li>
+          <li>Art Direction</li>
+          <li>Product Design</li>
+          <li>Design Research</li>
+        </ul>
       </div>
     </div>
   </section>
