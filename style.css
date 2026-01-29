@@ -325,6 +325,13 @@ body.grid-overlay{
   margin: 0;
   min-height: calc(var(--intro-lines) * 1.2em);
   grid-column: 1 / span 12;
+  line-height: 1.2;
+  min-height: calc(var(--intro-lines) * 1.2em);
+  max-height: calc(var(--intro-lines) * 1.2em);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--intro-lines);
 }
 
 /* --- hero image --- */
@@ -420,6 +427,13 @@ body.grid-overlay{
   margin: 10px 0 0;
   min-height: calc(var(--project-text-lines) * 1.2em);
   grid-column: 1 / span 12;
+  line-height: 1.2;
+  min-height: calc(var(--project-text-lines) * 1.2em);
+  max-height: calc(var(--project-text-lines) * 1.2em);
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--project-text-lines);
 }
 
 .project__view{
