@@ -337,6 +337,7 @@ body.grid-overlay{
   align-items: end;
   position: relative;
   min-height: var(--hero-height);
+  overflow-anchor: none;
   --hero-frame: min(
     calc(var(--hero-height) * var(--hero-aspect, 1.6)),
     calc(100vw - (var(--page-pad) * 2))

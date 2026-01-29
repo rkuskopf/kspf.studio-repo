@@ -183,10 +183,6 @@
         video.play().catch(() => {});
       } else {
         video.pause();
-        if (video.src) {
-          video.removeAttribute("src");
-          video.load();
-        }
       }
     };
 
