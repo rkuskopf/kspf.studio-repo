@@ -497,6 +497,7 @@ body.grid-overlay{
     row-gap: 12px;
     justify-items: center;
     align-self: center;
+    align-items: center;
   }
   .hero__media{
     grid-column: 1 / -1;
