@@ -2,6 +2,24 @@
   const container = document.getElementById("projects");
   if (!container) return;
 
+  const isVideoSrc = (src) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(src || "");
+  const normalizeViewUrl = (url) => {
+    if (!url) return "";
+    if (/^(https?:)?\/\//i.test(url)) return url;
+    return `https://${url}`;
+  };
+
+  const formatViewLabel = (url) => {
+    if (!url) return "visit site";
+    try {
+      const normalized = normalizeViewUrl(url);
+      const { hostname } = new URL(normalized);
+      return hostname.replace(/^www\./i, "");
+    } catch {
+      return url;
+    }
+  };
+
   const createHero = (project, index) => {
     const figure = document.createElement("figure");
     figure.className = "hero js-slideshow";
@@ -19,29 +37,43 @@
     next.setAttribute("aria-label", "Next image");
 
     const img = document.createElement("img");
-    img.className = "hero__img";
-    img.src = (project.slides && project.slides[0]) || "";
+    img.className = "hero__media hero__img";
+    const slides = project.slides || [];
+    const firstImage = slides.find((src) => src && !isVideoSrc(src)) || "";
+    img.src = firstImage || slides[0] || "";
     img.alt = project.alt || project.title || "Project image";
     img.loading = index === 0 ? "eager" : "lazy";
 
-    const meta = document.createElement("div");
-    meta.className = "hero__meta";
+    const video = document.createElement("video");
+    video.className = "hero__media hero__video";
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = "metadata";
+    const firstSlide = slides[0] || "";
+    const startsWithVideo = isVideoSrc(firstSlide);
+    if (startsWithVideo) {
+      video.src = firstSlide;
+    }
+    img.classList.toggle("is-hidden", startsWithVideo);
+    video.classList.toggle("is-hidden", !startsWithVideo);
 
-    const view = document.createElement("a");
-    view.className = "hero__view";
-    view.href = project.viewUrl || "#";
-    view.target = "_blank";
-    view.rel = "noopener";
-    view.textContent = "visit site";
-
-    meta.appendChild(view);
-    figure.append(prev, next, img, meta);
+    figure.append(prev, next, img, video);
     return figure;
   };
 
   const createProjectText = (project) => {
     const section = document.createElement("section");
     section.className = "project";
+    if (project.viewUrl) {
+      const view = document.createElement("a");
+      view.className = "project__view";
+      view.href = normalizeViewUrl(project.viewUrl);
+      view.target = "_blank";
+      view.rel = "noopener";
+      view.textContent = formatViewLabel(project.viewUrl);
+      section.appendChild(view);
+    }
     const p = document.createElement("p");
     p.className = "project__text";
     p.textContent = project.description || "";

@@ -18,23 +18,51 @@
       .filter(Boolean);
   };
 
+  const videoExtensions = new Set(["mp4", "mov", "webm", "m4v"]);
+
+  const isVideo = (src) => {
+    if (!src) return false;
+    const clean = src.split("?")[0];
+    const ext = clean.slice(clean.lastIndexOf(".") + 1).toLowerCase();
+    return videoExtensions.has(ext);
+  };
+
   const preload = (src) => {
-    if (!src) return;
+    if (!src || isVideo(src)) return;
     const img = new Image();
     img.src = src;
   };
 
+  const playbackUpdaters = new Map();
+
   const setActiveRoot = (root) => {
     if (activeRoot === root) return;
+    const previous = activeRoot;
     if (activeRoot) activeRoot.classList.remove("is-active");
     activeRoot = root;
     if (activeRoot) activeRoot.classList.add("is-active");
+    if (previous && playbackUpdaters.has(previous)) playbackUpdaters.get(previous)();
+    if (activeRoot && playbackUpdaters.has(activeRoot)) playbackUpdaters.get(activeRoot)();
   };
 
   const loadAspect = (src) =>
     new Promise((resolve) => {
       if (!src) {
         resolve(null);
+        return;
+      }
+      if (isVideo(src)) {
+        const probe = document.createElement("video");
+        const finalize = () => {
+          if (probe.videoWidth && probe.videoHeight) {
+            resolve(probe.videoWidth / probe.videoHeight);
+          } else {
+            resolve(null);
+          }
+        };
+        probe.onloadedmetadata = finalize;
+        probe.onerror = () => resolve(null);
+        probe.src = src;
         return;
       }
       const probe = new Image();
@@ -103,30 +131,78 @@
     roots.push(root);
 
     const img = root.querySelector(".hero__img");
+    const video = root.querySelector(".hero__video");
     const prev = root.querySelector(".hero__hit--prev");
     const next = root.querySelector(".hero__hit--next");
-    if (!img || !prev || !next) return;
+    if (!img || !video || !prev || !next) return;
 
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
     setHeroAspect(root, slides, img.getAttribute("src"));
+    root.addEventListener("pointerenter", () => setActiveRoot(root));
+    root.addEventListener("focusin", () => setActiveRoot(root));
+
+    let index = 0;
+    let isInView = false;
+    let currentIsVideo = false;
+    let currentSrc = null;
+    const shouldPlay = () => isInView && activeRoot === root;
+
+    const updatePlayback = () => {
+      if (!currentIsVideo) return;
+      if (shouldPlay()) {
+        if (video.src !== currentSrc) {
+          video.src = currentSrc;
+        }
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+    playbackUpdaters.set(root, updatePlayback);
+
+    const showImage = (src) => {
+      currentIsVideo = false;
+      currentSrc = null;
+      video.pause();
+      video.removeAttribute("src");
+      video.load();
+      video.classList.add("is-hidden");
+      img.classList.remove("is-hidden");
+      img.src = src;
+    };
+
+    const showVideo = (src) => {
+      currentIsVideo = true;
+      currentSrc = src;
+      img.classList.add("is-hidden");
+      video.classList.remove("is-hidden");
+      if (shouldPlay()) {
+        if (video.src !== src) {
+          video.src = src;
+        }
+        video.play().catch(() => {});
+      } else {
+        video.pause();
+      }
+    };
+
+    const show = (nextIndex) => {
+      index = (nextIndex + slides.length) % slides.length;
+      const current = slides[index];
+      if (isVideo(current)) {
+        showVideo(current);
+      } else {
+        showImage(current);
+      }
+      preload(slides[(index + 1) % slides.length]);
+      preload(slides[(index - 1 + slides.length) % slides.length]);
+    };
+
+    show(index);
     if (slides.length <= 1) {
       root.classList.add("is-single");
       return;
     }
-
-    root.addEventListener("pointerenter", () => setActiveRoot(root));
-    root.addEventListener("focusin", () => setActiveRoot(root));
-
-    const initialSrc = img.getAttribute("src");
-    let index = slides.indexOf(initialSrc);
-    if (index < 0) index = 0;
-
-    const show = (nextIndex) => {
-      index = (nextIndex + slides.length) % slides.length;
-      img.src = slides[index];
-      preload(slides[(index + 1) % slides.length]);
-      preload(slides[(index - 1 + slides.length) % slides.length]);
-    };
 
     prev.addEventListener("click", () => {
       setActiveRoot(root);
@@ -149,6 +225,18 @@
     });
 
     preload(slides[(index + 1) % slides.length]);
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target !== root) return;
+          isInView = entry.isIntersecting;
+          updatePlayback();
+        });
+      },
+      { root: null, threshold: 0.35 }
+    );
+    observer.observe(root);
   };
 
   const setupSlideshows = (scope = document) => {

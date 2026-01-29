@@ -1,37 +1,52 @@
 [
   {
-    "title": "Jak Architecture",
-    "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
-    "viewUrl": "https://www.jakarchitecture.com",
-    "slides": [
-      "assets/images/jakslideshow/jak 5.png",
-      "assets/images/jakslideshow/jak 6.png",
-      "assets/images/jakslideshow/jak 7.png",
-      "assets/images/jakslideshow/jak 8.png"
-    ],
-    "alt": "Jak Architecture website preview"
-  },
-  {
     "title": "Albus Lumen",
     "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
     "viewUrl": "https://www.albuslumen.com",
     "slides": [
-      "assets/images/albusslideshow/Albus 1.png",
-      "assets/images/albusslideshow/Albus 2.png",
-      "assets/images/albusslideshow/Albus 3.png",
-      "assets/images/albusslideshow/Albus 4.png",
-      "assets/images/albusslideshow/Albus 5.png"
+      "assets/images/Websites%20local/albus/Screenshot-2026-01-19-at-3.54.34pm.png",
+      "assets/images/Websites%20local/albus/Screenshot-2026-01-19-at-3.55.23pm.png",
+      "assets/images/Websites%20local/albus/Screenshot-2026-01-20-at-10.10.10am.png",
+      "assets/images/Websites%20local/albus/Screenshot-2026-01-20-at-10.17.49am.png"
     ],
     "alt": "Project preview"
+  },
+  {
+    "title": "AP-REPS",
+    "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
+    "viewUrl": "https://www.albuslumen.com",
+    "slides": [
+      "assets/images/Websites%20local/Ap-reps/AP-5.mov",
+      "assets/images/Websites%20local/Ap-reps/AP-10mov.mov",
+      "assets/images/Websites%20local/Ap-reps/AP-1.11.png",
+      "assets/images/Websites%20local/Ap-reps/AP-2.1.png",
+      "assets/images/Websites%20local/Ap-reps/AP-3.1.png"
+    ],
+    "alt": "Project preview"
+  },
+  {
+    "title": "Jak Architecture",
+    "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
+    "viewUrl": "https://www.jakarchitecture.com",
+    "slides": [
+      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.31.35am.png",
+      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.31.43am.png",
+      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.32.58am.png",
+      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.34.37am.png",
+      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.35.17am.png"
+    ],
+    "alt": "Jak Architecture website preview"
   },
   {
     "title": "Christopher Myles Henderson",
     "description": "Porrtfolio website for Chris Henderson – multidiciplinary artist. The site provides a minimal canvas allowing the diversity and eccentricity of his work to take centre stage.",
     "viewUrl": "https://christophermyles.com",
     "slides": [
-      "assets/images/chrisslideshow/chris_image_1.png",
-      "assets/images/chrisslideshow/chris_image_2.png",
-      "assets/images/chrisslideshow/chris_image_3.png"
+      "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.42.10am.png",
+      "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.43.51am.png",
+      "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.44.57am.png",
+      "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.45.11am.png",
+      "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.46.04am.png"
     ],
     "alt": "Project preview"
   }
