@@ -35,6 +35,15 @@
   --cursor-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
 	  --cursor-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
 }
+.hero__hit--prev{
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
+  
+}
+
+.hero__hit--next{
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
+}
+
 
 @supports (width: 100dvw){
   :root{ --viewport-w: 100dvw; }
