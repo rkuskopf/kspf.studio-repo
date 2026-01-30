@@ -595,3 +595,29 @@ body.grid-overlay{
     transform: translateX(14.6862vw);
   }
 }
+  .overlay{
+    padding-top: 80px;
+  }
+
+  .information-overlay__inner{
+    display: block;
+  }
+
+  .information-overlay__contact,
+  .information-overlay__services{
+    width: 100%;
+    align-items: flex-start;
+    justify-content: flex-start;
+    text-align: left;
+  }
+
+  .information-overlay__services{
+    margin-top: 40px;
+  }
+
+  .clients-overlay__list{
+    margin-left: 0;
+    margin-right: 0;
+    align-items: flex-start;
+    text-align: left;
+  }

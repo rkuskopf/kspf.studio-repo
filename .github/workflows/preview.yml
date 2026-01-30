@@ -1,0 +1,21 @@
+name: Deploy PR Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy Preview
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: . # If your site is in a subfolder, change this
