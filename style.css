@@ -611,9 +611,11 @@ body.grid-overlay{
     text-align: left;
   }
 
+  @media (max-width: 720px){
   .information-overlay__services{
-    margin-top: 40px;
+    margin-top: 80px;
   }
+}
 
   .clients-overlay__list{
     margin-left: 0;
