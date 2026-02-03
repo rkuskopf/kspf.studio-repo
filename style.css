@@ -25,6 +25,7 @@
 	  --nav-gap-4: 160px;
 	  --mockup-shadow-offset: 20px;
 	  --project-text-lines: 3;
+	  --project-gap: 70px;
 	  --intro-lines: 2;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(
@@ -49,7 +50,7 @@ body{
   font-weight: 300;
   color: #000;
   letter-spacing: 0.21px;
-  background: #fff;
+  background: #fefefe;
 }
 
 /* optional column overlay (like your screenshot) */
@@ -310,7 +311,7 @@ body.grid-overlay{
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
-  row-gap: 50px;
+  row-gap: var(--project-gap);
 }
 
 .project-block{
@@ -363,10 +364,15 @@ body.grid-overlay{
   position: relative;
   z-index: 2;
   margin: 0;
+  transition: opacity 220ms ease;
 }
 
 .hero__media.is-hidden{
   display: none;
+}
+
+.hero.is-transitioning .hero__media{
+  opacity: 0;
 }
 
 /* --- hero meta --- */
@@ -451,6 +457,8 @@ body.grid-overlay{
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
+  height: 150px;
+  align-items: center;
 }
 
 .footer__text{
@@ -494,6 +502,9 @@ body.grid-overlay{
     min-height: auto;
     padding: 0;
   }
+  .project-block + .project-block{
+    margin-top: var(--project-gap);
+  }
   .intro{
     grid-column: 1 / -1;
     max-height: none;
@@ -531,7 +542,7 @@ body.grid-overlay{
   }
 
 
-  .project{ display: block; width: 100%; margin: 24px 0 0; }
+  .project{ display: block; width: 100%; margin: 44px 0 0; }
   .project__text{ width: 100%; max-width: none; }
 }
 

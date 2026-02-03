@@ -155,6 +155,7 @@
     let isInView = false;
     let currentIsVideo = false;
     let currentSrc = null;
+    let hasShown = false;
     const videoPositions = new Map();
     const shouldPlay = () => isInView && activeRoot === root;
     let wasPlaying = false;
@@ -254,7 +255,7 @@
       updatePortraitFlag(src);
     };
 
-    const show = (nextIndex) => {
+    const showImmediate = (nextIndex) => {
       index = (nextIndex + slides.length) % slides.length;
       const current = slides[index];
       if (isVideo(current)) {
@@ -264,6 +265,21 @@
       }
       preload(slides[(index + 1) % slides.length]);
       preload(slides[(index - 1 + slides.length) % slides.length]);
+    };
+
+    const show = (nextIndex) => {
+      if (!hasShown) {
+        hasShown = true;
+        showImmediate(nextIndex);
+        return;
+      }
+      root.classList.add("is-transitioning");
+      window.requestAnimationFrame(() => {
+        showImmediate(nextIndex);
+        window.requestAnimationFrame(() => {
+          root.classList.remove("is-transitioning");
+        });
+      });
     };
 
     show(index);
