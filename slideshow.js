@@ -145,22 +145,68 @@
     let isInView = false;
     let currentIsVideo = false;
     let currentSrc = null;
+    const videoPositions = new Map();
     const shouldPlay = () => isInView && activeRoot === root;
+    let wasPlaying = false;
+
+    const rememberVideoTime = () => {
+      if (!currentIsVideo || !currentSrc) return;
+      if (Number.isFinite(video.currentTime)) {
+        videoPositions.set(currentSrc, video.currentTime);
+      }
+    };
+
+    const restoreVideoTime = (src) => {
+      const saved = videoPositions.get(src);
+      if (!Number.isFinite(saved)) return;
+      const apply = () => {
+        try {
+          if (Number.isFinite(video.duration) && video.duration > 0) {
+            video.currentTime = Math.min(saved, Math.max(0, video.duration - 0.05));
+          } else {
+            video.currentTime = Math.max(0, saved);
+          }
+        } catch {
+          /* ignore seek failures */
+        }
+      };
+      if (video.readyState >= 1) {
+        apply();
+      } else {
+        video.addEventListener("loadedmetadata", apply, { once: true });
+      }
+    };
+
+    const getVideoSrc = () => video.getAttribute("src") || "";
+    const ensureVideoSrc = (src) => {
+      if (getVideoSrc() !== src) {
+        video.src = src;
+      }
+    };
 
     const updatePlayback = () => {
       if (!currentIsVideo) return;
-      if (shouldPlay()) {
-        if (video.src !== currentSrc) {
-          video.src = currentSrc;
+      const should = shouldPlay();
+      if (should) {
+        ensureVideoSrc(currentSrc);
+        if (!wasPlaying) {
+          restoreVideoTime(currentSrc);
+          video.play().catch(() => {});
         }
-        video.play().catch(() => {});
-      } else {
+        wasPlaying = true;
+        return;
+      }
+      if (wasPlaying) {
+        rememberVideoTime();
         video.pause();
       }
+      wasPlaying = false;
     };
     playbackUpdaters.set(root, updatePlayback);
 
     const showImage = (src) => {
+      rememberVideoTime();
+      wasPlaying = false;
       currentIsVideo = false;
       currentSrc = null;
       video.pause();
@@ -172,15 +218,19 @@
     };
 
     const showVideo = (src) => {
+      if (currentIsVideo && currentSrc && currentSrc !== src) {
+        rememberVideoTime();
+      }
       currentIsVideo = true;
       currentSrc = src;
+      wasPlaying = false;
       img.classList.add("is-hidden");
       video.classList.remove("is-hidden");
       if (shouldPlay()) {
-        if (video.src !== src) {
-          video.src = src;
-        }
+        ensureVideoSrc(src);
+        restoreVideoTime(src);
         video.play().catch(() => {});
+        wasPlaying = true;
       } else {
         video.pause();
       }

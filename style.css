@@ -490,7 +490,14 @@ body.grid-overlay{
     min-height: auto;
     padding: 0;
   }
-  .intro{ grid-column: 1 / -1; }
+  .intro{
+    grid-column: 1 / -1;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+    display: block;
+    -webkit-line-clamp: unset;
+  }
 
   .hero{
     display: flex !important;
