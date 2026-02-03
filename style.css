@@ -345,6 +345,7 @@ body.grid-overlay{
   position: relative;
   min-height: var(--hero-height);
   overflow-anchor: none;
+  touch-action: pan-y;
   --hero-frame: min(
     calc(var(--hero-height) * var(--hero-aspect, 1.6)),
     calc(100vw - (var(--page-pad) * 2))
@@ -405,6 +406,7 @@ body.grid-overlay{
   -webkit-appearance: none;
   appearance: none;
   -webkit-tap-highlight-color: transparent;
+  touch-action: pan-y;
 }
 
 .hero.is-active .hero__hit{
@@ -481,6 +483,8 @@ body.grid-overlay{
 
 	  .clients-overlay__list{
 	    grid-column: 1 / -1;
+      margin-left: 0;
+      margin-right: 0;
 	  }
 
   .wrap{ grid-template-columns: 1fr; }
@@ -511,6 +515,19 @@ body.grid-overlay{
     grid-column: 1 / -1;
     justify-self: center;
     margin-inline: auto;
+  }
+  .hero.is-portrait{
+    height: var(--hero-height);
+  }
+  .hero.is-portrait .hero__media{
+    height: 100%;
+    width: auto;
+    max-height: none;
+    max-width: none;
+    min-height: var(--hero-height);
+  }
+  .hero.is-portrait .hero__video{
+    object-fit: cover;
   }
 
 
@@ -624,9 +641,4 @@ body.grid-overlay{
   }
 }
 
-  .clients-overlay__list{
-    margin-left: 0;
-    margin-right: 0;
-    align-items: flex-start;
-    text-align: left;
-  }
+  

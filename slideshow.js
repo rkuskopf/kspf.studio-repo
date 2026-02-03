@@ -45,17 +45,25 @@
     if (activeRoot && playbackUpdaters.has(activeRoot)) playbackUpdaters.get(activeRoot)();
   };
 
+  const aspectCache = new Map();
+
   const loadAspect = (src) =>
     new Promise((resolve) => {
       if (!src) {
         resolve(null);
         return;
       }
+      if (aspectCache.has(src)) {
+        resolve(aspectCache.get(src));
+        return;
+      }
       if (isVideo(src)) {
         const probe = document.createElement("video");
         const finalize = () => {
           if (probe.videoWidth && probe.videoHeight) {
-            resolve(probe.videoWidth / probe.videoHeight);
+            const value = probe.videoWidth / probe.videoHeight;
+            aspectCache.set(src, value);
+            resolve(value);
           } else {
             resolve(null);
           }
@@ -68,7 +76,9 @@
       const probe = new Image();
       const finalize = () => {
         if (probe.naturalWidth && probe.naturalHeight) {
-          resolve(probe.naturalWidth / probe.naturalHeight);
+          const value = probe.naturalWidth / probe.naturalHeight;
+          aspectCache.set(src, value);
+          resolve(value);
         } else {
           resolve(null);
         }
@@ -204,6 +214,12 @@
     };
     playbackUpdaters.set(root, updatePlayback);
 
+    const updatePortraitFlag = (src) => {
+      loadAspect(src).then((aspect) => {
+        root.classList.toggle("is-portrait", Number.isFinite(aspect) && aspect < 1);
+      });
+    };
+
     const showImage = (src) => {
       rememberVideoTime();
       wasPlaying = false;
@@ -215,6 +231,7 @@
       video.classList.add("is-hidden");
       img.classList.remove("is-hidden");
       img.src = src;
+      updatePortraitFlag(src);
     };
 
     const showVideo = (src) => {
@@ -234,6 +251,7 @@
       } else {
         video.pause();
       }
+      updatePortraitFlag(src);
     };
 
     const show = (nextIndex) => {
@@ -273,6 +291,66 @@
         show(index + 1);
       }
     });
+
+    let pointerId = null;
+    let startX = 0;
+    let startY = 0;
+    let ignoreClick = false;
+
+    const clearPointer = () => {
+      if (pointerId === null) return;
+      if (root.hasPointerCapture && root.hasPointerCapture(pointerId)) {
+        root.releasePointerCapture(pointerId);
+      }
+      pointerId = null;
+    };
+
+    const onPointerDown = (e) => {
+      if (e.pointerType !== "touch") return;
+      if (pointerId !== null) return;
+      setActiveRoot(root);
+      pointerId = e.pointerId;
+      startX = e.clientX;
+      startY = e.clientY;
+      if (root.setPointerCapture) {
+        root.setPointerCapture(pointerId);
+      }
+    };
+
+    const onPointerMove = (e) => {
+      if (pointerId === null || e.pointerId !== pointerId) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+      if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+        e.preventDefault();
+        ignoreClick = true;
+        if (dx > 0) {
+          show(index - 1);
+        } else {
+          show(index + 1);
+        }
+        clearPointer();
+      }
+    };
+
+    const onPointerEnd = (e) => {
+      if (pointerId === null || e.pointerId !== pointerId) return;
+      clearPointer();
+    };
+
+    const onClickCapture = (e) => {
+      if (!ignoreClick) return;
+      ignoreClick = false;
+      e.preventDefault();
+      e.stopPropagation();
+    };
+
+    root.addEventListener("pointerdown", onPointerDown);
+    root.addEventListener("pointermove", onPointerMove, { passive: false });
+    root.addEventListener("pointerup", onPointerEnd);
+    root.addEventListener("pointercancel", onPointerEnd);
+    root.addEventListener("click", onClickCapture, true);
 
     preload(slides[(index + 1) % slides.length]);
 
