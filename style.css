@@ -342,9 +342,10 @@ body.grid-overlay{
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
-  align-items: end;
+  align-items: center;
+  align-content: center;
   position: relative;
-  min-height: var(--hero-height);
+  min-height: 643px;
   overflow-anchor: none;
   touch-action: pan-y;
   --hero-frame: min(
@@ -469,7 +470,7 @@ body.grid-overlay{
 /* --- project row --- */
 .project{
   grid-column: 1 / -1;
-  margin: 0;
+  margin: 30px 0 0;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);

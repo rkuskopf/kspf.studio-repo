@@ -4,6 +4,7 @@
     "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
     "viewUrl": "https://www.albuslumen.com",
     "slides": [
+      "assets/images/albusslideshow/Albus%20movie%201.mp4",
       "assets/images/albusslideshow/Albus%201.png",
       "assets/images/albusslideshow/Albus%202.png",
       "assets/images/albusslideshow/Albus%203.png",
@@ -17,11 +18,10 @@
     "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
     "viewUrl": "https://www.jakarchitecture.com",
     "slides": [
-      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.31.35am.png",
-      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.31.43am.png",
-      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.32.58am.png",
-      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.34.37am.png",
-      "assets/images/Websites%20local/jak/Screenshot-2026-01-13-at-9.35.17am.png"
+      "assets/images/jakslideshow/Sequence%20jak.mp4",
+      "assets/images/jakslideshow/jak%20%201.png",
+      "assets/images/jakslideshow/jak%202.png",
+      "assets/images/jakslideshow/Sequence%20jak%2002.mp4"
     ],
     "alt": "Jak Architecture website preview"
   },
