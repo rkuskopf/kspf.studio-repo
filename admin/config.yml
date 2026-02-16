@@ -26,9 +26,14 @@ collections:
     folder: "content/case-studies"
     create: true
     slug: "{{slug}}"
+    extension: "json"
+    format: "json"
     fields:
       - { label: "Title", name: "title", widget: "string" }
-      - { label: "Slug", name: "slug", widget: "string" }
       - { label: "Summary", name: "summary", widget: "text" }
-      - { label: "Hero Image", name: "heroImage", widget: "image" }
-      - { label: "Body", name: "body", widget: "markdown" }
+      - { label: "Role Label", name: "roleLabel", widget: "string" }
+      - { label: "Role Value", name: "roleValue", widget: "string" }
+      - label: "Slides"
+        name: "slides"
+        widget: "list"
+        field: { label: "Slide", name: "slide", widget: "image" }

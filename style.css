@@ -35,6 +35,10 @@
   --hero-effective: min(var(--hero-width), calc(100vw - (var(--page-pad) * 2)));
   --cursor-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
 	  --cursor-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
+    --maintenance-display: none;
+    --maintenance-overflow: auto;
+    --maintenance-title: "Site maintenance";
+    --maintenance-message: "We are doing a quick update. Please check back soon.";
 }
 
 @supports (width: 100dvw){
@@ -51,6 +55,39 @@ body{
   color: #000;
   letter-spacing: 0.21px;
   background: #fefefe;
+  overflow: var(--maintenance-overflow);
+}
+
+/* maintenance overlay (toggle by setting --maintenance-display to block) */
+body::after{
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.94);
+  z-index: 10000;
+  display: var(--maintenance-display);
+  pointer-events: all;
+}
+
+body::before{
+  content: var(--maintenance-title) "\A" var(--maintenance-message);
+  position: fixed;
+  inset: 0;
+  display: var(--maintenance-display);
+  z-index: 10001;
+  padding: 24px;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: pre-wrap;
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  pointer-events: none;
+}
+
+.case-study-page .wrap{
+  padding-left: calc(50px - var(--page-pad));
+  padding-right: calc(50px - var(--page-pad));
 }
 
 /* optional column overlay (like your screenshot) */
@@ -93,7 +130,7 @@ body.grid-overlay{
 
 .nav__group{
   grid-row: 1;
-  grid-column: 5 / -1;
+  grid-column: 5 / -2;
   display: inline-flex;
   align-items: center;
   gap: var(--nav-group-gap);
@@ -132,6 +169,10 @@ body.grid-overlay{
 
 
 .nav__link--home{ grid-column: 1 / span 2; }
+.nav__link--services{
+  grid-column: -2 / -1;
+  justify-self: end;
+}
 
 .nav__link--close{
 	  display: inline-block;
@@ -455,18 +496,57 @@ body.grid-overlay{
 
 /* --- footer --- */
 .footer{
-  margin: 80px 0 0;
+  margin: 100px 0 0;
+  padding: 60px 0 90px;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
+  row-gap: 28px;
   border-top: 1px solid rgba(0, 0, 0, 0.6);
-  height: 150px;
-  align-items: center;
+  align-items: start;
 }
 
-.footer__text{
+.footer__title{
   margin: 0;
-  grid-column: 1 / span 4;
+  grid-column: 3 / span 2;
+}
+
+.footer__services{
+  grid-column: 8 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 40px;
+  row-gap: 36px;
+}
+
+.footer__services-column{
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.footer__services-group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__services-heading{
+  margin: 0;
+  color: inherit;
+  display: inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
+}
+
+.footer__services-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
  
 /* --- project row --- */
@@ -481,29 +561,31 @@ body.grid-overlay{
 /* --- experience page --- */
 .exp-hero{
   grid-column: 1 / -1;
-  height: 80vh;
+  min-height: 130px;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 0;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-top: 250px;
+  padding-bottom: 100px;
   width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
   margin: 0 auto;
 }
 
 .exp-hero__inner{
-  width: 885px;
+  width: 750px;
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 64px;
-  text-align: left;
+  align-items: center;
+  gap: 30px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .exp-hero__text{
   margin: 0;
-  font-size: 36px;
-  line-height: 1.15;
+  font-size: 20px;
+  line-height: 1.20;
   text-align: left;
   font-weight: 200;
   width: 885px;
@@ -512,24 +594,25 @@ body.grid-overlay{
 
 .exp-hero__cta{
   width: 481px;
-  height: 73px;
+  height: auto;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: top;
+  justify-content: left;
   align-self: flex-start;
   font-size: 14px;
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 0.5px;
-  border: 1px solid #000;
+  border: 0px solid #000;
   border-radius: 2px;
 }
 
 .exp-cases{
   grid-column: 1 / -1;
-  margin: 0 auto;
-  width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
+  margin: 0;
+  justify-self: start;
+  width: 100%;
 }
 
 .exp-cases__title{
@@ -541,29 +624,41 @@ body.grid-overlay{
 
 .exp-cases__rule{
   height: 0.5px;
-  width: min(1280px, 100%);
+  width: 100%;
   background: rgba(0, 0, 0, 0.6);
   margin: 12px 0 24px;
 }
 
 .exp-cases__grid{
-  display: flex;
+  display: grid;
   width: 100%;
   gap: 10px;
-  flex-wrap: nowrap;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .exp-case{
-  flex: 1 1 0;
-  max-width: 420px;
+  max-width: none;
   display: grid;
   row-gap: 10px;
+}
+
+.exp-case__link{
+  display: grid;
+  row-gap: 10px;
+  color: inherit;
+  text-decoration: none;
 }
 
 .exp-case__media{
   width: 100%;
   aspect-ratio: 4 / 5;
   background: #b3b3b3;
+  background-size: cover;
+  background-position: center;
+}
+
+.exp-case__media--aesop{
+  background-image: url("assets/images/aesop/aesop-thumbnail.jpg");
 }
 
 .exp-case__title{
@@ -821,7 +916,7 @@ body.grid-overlay{
 	  }
 
 	  .nav__link--home{ grid-column: 1 / span 2; }
-	  .nav__group{ grid-column: 3 / -1; }
+	  .nav__group{ grid-column: 3 / -2; }
 
 	  .clients-overlay__list{
 	    grid-column: 1 / -1;
@@ -875,6 +970,20 @@ body.grid-overlay{
     object-fit: cover;
   }
 
+  .footer{
+    padding: 50px 0 70px;
+    margin-top: 50px;
+  }
+
+  .footer__title{
+    grid-column: 1 / -1;
+  }
+
+  .footer__services{
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
+    row-gap: 28px;
+  }
 
   .project{ display: block; width: 100%; margin: 44px 0 0; }
   .project__text{ width: 100%; max-width: none; }
