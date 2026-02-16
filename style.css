@@ -457,6 +457,7 @@ body.grid-overlay{
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
+  border-top: 1px solid rgba(0, 0, 0, 0.6);
   height: 150px;
   align-items: center;
 }
