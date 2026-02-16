@@ -1,9 +1,9 @@
 backend:
   name: github
-  repo: YOUR_GITHUB_USERNAME/YOUR_REPO_NAME
+  repo: rkuskopf/kspf.studio-repo
   branch: main
-  base_url: https://YOUR_DOMAIN
-  auth_endpoint: /api/auth
+  base_url: https://dms-cms-proxy.studio-3cc.workers.dev
+  auth_endpoint: /auth
 
 media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
