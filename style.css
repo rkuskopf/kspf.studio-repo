@@ -93,7 +93,7 @@ body.grid-overlay{
 
 .nav__group{
   grid-row: 1;
-  grid-column: 5 / -1;
+  grid-column: 5 / -2;
   display: inline-flex;
   align-items: center;
   gap: var(--nav-group-gap);
@@ -132,6 +132,10 @@ body.grid-overlay{
 
 
 .nav__link--home{ grid-column: 1 / span 2; }
+.nav__link--services{
+  grid-column: -2 / -1;
+  justify-self: end;
+}
 
 .nav__link--close{
 	  display: inline-block;
@@ -456,17 +460,56 @@ body.grid-overlay{
 /* --- footer --- */
 .footer{
   margin: 80px 0 0;
+  padding: 60px 0 90px;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
+  row-gap: 28px;
   border-top: 1px solid rgba(0, 0, 0, 0.6);
-  height: 150px;
-  align-items: center;
+  align-items: start;
 }
 
-.footer__text{
+.footer__title{
   margin: 0;
-  grid-column: 1 / span 4;
+  grid-column: 3 / span 2;
+}
+
+.footer__services{
+  grid-column: 8 / -1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 40px;
+  row-gap: 36px;
+}
+
+.footer__services-column{
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+}
+
+.footer__services-group{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__services-heading{
+  margin: 0;
+  color: inherit;
+  display: inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
+}
+
+.footer__services-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
  
 /* --- project row --- */
@@ -558,6 +601,13 @@ body.grid-overlay{
   max-width: 420px;
   display: grid;
   row-gap: 10px;
+}
+
+.exp-case__link{
+  display: grid;
+  row-gap: 10px;
+  color: inherit;
+  text-decoration: none;
 }
 
 .exp-case__media{
@@ -821,7 +871,7 @@ body.grid-overlay{
 	  }
 
 	  .nav__link--home{ grid-column: 1 / span 2; }
-	  .nav__group{ grid-column: 3 / -1; }
+	  .nav__group{ grid-column: 3 / -2; }
 
 	  .clients-overlay__list{
 	    grid-column: 1 / -1;
@@ -875,6 +925,19 @@ body.grid-overlay{
     object-fit: cover;
   }
 
+  .footer{
+    padding: 50px 0 70px;
+  }
+
+  .footer__title{
+    grid-column: 1 / -1;
+  }
+
+  .footer__services{
+    grid-column: 1 / -1;
+    grid-template-columns: 1fr;
+    row-gap: 28px;
+  }
 
   .project{ display: block; width: 100%; margin: 44px 0 0; }
   .project__text{ width: 100%; max-width: none; }
