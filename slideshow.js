@@ -388,7 +388,9 @@
   };
 
   window.initSlideshows = setupSlideshows;
-  setupSlideshows();
+  if (!window.__deferSlideshows) {
+    setupSlideshows();
+  }
 
   window.addEventListener("scroll", schedulePickClosest, { passive: true });
   window.addEventListener("resize", schedulePickClosest);
