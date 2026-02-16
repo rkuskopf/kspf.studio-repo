@@ -459,7 +459,7 @@ body.grid-overlay{
 
 /* --- footer --- */
 .footer{
-  margin: 80px 0 0;
+  margin: 100px 0 0;
   padding: 60px 0 90px;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
@@ -524,29 +524,31 @@ body.grid-overlay{
 /* --- experience page --- */
 .exp-hero{
   grid-column: 1 / -1;
-  height: 80vh;
+  min-height: 130px;
   display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  padding-top: 0;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-top: 250px;
+  padding-bottom: 100px;
   width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
   margin: 0 auto;
 }
 
 .exp-hero__inner{
-  width: 885px;
+  width: 750px;
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 64px;
-  text-align: left;
+  align-items: center;
+  gap: 30px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .exp-hero__text{
   margin: 0;
-  font-size: 36px;
-  line-height: 1.15;
+  font-size: 20px;
+  line-height: 1.20;
   text-align: left;
   font-weight: 200;
   width: 885px;
@@ -555,24 +557,25 @@ body.grid-overlay{
 
 .exp-hero__cta{
   width: 481px;
-  height: 73px;
+  height: auto;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  align-items: top;
+  justify-content: left;
   align-self: flex-start;
   font-size: 14px;
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 0.5px;
-  border: 1px solid #000;
+  border: 0px solid #000;
   border-radius: 2px;
 }
 
 .exp-cases{
   grid-column: 1 / -1;
-  margin: 0 auto;
-  width: min(1280px, calc(100vw - (var(--page-pad) * 2)));
+  margin: 0;
+  justify-self: start;
+  width: 100%;
 }
 
 .exp-cases__title{
@@ -584,21 +587,20 @@ body.grid-overlay{
 
 .exp-cases__rule{
   height: 0.5px;
-  width: min(1280px, 100%);
+  width: 100%;
   background: rgba(0, 0, 0, 0.6);
   margin: 12px 0 24px;
 }
 
 .exp-cases__grid{
-  display: flex;
+  display: grid;
   width: 100%;
   gap: 10px;
-  flex-wrap: nowrap;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .exp-case{
-  flex: 1 1 0;
-  max-width: 420px;
+  max-width: none;
   display: grid;
   row-gap: 10px;
 }
@@ -614,6 +616,12 @@ body.grid-overlay{
   width: 100%;
   aspect-ratio: 4 / 5;
   background: #b3b3b3;
+  background-size: cover;
+  background-position: center;
+}
+
+.exp-case__media--aesop{
+  background-image: url("assets/images/aesop/aesop-thumbnail.jpg");
 }
 
 .exp-case__title{
@@ -927,6 +935,7 @@ body.grid-overlay{
 
   .footer{
     padding: 50px 0 70px;
+    margin-top: 50px;
   }
 
   .footer__title{
