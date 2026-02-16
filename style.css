@@ -53,6 +53,11 @@ body{
   background: #fefefe;
 }
 
+.case-study-page .wrap{
+  padding-left: calc(50px - var(--page-pad));
+  padding-right: calc(50px - var(--page-pad));
+}
+
 /* optional column overlay (like your screenshot) */
 body.grid-overlay{
   --col: calc(
