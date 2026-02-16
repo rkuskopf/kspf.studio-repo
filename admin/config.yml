@@ -1,6 +1,6 @@
 backend:
   name: github
-  repo: rluskopf/kspf-studio-repo
+  repo: rkuskopf/kspf.studio-repo
   branch: main
   base_url: https://dms-cms-proxy.studio-3cc.workers.dev
   auth_endpoint: /auth
