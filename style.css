@@ -35,6 +35,10 @@
   --hero-effective: min(var(--hero-width), calc(100vw - (var(--page-pad) * 2)));
   --cursor-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
 	  --cursor-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
+    --maintenance-display: none;
+    --maintenance-overflow: auto;
+    --maintenance-title: "Site maintenance";
+    --maintenance-message: "We are doing a quick update. Please check back soon.";
 }
 
 @supports (width: 100dvw){
@@ -51,6 +55,34 @@ body{
   color: #000;
   letter-spacing: 0.21px;
   background: #fefefe;
+  overflow: var(--maintenance-overflow);
+}
+
+/* maintenance overlay (toggle by setting --maintenance-display to block) */
+body::after{
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.94);
+  z-index: 10000;
+  display: var(--maintenance-display);
+  pointer-events: all;
+}
+
+body::before{
+  content: var(--maintenance-title) "\A" var(--maintenance-message);
+  position: fixed;
+  inset: 0;
+  display: var(--maintenance-display);
+  z-index: 10001;
+  padding: 24px;
+  font-size: 18px;
+  line-height: 1.4;
+  text-align: center;
+  white-space: pre-wrap;
+  font-family: "Times New Roman", Times, serif;
+  color: #000;
+  pointer-events: none;
 }
 
 .case-study-page .wrap{
