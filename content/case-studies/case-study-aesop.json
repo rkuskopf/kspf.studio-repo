@@ -19,9 +19,9 @@
     },
     {
       "key": "uncovered",
-      "label": "Approach",
+      "label": "Findings",
       "body": "",
-      "subtitle": "Analysis of qualitative feedback (on-site surveys, regional stakeholder interviews) revealed a structural mismatch between interface philosophy and cultural expectations:",
+      "subtitle": "Analysis of qualitative research revealed a structural mismatch between interface philosophy and cultural expectations:",
       "slides": [],
       "layout": "list",
       "items": [
