@@ -10,7 +10,8 @@
     {
       "key": "problem",
       "slides": [
-        "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/drop%20off%20graph.png?raw=true"
+        "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/aesop-challenge-1.png?raw=true",
+        "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/aesop-challenge-2.png?raw=true"
       ],
       "label": "Challenge",
       "subtitle": "Aesop's global checkout was performing exactly as designed: clean, minimal, frictionless. Except in Japan, where 52% of users abandoned at the first step—nearly double the rate of any other market."
