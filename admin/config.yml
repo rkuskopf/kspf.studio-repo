@@ -37,3 +37,25 @@ collections:
         name: "slides"
         widget: "list"
         field: { label: "Slide", name: "slide", widget: "image" }
+      - label: "Tabs"
+        name: "tabs"
+        widget: "list"
+        summary: "{{fields.label}}"
+        min: 4
+        max: 4
+        fields:
+          - label: "Key"
+            name: "key"
+            widget: "select"
+            options:
+              - { label: "The problem", value: "problem" }
+              - { label: "What we uncovered", value: "uncovered" }
+              - { label: "Design principles", value: "principles" }
+              - { label: "The solution", value: "solution" }
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - { label: "Body", name: "body", widget: "text", required: false }
+          - label: "Slides"
+            name: "slides"
+            widget: "list"
+            field: { label: "Slide", name: "slide", widget: "image" }

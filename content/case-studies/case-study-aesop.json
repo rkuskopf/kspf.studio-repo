@@ -5,5 +5,43 @@
   "roleValue": "Product Designer",
   "slides": [
     "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/aesop-thumbnail.jpg?raw=true"
+  ],
+  "tabs": [
+    {
+      "key": "problem",
+      "label": "The problem",
+      "subtitle": "Aesop's global checkout was performing exactly as designed: clean, minimal, frictionless. Except in Japan, where 52% of users abandoned at the first step—nearly double the rate of any other market.",
+      "body": "",
+      "slides": [
+        "/assets/images/aesop/aesop-thumbnail.jpg"
+      ]
+    },
+    {
+      "key": "uncovered",
+      "label": "What we uncovered",
+      "subtitle": "What we uncovered",
+      "body": "",
+      "slides": [
+        "/assets/images/aesop/aesop-thumbnail.jpg"
+      ]
+    },
+    {
+      "key": "principles",
+      "label": "Design principles",
+      "subtitle": "Design principles",
+      "body": "",
+      "slides": [
+        "/assets/images/aesop/aesop-thumbnail.jpg"
+      ]
+    },
+    {
+      "key": "solution",
+      "label": "The solution",
+      "subtitle": "The solution",
+      "body": "",
+      "slides": [
+        "/assets/images/aesop/aesop-thumbnail.jpg"
+      ]
+    }
   ]
 }

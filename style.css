@@ -85,10 +85,6 @@ body::before{
   pointer-events: none;
 }
 
-.case-study-page .wrap{
-  padding-left: calc(50px - var(--page-pad));
-  padding-right: calc(50px - var(--page-pad));
-}
 
 /* optional column overlay (like your screenshot) */
 body.grid-overlay{
@@ -679,6 +675,10 @@ body.grid-overlay{
 }
 
 /* --- case study page --- */
+.case-study-page{
+  --case-hero-height: 70vh;
+}
+
 .case-accordion{
   display: none;
 }
@@ -689,23 +689,24 @@ body.grid-overlay{
   grid-template-columns: minmax(0, 1fr);
   column-gap: 64px;
   align-items: end;
+  margin-top: 40px;
 }
 
 
 
 .case-banner__title{
   margin: 0 0 16px;
-  font-size: 48px;
+  font-size: 36px;
   font-weight: 600;
   line-height: 1.05;
   letter-spacing: -1.2px;
 }
 
 .case-banner__summary{
-  margin: 0;
+  margin-top: 20px;
   font-size: 15px;
-  line-height: 1.35;
-  max-width: 1100px;
+  line-height: 1.50;
+  max-width: 1570px;
 }
 
 .case-banner__meta{
@@ -820,7 +821,8 @@ body.grid-overlay{
   display: flex;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 28px;
+  margin: 0 20px 28px 0;
+  font-size: 18px;
 }
 
 .case-tabs__tab{
@@ -875,6 +877,7 @@ body.grid-overlay{
   column-gap: 60px;
   align-items: center;
   margin-top: 70px;
+  padding: 0 50px;
 }
 
 .case-tabs__text{
@@ -891,7 +894,6 @@ body.grid-overlay{
   font-weight: 100;
   font-family: "Times New Roman", Times, serif;
   line-height: 1.1;
-  padding-right: 50px;
 }
 
 .case-tabs__media{
@@ -901,6 +903,30 @@ body.grid-overlay{
   background: #3b3432;
   border-radius: 2px;
   align-self: center;
+  overflow: hidden;
+  position: relative;
+  margin-top:40px;
+}
+
+.case-tabs__slideshow.hero{
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  display: block;
+}
+
+.case-tabs__slideshow .hero__media{
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+}
+
+.case-tabs__slideshow .hero__hit{
+  width: 50%;
+  display: block;
 }
 
 /* --- responsive --- */
@@ -1090,27 +1116,33 @@ body.grid-overlay{
   
 .case-hero-wrap{
   grid-column: 1 / -1;
-  min-height: calc(100vh - 20px);
+  min-height: auto;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 50px;
 }
 
 .case-hero-media{
-  flex: 1;
+  flex: 0 0 auto;
+  height: var(--case-hero-height);
   min-height: 0;
   background: #000;
   display: flex;
+  overflow: hidden;
 }
 
 .case-hero__slideshow{
+  --hero-height: var(--case-hero-height);
   width: 100%;
   height: 100%;
+  min-height: 0;
   display: grid;
   place-items: center;
 }
 
 .case-hero__slideshow .hero__media{
+  width: auto;
+  height: auto;
   max-width: 100%;
   max-height: 100%;
 }
