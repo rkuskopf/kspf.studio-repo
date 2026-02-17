@@ -5,5 +5,13 @@
   "roleValue": "Product Designer",
   "slides": [
     "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/aesop-ss-2.png?raw=true"
+  ],
+  "tabs": [
+    {
+      "key": "problem",
+      "slides": [
+        "/assets/uploads/aesop-thumbnail.jpg"
+      ]
+    }
   ]
 }
