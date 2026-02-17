@@ -957,14 +957,15 @@ body.grid-overlay{
     margin-inline: auto;
   }
   .hero.is-portrait{
-    height: var(--hero-height);
+    height: auto;
+    min-height: 0;
   }
   .hero.is-portrait .hero__media{
-    height: 100%;
     width: auto;
-    max-height: none;
-    max-width: none;
-    min-height: var(--hero-height);
+    height: auto;
+    max-width: 100%;
+    max-height: var(--hero-height);
+    min-height: 0;
   }
   .hero.is-portrait .hero__video{
     object-fit: cover;
