@@ -14,7 +14,8 @@
         "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/aesop-challenge-2.png?raw=true"
       ],
       "label": "Challenge",
-      "subtitle": "Aesop's global checkout was performing exactly as designed: clean, minimal, frictionless. Except in Japan, where 52% of users abandoned at the first step—nearly double the rate of any other market."
+      "subtitle": "Aesop's global checkout was performing exactly as designed: clean, minimal, frictionless. Except in Japan, where 52% of users abandoned at the first step—nearly double the rate of any other market.",
+      "layout": "media"
     },
     {
       "key": "uncovered",
@@ -38,8 +39,6 @@
       "body": "",
       "key": "principles",
       "label": "Design Principles",
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
       "subtitle": "Rather than redesigning the checkout wholesale, I established three principles to guide every decision:",
       "items": [
         {
@@ -57,17 +56,6 @@
       ],
       "slides": [],
       "layout": "list"
-    },
-    {
-      "key": "solution",
-      "label": "The Solution",
-      "subtitle": "The solution"
-=======
-      "subtitle": "Rather than redesigning the checkout wholesale, I established three principles to guide every decision:"
->>>>>>> Stashed changes
-=======
-      "subtitle": "Rather than redesigning the checkout wholesale, I established three principles to guide every decision:"
->>>>>>> Stashed changes
     }
   ]
 }
