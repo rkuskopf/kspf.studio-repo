@@ -41,8 +41,7 @@ collections:
         name: "tabs"
         widget: "list"
         summary: "{{fields.label}}"
-        min: 4
-        max: 4
+        min: 1
         fields:
           - label: "Key"
             name: "key"

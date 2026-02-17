@@ -11,6 +11,75 @@
   const slideshowVideo = slideshow ? slideshow.querySelector(".hero__video") : null;
   const tabButtons = document.querySelectorAll(".case-tabs__tab");
   const tabPanels = document.querySelectorAll(".case-tabs__panel");
+  const setActive = (name) => {
+    if (!tabButtons.length || !tabPanels.length) return;
+    tabButtons.forEach((tab) => {
+      if (tab.dataset.tab !== name) {
+        tab.classList.remove("is-active");
+        tab.setAttribute("aria-selected", "false");
+        return;
+      }
+      tab.classList.add("is-active");
+      tab.setAttribute("aria-selected", "true");
+    });
+    tabPanels.forEach((panel) => {
+      const isActive = panel.dataset.panel === name;
+      panel.classList.toggle("is-active", isActive);
+      panel.hidden = !isActive;
+    });
+  };
+  const scheduleTabsMinHeight = (() => {
+    let raf = 0;
+    return () => {
+      if (raf) return;
+      raf = window.requestAnimationFrame(() => {
+        raf = 0;
+        let maxHeight = 0;
+        tabPanels.forEach((panel) => {
+          if (panel.dataset.disabled === "1") return;
+          const wasHidden = panel.hidden;
+          const wasActive = panel.classList.contains("is-active");
+          const prevDisplay = panel.style.display;
+          const prevPosition = panel.style.position;
+          const prevVisibility = panel.style.visibility;
+          const prevPointerEvents = panel.style.pointerEvents;
+          const prevLeft = panel.style.left;
+          const prevTop = panel.style.top;
+          const prevWidth = panel.style.width;
+
+          panel.hidden = false;
+          panel.classList.add("is-active");
+          panel.style.display = "block";
+          panel.style.position = "absolute";
+          panel.style.visibility = "hidden";
+          panel.style.pointerEvents = "none";
+          panel.style.left = "0";
+          panel.style.top = "0";
+          panel.style.width = panel.parentElement ? `${panel.parentElement.clientWidth}px` : "100%";
+
+          const height = panel.getBoundingClientRect().height;
+          if (height > maxHeight) maxHeight = height;
+
+          panel.style.display = prevDisplay;
+          panel.style.position = prevPosition;
+          panel.style.visibility = prevVisibility;
+          panel.style.pointerEvents = prevPointerEvents;
+          panel.style.left = prevLeft;
+          panel.style.top = prevTop;
+          panel.style.width = prevWidth;
+          if (!wasActive) panel.classList.remove("is-active");
+          panel.hidden = wasHidden;
+        });
+
+        if (maxHeight > 0) {
+          const value = `${Math.ceil(maxHeight)}px`;
+          tabPanels.forEach((panel) => {
+            panel.style.minHeight = value;
+          });
+        }
+      });
+    };
+  })();
   const src = banner.dataset.case;
   const isVideoSrc = (value) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(value || "");
 
@@ -67,14 +136,38 @@
       if (tab && tab.key) byKey.set(tab.key, tab);
     });
 
+    let activeKey = "";
+    tabButtons.forEach((tabButton) => {
+      if (tabButton.classList.contains("is-active")) {
+        activeKey = tabButton.dataset.tab || "";
+      }
+    });
+
+    const availableKeys = [];
     tabButtons.forEach((tabButton, index) => {
       const key = tabButton.dataset.tab || "";
       const tabData = byKey.get(key) || list[index];
-      if (!tabData) return;
+      const panel = document.querySelector(`.case-tabs__panel[data-panel="${key}"]`);
+      if (!tabData) {
+        tabButton.hidden = true;
+        tabButton.setAttribute("aria-hidden", "true");
+        tabButton.classList.remove("is-active");
+        tabButton.setAttribute("aria-selected", "false");
+        if (panel) {
+          panel.hidden = true;
+          panel.classList.remove("is-active");
+          panel.dataset.disabled = "1";
+        }
+        return;
+      }
+
+      tabButton.hidden = false;
+      tabButton.removeAttribute("aria-hidden");
+      if (panel) panel.dataset.disabled = "0";
+      availableKeys.push(key);
 
       if (tabData.label) tabButton.textContent = tabData.label;
 
-      const panel = document.querySelector(`.case-tabs__panel[data-panel="${key}"]`);
       if (!panel) return;
 
       const layout = tabData.layout === "list" ? "list" : "media";
@@ -128,6 +221,11 @@
       }
     });
 
+    if (!activeKey || !availableKeys.includes(activeKey)) {
+      if (availableKeys.length) setActive(availableKeys[0]);
+    }
+
+    scheduleTabsMinHeight();
     return true;
   };
 
@@ -170,6 +268,7 @@
       }
 
       if (applyTabs(data.tabs)) shouldInitSlideshows = true;
+      scheduleTabsMinHeight();
 
       if (shouldInitSlideshows && typeof window.initSlideshows === "function") {
         window.__deferSlideshows = false;
@@ -179,18 +278,9 @@
     .catch(() => {});
 
   if (tabButtons.length && tabPanels.length) {
-    const setActive = (name) => {
-      tabButtons.forEach((tab) => {
-        const isActive = tab.dataset.tab === name;
-        tab.classList.toggle("is-active", isActive);
-        tab.setAttribute("aria-selected", isActive ? "true" : "false");
-      });
-      tabPanels.forEach((panel) => {
-        const isActive = panel.dataset.panel === name;
-        panel.classList.toggle("is-active", isActive);
-        panel.hidden = !isActive;
-      });
-    };
+    scheduleTabsMinHeight();
+    window.addEventListener("resize", scheduleTabsMinHeight);
+    window.addEventListener("load", scheduleTabsMinHeight);
     tabButtons.forEach((tab) => {
       tab.addEventListener("click", () => setActive(tab.dataset.tab));
     });

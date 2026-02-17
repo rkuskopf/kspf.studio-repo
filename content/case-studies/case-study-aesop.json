@@ -38,6 +38,7 @@
       "body": "",
       "key": "principles",
       "label": "Design Principles",
+<<<<<<< Updated upstream
       "subtitle": "Rather than redesigning the checkout wholesale, I established three principles to guide every decision:",
       "items": [
         {
@@ -60,6 +61,9 @@
       "key": "solution",
       "label": "The Solution",
       "subtitle": "The solution"
+=======
+      "subtitle": "Rather than redesigning the checkout wholesale, I established three principles to guide every decision:"
+>>>>>>> Stashed changes
     }
   ]
 }
