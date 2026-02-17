@@ -691,15 +691,14 @@ body.grid-overlay{
   align-items: end;
 }
 
-.case-banner__main{
-  max-width: 900px;
-}
+
 
 .case-banner__title{
   margin: 0 0 16px;
   font-size: 48px;
   font-weight: 600;
   line-height: 1.05;
+  letter-spacing: -1.2px;
 }
 
 .case-banner__summary{
