@@ -949,26 +949,18 @@ body.grid-overlay{
     justify-content: center;
     align-items: center;
     min-height: var(--hero-height);
+    height: var(--hero-height);
     margin: 0 auto;
   }
   .hero__media{
     grid-column: 1 / -1;
     justify-self: center;
     margin-inline: auto;
-  }
-  .hero.is-portrait{
-    height: auto;
-    min-height: 0;
-  }
-  .hero.is-portrait .hero__media{
-    width: auto;
-    height: auto;
+    width: 100%;
+    height: 100%;
     max-width: 100%;
-    max-height: var(--hero-height);
-    min-height: 0;
-  }
-  .hero.is-portrait .hero__video{
-    object-fit: cover;
+    max-height: 100%;
+    object-fit: contain;
   }
 
   .footer{
