@@ -42,7 +42,6 @@ collections:
         widget: "list"
         summary: "{{fields.label}}"
         min: 1
-        max: 4
         fields:
           - label: "Key"
             name: "key"
