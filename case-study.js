@@ -77,6 +77,9 @@
       const panel = document.querySelector(`.case-tabs__panel[data-panel="${key}"]`);
       if (!panel) return;
 
+      const layout = tabData.layout === "list" ? "list" : "media";
+      panel.classList.toggle("is-list", layout === "list");
+
       const subtitleEl = panel.querySelector(".case-tabs__subtitle");
       if (subtitleEl && Object.prototype.hasOwnProperty.call(tabData, "subtitle")) {
         subtitleEl.textContent = tabData.subtitle || "";
@@ -87,11 +90,41 @@
         bodyEl.textContent = tabData.body || "";
       }
 
+      const listEl = panel.querySelector(".case-tabs__list");
+      if (listEl) {
+        listEl.innerHTML = "";
+        if (layout === "list" && Array.isArray(tabData.items)) {
+          tabData.items.forEach((item) => {
+            if (!item) return;
+            const li = document.createElement("li");
+            li.className = "case-tabs__item";
+
+            if (item.title) {
+              const title = document.createElement("h4");
+              title.className = "case-tabs__item-title";
+              title.textContent = item.title;
+              li.appendChild(title);
+            }
+
+            if (item.description) {
+              const desc = document.createElement("p");
+              desc.className = "case-tabs__item-desc";
+              desc.textContent = item.description;
+              li.appendChild(desc);
+            }
+
+            if (li.childElementCount) listEl.appendChild(li);
+          });
+        }
+      }
+
       const mediaEl = panel.querySelector(".case-tabs__media");
-      if (mediaEl && Array.isArray(tabData.slides)) {
+      if (mediaEl) {
         mediaEl.innerHTML = "";
-        const slideshowEl = buildTabSlideshow(tabData.slides, tabData.label || tabData.subtitle);
-        if (slideshowEl) mediaEl.appendChild(slideshowEl);
+        if (layout !== "list" && Array.isArray(tabData.slides)) {
+          const slideshowEl = buildTabSlideshow(tabData.slides, tabData.label || tabData.subtitle);
+          if (slideshowEl) mediaEl.appendChild(slideshowEl);
+        }
       }
     });
 

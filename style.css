@@ -882,12 +882,56 @@ body.grid-overlay{
 
 .case-tabs__text{
   grid-area: text;
-  max-width: none;
+  max-width: 700px;
   font-size: 15px;
   line-height: 1.35;
   align-self: center;
   justify-self: start;
   text-align: left;
+}
+
+.case-tabs__list{
+  grid-area: list;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: none;
+  row-gap: 28px;
+}
+
+.case-tabs__panel.is-list .case-tabs__content{
+  grid-template-areas: "text list";
+  column-gap: 80px;
+  align-items: start;
+}
+
+.case-tabs__panel.is-list .case-tabs__text{
+  align-self: start;
+}
+
+.case-tabs__panel.is-list .case-tabs__media{
+  display: none;
+}
+
+.case-tabs__panel.is-list .case-tabs__list{
+  display: grid;
+}
+
+.case-tabs__item-title{
+  margin: 0 0 8px;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+.case-tabs__item-desc{
+  margin: 0;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 1.35;
 }
 
 .case-study-page .case-tabs__subtitle{
@@ -1010,6 +1054,22 @@ body.grid-overlay{
 
   .project{ display: block; width: 100%; margin: 44px 0 0; }
   .project__text{ width: 100%; max-width: none; }
+
+  .case-tabs__content{
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "media"
+      "text";
+    row-gap: 24px;
+    padding: 0 20px;
+  }
+
+  .case-tabs__panel.is-list .case-tabs__content{
+    grid-template-areas:
+      "text"
+      "list";
+    row-gap: 28px;
+  }
 }
 
 @media (min-width: 721px){

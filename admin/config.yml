@@ -55,6 +55,20 @@ collections:
           - { label: "Label", name: "label", widget: "string" }
           - { label: "Subtitle", name: "subtitle", widget: "string" }
           - { label: "Body", name: "body", widget: "text", required: false }
+          - label: "Layout"
+            name: "layout"
+            widget: "select"
+            options:
+              - { label: "Media + text", value: "media" }
+              - { label: "Text + list", value: "list" }
+            default: "media"
+          - label: "List Items"
+            name: "items"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
           - label: "Slides"
             name: "slides"
             widget: "list"
