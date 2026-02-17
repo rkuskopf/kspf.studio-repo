@@ -886,23 +886,28 @@ body.grid-overlay{
   font-size: 15px;
   line-height: 1.35;
   align-self: center;
+  justify-self: start;
+  text-align: left;
 }
 
 .case-study-page .case-tabs__subtitle{
   margin: 0 0 18px;
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 100;
   font-family: "Times New Roman", Times, serif;
   line-height: 1.1;
+  max-width: 720px;
 }
 
 .case-tabs__media{
   grid-area: media;
   width: 100%;
+  max-width: 700px;
   aspect-ratio: 4 / 3;
   background: #3b3432;
   border-radius: 2px;
   align-self: center;
+  justify-self: center;
   overflow: hidden;
   position: relative;
   margin-top:40px;
