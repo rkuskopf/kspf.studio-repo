@@ -9,9 +9,9 @@
   "tabs": [
     {
       "key": "problem",
-      "label": "Challenge",
       "slides": [
-        "/assets/uploads/aesop-thumbnail.jpg"
+        "/assets/uploads/aesop-thumbnail.jpg",
+        "https://github.com/rkuskopf/kspf.studio-repo/blob/main/assets/images/aesop/drop%20off%20graph.png?raw=true"
       ]
     }
   ]
