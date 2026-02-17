@@ -48,8 +48,8 @@ collections:
             name: "key"
             widget: "select"
             options:
-              - { label: "The problem", value: "problem" }
-              - { label: "What we uncovered", value: "uncovered" }
+              - { label: "Challenge", value: "problem" }
+              - { label: "Approach", value: "uncovered" }
               - { label: "Design principles", value: "principles" }
               - { label: "The solution", value: "solution" }
           - { label: "Label", name: "label", widget: "string" }

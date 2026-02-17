@@ -689,7 +689,7 @@ body.grid-overlay{
   grid-template-columns: minmax(0, 1fr);
   column-gap: 64px;
   align-items: end;
-  margin-top: 40px;
+  margin-top: 20px;
 }
 
 
@@ -698,7 +698,7 @@ body.grid-overlay{
   margin: 0 0 16px;
   font-size: 36px;
   font-weight: 600;
-  line-height: 1.05;
+  line-height: 1.05;  
   letter-spacing: -1.2px;
 }
 
@@ -814,7 +814,7 @@ body.grid-overlay{
 /* --- case study tabs --- */
 .case-tabs{
   grid-column: 1 / -1;
-  margin-top: 100px;
+  margin-top: 50px;
 }
 
 .case-tabs__nav{
@@ -876,7 +876,7 @@ body.grid-overlay{
   grid-template-areas: "media text";
   column-gap: 60px;
   align-items: center;
-  margin-top: 70px;
+  margin-top: 40px;
   padding: 0 50px;
 }
 
@@ -1126,7 +1126,7 @@ body.grid-overlay{
   flex: 0 0 auto;
   height: var(--case-hero-height);
   min-height: 0;
-  background: #000;
+  background: #fff;
   display: flex;
   overflow: hidden;
 }

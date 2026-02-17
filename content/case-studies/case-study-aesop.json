@@ -9,6 +9,7 @@
   "tabs": [
     {
       "key": "problem",
+      "label": "Challenge",
       "slides": [
         "/assets/uploads/aesop-thumbnail.jpg"
       ]
