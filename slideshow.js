@@ -108,30 +108,48 @@
 
   const roots = [];
 
-  const pickClosestToCenter = () => {
+  const pickMostVisible = () => {
     if (!roots.length) return;
-    const centerY = window.innerHeight / 2;
-    let closest = roots[0];
-    let bestDistance = Infinity;
+    const viewport = {
+      top: 0,
+      left: 0,
+      right: window.innerWidth,
+      bottom: window.innerHeight,
+    };
+    let best = null;
+    let bestRatio = -1;
+    let bestArea = -1;
 
     roots.forEach((root) => {
       const rect = root.getBoundingClientRect();
-      const distance = Math.abs(rect.top + rect.height / 2 - centerY);
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        closest = root;
+      const visibleWidth = Math.max(
+        0,
+        Math.min(rect.right, viewport.right) - Math.max(rect.left, viewport.left)
+      );
+      const visibleHeight = Math.max(
+        0,
+        Math.min(rect.bottom, viewport.bottom) - Math.max(rect.top, viewport.top)
+      );
+      const visibleArea = visibleWidth * visibleHeight;
+      const totalArea = rect.width * rect.height;
+      const ratio = totalArea > 0 ? visibleArea / totalArea : 0;
+
+      if (ratio > bestRatio || (ratio === bestRatio && visibleArea > bestArea)) {
+        bestRatio = ratio;
+        bestArea = visibleArea;
+        best = root;
       }
     });
 
-    setActiveRoot(closest);
+    if (best) setActiveRoot(best);
   };
 
   let rafId = 0;
-  const schedulePickClosest = () => {
+  const schedulePickMostVisible = () => {
     if (rafId) return;
     rafId = window.requestAnimationFrame(() => {
       rafId = 0;
-      pickClosestToCenter();
+      pickMostVisible();
     });
   };
 
@@ -148,8 +166,7 @@
 
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
     setHeroAspect(root, slides, img.getAttribute("src"));
-    root.addEventListener("pointerenter", () => setActiveRoot(root));
-    root.addEventListener("focusin", () => setActiveRoot(root));
+    // Active slideshow is chosen by viewport visibility, not hover/focus.
 
     let index = 0;
     let isInView = false;
@@ -289,11 +306,9 @@
     }
 
     prev.addEventListener("click", () => {
-      setActiveRoot(root);
       show(index - 1);
     });
     next.addEventListener("click", () => {
-      setActiveRoot(root);
       show(index + 1);
     });
 
@@ -324,7 +339,6 @@
     const onPointerDown = (e) => {
       if (e.pointerType !== "touch") return;
       if (pointerId !== null) return;
-      setActiveRoot(root);
       pointerId = e.pointerId;
       startX = e.clientX;
       startY = e.clientY;
@@ -376,6 +390,7 @@
           if (entry.target !== root) return;
           isInView = entry.isIntersecting;
           updatePlayback();
+          schedulePickMostVisible();
         });
       },
       { root: null, threshold: 0.35 }
@@ -392,7 +407,7 @@
     setupSlideshows();
   }
 
-  window.addEventListener("scroll", schedulePickClosest, { passive: true });
-  window.addEventListener("resize", schedulePickClosest);
-  schedulePickClosest();
+  window.addEventListener("scroll", schedulePickMostVisible, { passive: true });
+  window.addEventListener("resize", schedulePickMostVisible);
+  schedulePickMostVisible();
 })();
