@@ -30,9 +30,12 @@ collections:
             name: "informationOverlay"
             widget: "object"
             fields:
+              - { label: "Profile Title", name: "profileTitle", widget: "string", required: false }
+              - { label: "Profile Body", name: "profileBody", widget: "text", required: false }
               - { label: "Contact Title", name: "contactTitle", widget: "string" }
               - { label: "Contact Body", name: "contactBody", widget: "text" }
               - { label: "Contact Email", name: "contactEmail", widget: "string" }
+              - { label: "Contact Phone", name: "contactPhone", widget: "string", required: false }
               - { label: "Services Title", name: "servicesTitle", widget: "string", required: false }
               - label: "Services"
                 name: "services"

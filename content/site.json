@@ -8,9 +8,12 @@
     "servicesHref": "#services"
   },
   "informationOverlay": {
+    "profileTitle": "Profile",
+    "profileBody": "kspf is a digital practice, run by Rowan, in collaboration with a community of local creatives. We craft digital experiences that go beyond aesthetics, thoughtfully designed to reflect each brand's unique story and ambitions.",
     "contactTitle": "Contact",
     "contactBody": "We offer free consultations to discuss your project needs.\nPlease email us to arrange this or for for more information about our services",
     "contactEmail": "hello@kspf.au",
+    "contactPhone": "(+64) 22785041",
     "servicesTitle": "Services",
     "services": [
       "Custom web Development",

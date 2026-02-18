@@ -4,6 +4,16 @@
     return value.replace(/^mailto:/i, "");
   };
 
+  const normalizePhone = (value) => {
+    if (!value) return "";
+    const cleaned = String(value).trim();
+    if (!cleaned) return "";
+    const hasPlus = cleaned.includes("+");
+    const digits = cleaned.replace(/[^\d]/g, "");
+    if (!digits) return "";
+    return hasPlus ? `+${digits}` : digits;
+  };
+
   const setText = (el, value) => {
     if (!el || value === undefined || value === null) return;
     el.textContent = value;
@@ -21,6 +31,17 @@
     el.setAttribute("href", `mailto:${email}`);
   };
 
+  const setPhone = (el, value) => {
+    if (!el || !value) return;
+    const phoneText = String(value).trim();
+    if (!phoneText) return;
+    el.textContent = phoneText;
+    if (el.tagName === "A") {
+      const phoneHref = normalizePhone(phoneText);
+      if (phoneHref) el.setAttribute("href", `tel:${phoneHref}`);
+    }
+  };
+
   const setBodyHtml = (el, value) => {
     if (!el || value === undefined || value === null) return;
     const html = String(value)
@@ -32,7 +53,7 @@
 
   const renderFooter = (footer) => {
     if (!footer || !Array.isArray(footer.columns)) return;
-    const titleEl = document.querySelector(".footer__title");
+    const titleEl = document.querySelector(".js-footer-services-title");
     setText(titleEl, footer.title);
 
     const servicesWrap = document.querySelector(".footer__services");
@@ -110,6 +131,11 @@
     setBodyHtml(document.querySelector(".js-info-contact-body"), info.contactBody);
     setEmail(document.querySelector(".js-info-contact-email"), info.contactEmail);
     setText(document.querySelector(".js-info-services-title"), info.servicesTitle);
+    setText(document.querySelector(".js-footer-profile-title"), info.profileTitle);
+    setBodyHtml(document.querySelector(".js-footer-profile-body"), info.profileBody);
+    setText(document.querySelector(".js-footer-contact-title"), info.contactTitle);
+    setEmail(document.querySelector(".js-footer-contact-email"), info.contactEmail);
+    setPhone(document.querySelector(".js-footer-contact-phone"), info.contactPhone);
 
     const servicesList = document.querySelector(".js-info-services-list");
     if (servicesList && Array.isArray(info.services)) {

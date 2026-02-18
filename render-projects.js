@@ -94,6 +94,9 @@
     if (typeof window.initSlideshows === "function") {
       window.initSlideshows();
     }
+    if (typeof window.initHomeScrollAssist === "function") {
+      window.initHomeScrollAssist();
+    }
   };
 
   fetch("projects.json", { cache: "no-cache" })
