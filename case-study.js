@@ -3,7 +3,8 @@
   if (!banner) return;
 
   const titleEl = banner.querySelector(".js-case-title");
-  const summaryEl = banner.querySelector(".js-case-summary");
+  const heroWrap = banner.closest(".case-hero-wrap");
+  const summaryEl = heroWrap ? heroWrap.querySelector(".js-case-summary") : banner.querySelector(".js-case-summary");
   const roleLabelEl = banner.querySelector(".js-case-role-label");
   const roleValueEl = banner.querySelector(".js-case-role-value");
   const slideshow = document.querySelector(".js-case-slideshow");
