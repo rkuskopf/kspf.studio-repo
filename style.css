@@ -19,13 +19,14 @@
 	  --grid-step: calc(var(--grid-col-w) + var(--gutter));
 	  --nav-shift: calc(var(--grid-col-w) * 0.5);
 	  --hero-width: 800px;
-	  --hero-height: 65vh;
+	  --hero-height: clamp(420px, 60vh, 620px);
 	  --information-services-gap: 150px;
 	  --nav-gap-2: 80px;
 	  --nav-gap-4: 160px;
 	  --mockup-shadow-offset: 20px;
 	  --project-text-lines: 3;
-	  --project-gap: 70px;
+	  --project-text-gap: clamp(26px, 3.5vh, 34px);
+	  --project-gap: calc(var(--project-text-gap) + 26px);
 	  --intro-lines: 2;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(
@@ -383,7 +384,7 @@ body.grid-overlay{
   align-items: center;
   align-content: center;
   position: relative;
-  min-height: 643px;
+  min-height: var(--hero-height);
   overflow-anchor: none;
   touch-action: pan-y;
   --hero-frame: min(
@@ -548,7 +549,7 @@ body.grid-overlay{
 /* --- project row --- */
 .project{
   grid-column: 1 / -1;
-  margin: 30px 0 0;
+  margin: var(--project-text-gap) 0 0;
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
@@ -1078,7 +1079,7 @@ body.grid-overlay{
     row-gap: 28px;
   }
 
-  .project{ display: block; width: 100%; margin: 44px 0 0; }
+  .project{ display: block; width: 100%; margin: var(--project-text-gap) 0 0; }
   .project__text{ width: 100%; max-width: none; }
 
   .case-tabs__content{
