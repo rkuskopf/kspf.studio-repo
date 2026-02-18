@@ -721,6 +721,12 @@ body.grid-overlay{
   max-width: 1200px;
 }
 
+.case-hero__summary{
+  margin: 15px auto 0;
+  width: 100%;
+  max-width: var(--case-hero-frame);
+}
+
 .case-banner__meta{
   display: grid;
   row-gap: 6px;
@@ -1211,6 +1217,13 @@ body.grid-overlay{
   gap: 50px;
 }
 
+.case-hero-wrap--aesop{
+  --case-hero-height: 100vh;
+  min-height: var(--case-hero-height);
+  height: var(--case-hero-height);
+  gap: 0;
+}
+
 .case-hero-media{
   flex: 0 0 auto;
   height: var(--case-hero-height);
@@ -1218,6 +1231,13 @@ body.grid-overlay{
   background: #fff;
   display: flex;
   overflow: hidden;
+}
+
+.case-hero-wrap--aesop .case-hero-media{
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  width: 100%;
 }
 
 .case-hero__slideshow{
@@ -1234,4 +1254,37 @@ body.grid-overlay{
   height: auto;
   max-width: 100%;
   max-height: 100%;
+}
+
+.case-hero-wrap--aesop .case-hero__slideshow .hero__media{
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  object-fit: cover;
+  object-position: center;
+}
+
+.case-hero-wrap--aesop .case-banner,
+.case-hero-wrap--aesop .case-banner__main,
+.case-hero-wrap--aesop .case-banner__title{
+  text-align: left;
+}
+
+.case-hero-wrap--aesop .case-banner{
+  max-width: none;
+  margin-inline: 0;
+  margin-top: 20px;
+}
+
+.case-hero-wrap--aesop .case-hero__summary{
+  max-width: none;
+  margin-inline: 0;
+}
+
+.case-hero-wrap--aesop .case-hero__slideshow{
+  position: relative;
+  display: block;
 }
