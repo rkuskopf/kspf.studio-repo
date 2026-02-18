@@ -1,0 +1,64 @@
+{
+  "nav": {
+    "homeLabel": "kspf",
+    "homeHref": "/",
+    "informationLabel": "information",
+    "closeLabel": "x",
+    "servicesLabel": "services",
+    "servicesHref": "#services"
+  },
+  "informationOverlay": {
+    "contactTitle": "Contact",
+    "contactBody": "We offer free consultations to discuss your project needs.\nPlease email us to arrange this or for for more information about our services",
+    "contactEmail": "hello@kspf.au",
+    "servicesTitle": "Services",
+    "services": [
+      "Custom web Development",
+      "Shopify",
+      "Squarespace",
+      "UI/UX Design",
+      "Creative Direction",
+      "Design Research"
+    ]
+  },
+  "footer": {
+    "title": "Services",
+    "columns": [
+      {
+        "groups": [
+          {
+            "heading": "Web Development",
+            "items": [
+              "Web Design",
+              "Shopify",
+              "Cargo | Squarespace",
+              "Custom HTML/CSS/ Java Script"
+            ]
+          },
+          {
+            "heading": "Experience",
+            "href": "/experience.html",
+            "items": [
+              "Product Design",
+              "Research",
+              "UX Strategy",
+              "Accessibility Consulting"
+            ]
+          }
+        ]
+      },
+      {
+        "groups": [
+          {
+            "heading": "Visual Design",
+            "items": [
+              "Identity",
+              "Editorial",
+              "Art Direction"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

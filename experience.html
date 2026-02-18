@@ -7,6 +7,7 @@
   <meta name="description" content="Experience design by kspf." />
   <link rel="icon" type="image/png" href="/assets/flav/Frame%2019.png" />
   <link rel="stylesheet" href="/style.css" />
+  <script src="/site-content.js" defer></script>
   <script src="/experience.js" defer></script>
   <script src="/clients-overlay.js" defer></script>
   <script src="/smooth-scroll.js?v=20260218-1" defer></script>
@@ -34,14 +35,14 @@
   <section class="overlay information-overlay" id="informationOverlay" aria-hidden="true">
     <div class="information-overlay__inner">
       <div class="information-overlay__contact">
-        <p class="information-overlay__contact-title">Contact</p>
-        <p>We offer free consultations to discuss your project needs.
+        <p class="information-overlay__contact-title js-info-contact-title">Contact</p>
+        <p class="js-info-contact-body">We offer free consultations to discuss your project needs.
           <br>Please email us to arrange this or for for more information about our services</p>
-        <a href="mailto:hello@kspf.au">hello@kspf.au</a>
+        <a class="js-info-contact-email" href="mailto:hello@kspf.au">hello@kspf.au</a>
       </div>
       <div class="information-overlay__services">
-        <p class="information-overlay__services-title">Services</p>
-        <ul class="information-overlay__services-list">
+        <p class="information-overlay__services-title js-info-services-title">Services</p>
+        <ul class="information-overlay__services-list js-info-services-list">
           <li>Custom web Development</li>
           <li>Shopify</li>
           <li>Squarespace</li>
@@ -66,9 +67,9 @@
     </section>
 
     <section class="exp-cases" aria-label="Case studies">
-      <h2 class="exp-cases__title">Case Studies</h2>
+      <h2 class="exp-cases__title js-exp-cases-title">Case Studies</h2>
       <div class="exp-cases__rule"></div>
-      <div class="exp-cases__grid">
+      <div class="exp-cases__grid js-exp-cases-grid">
         <article class="exp-case">
           <a class="exp-case__link" href="/case-study-aesop.html">
             <div class="exp-case__media exp-case__media--aesop"></div>

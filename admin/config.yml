@@ -9,17 +9,110 @@ media_folder: "assets/uploads"
 public_folder: "/assets/uploads"
 
 collections:
+  - name: "site"
+    label: "Site Settings"
+    files:
+      - file: "content/site.json"
+        label: "Global Content"
+        name: "global"
+        fields:
+          - label: "Navigation"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "Home Label", name: "homeLabel", widget: "string" }
+              - { label: "Home Link", name: "homeHref", widget: "string", required: false }
+              - { label: "Information Label", name: "informationLabel", widget: "string" }
+              - { label: "Close Label", name: "closeLabel", widget: "string" }
+              - { label: "Services Label", name: "servicesLabel", widget: "string" }
+              - { label: "Services Link", name: "servicesHref", widget: "string", required: false }
+          - label: "Information Overlay"
+            name: "informationOverlay"
+            widget: "object"
+            fields:
+              - { label: "Contact Title", name: "contactTitle", widget: "string" }
+              - { label: "Contact Body", name: "contactBody", widget: "text" }
+              - { label: "Contact Email", name: "contactEmail", widget: "string" }
+              - { label: "Services Title", name: "servicesTitle", widget: "string", required: false }
+              - label: "Services"
+                name: "services"
+                widget: "list"
+                required: false
+                field: { label: "Service", name: "service", widget: "string" }
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - label: "Columns"
+                name: "columns"
+                widget: "list"
+                fields:
+                  - label: "Groups"
+                    name: "groups"
+                    widget: "list"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string" }
+                      - { label: "Heading Link", name: "href", widget: "string", required: false }
+                      - label: "Items"
+                        name: "items"
+                        widget: "list"
+                        field: { label: "Item", name: "item", widget: "string" }
+
+  - name: "home"
+    label: "Home Page"
+    files:
+      - file: "content/home.json"
+        label: "Home Content"
+        name: "home"
+        fields:
+          - { label: "Page Title", name: "title", widget: "string", required: false }
+          - { label: "Meta Description", name: "metaDescription", widget: "text", required: false }
+          - { label: "Intro Text", name: "intro", widget: "text" }
+
   - name: "experience"
     label: "Experience Page"
     files:
       - file: "content/experience.json"
-        label: "Hero"
-        name: "hero"
+        label: "Page Content"
+        name: "experience"
         fields:
           - { label: "Nav Intro Text", name: "navIntro", widget: "text" }
           - { label: "Hero Text", name: "heroText", widget: "text" }
           - { label: "CTA Label", name: "ctaLabel", widget: "string" }
           - { label: "CTA Link", name: "ctaHref", widget: "string" }
+          - { label: "Cases Title", name: "casesTitle", widget: "string", required: false }
+          - label: "Cases"
+            name: "cases"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Company", name: "company", widget: "string" }
+              - { label: "Service", name: "service", widget: "string" }
+              - { label: "Link", name: "href", widget: "string", required: false }
+              - { label: "Media Image", name: "mediaImage", widget: "image", required: false }
+              - { label: "Media Class", name: "mediaClass", widget: "string", required: false }
+
+  - name: "projects"
+    label: "Projects"
+    files:
+      - file: "projects.json"
+        label: "Projects"
+        name: "projects"
+        fields:
+          - label: "Projects"
+            name: "projects"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "View URL", name: "viewUrl", widget: "string", required: false }
+              - { label: "Alt Text", name: "alt", widget: "string", required: false }
+              - label: "Slides"
+                name: "slides"
+                widget: "list"
+                field: { label: "Slide", name: "slide", widget: "image" }
 
   - name: "caseStudies"
     label: "Case Studies"

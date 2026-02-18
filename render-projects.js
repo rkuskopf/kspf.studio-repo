@@ -97,9 +97,21 @@
   };
 
   fetch("projects.json", { cache: "no-cache" })
-    .then((res) => (res.ok ? res.json() : []))
-    .then((projects) => {
-      if (Array.isArray(projects)) renderProjects(projects);
+    .then((res) => {
+      if (!res.ok) throw new Error("Projects request failed");
+      return res.json();
+    })
+    .then((data) => {
+      const projects = Array.isArray(data)
+        ? data
+        : Array.isArray(data && data.projects)
+          ? data.projects
+          : [];
+      if (projects.length) {
+        renderProjects(projects);
+        return;
+      }
+      container.textContent = "Projects not found.";
     })
     .catch(() => {
       container.textContent = "Projects failed to load.";
