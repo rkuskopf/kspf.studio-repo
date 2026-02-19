@@ -9,6 +9,11 @@
     el.textContent = value;
   };
 
+  const setTitle = (el, value) => {
+    if (!el || value === undefined || value === null) return;
+    el.setAttribute("title", value);
+  };
+
   const setHref = (el, value) => {
     if (!el || !value) return;
     el.setAttribute("href", value);
@@ -30,16 +35,42 @@
     el.innerHTML = html;
   };
 
-  const renderFooter = (footer) => {
-    if (!footer || !Array.isArray(footer.columns)) return;
-    const titleEl = document.querySelector(".footer__title");
-    setText(titleEl, footer.title);
+  const renderFooter = (footer, profile) => {
+    if (!footer) return;
+
+    setText(document.querySelector(".footer__brand"), footer.brand);
+    setText(document.querySelector(".footer__profile-label"), footer.profileLabel);
+    setText(document.querySelector(".footer__contact-label"), footer.contactLabel);
+    setText(document.querySelector(".footer__services-label"), footer.title);
+
+    const profileEl = document.querySelector(".footer__profile-text");
+    setText(profileEl, profile);
+
+    const contactList = document.querySelector(".footer__contact-list");
+    if (contactList) {
+      contactList.innerHTML = "";
+      const contacts = Array.isArray(footer.contact) ? footer.contact : [];
+      contacts.forEach((item) => {
+        if (!item) return;
+        const li = document.createElement("li");
+        if (item.href) {
+          const link = document.createElement("a");
+          link.href = item.href;
+          link.textContent = item.label || "";
+          li.appendChild(link);
+        } else {
+          li.textContent = item.label || "";
+        }
+        contactList.appendChild(li);
+      });
+    }
 
     const servicesWrap = document.querySelector(".footer__services");
     if (!servicesWrap) return;
     servicesWrap.innerHTML = "";
 
-    footer.columns.forEach((column) => {
+    const columns = Array.isArray(footer.columns) ? footer.columns : [];
+    columns.forEach((column) => {
       const colEl = document.createElement("div");
       colEl.className = "footer__services-column";
 
@@ -94,17 +125,25 @@
       setHref(link, nav.homeHref);
     });
 
-    const infoToggles = document.querySelectorAll(".js-information-toggle");
-    infoToggles.forEach((btn) => setText(btn, nav.informationLabel));
-
-    const infoCloses = document.querySelectorAll(".js-information-close");
-    infoCloses.forEach((btn) => setText(btn, nav.closeLabel));
+    const infoLinks = document.querySelectorAll(".js-information-link");
+    infoLinks.forEach((link) => {
+      setText(link, nav.informationLabel);
+      setHref(link, nav.informationHref || nav.servicesHref);
+    });
 
     const servicesLinks = document.querySelectorAll(".nav__link--case");
     servicesLinks.forEach((link) => {
       setText(link, nav.servicesLabel);
       setHref(link, nav.servicesHref);
     });
+
+    const profile = data.profile;
+    const homeIntro = document.querySelector(".js-home-intro");
+    setText(homeIntro, profile);
+    setTitle(homeIntro, profile);
+    const expIntro = document.querySelector(".js-exp-intro");
+    setText(expIntro, profile);
+    setTitle(expIntro, profile);
 
     setText(document.querySelector(".js-info-contact-title"), info.contactTitle);
     setBodyHtml(document.querySelector(".js-info-contact-body"), info.contactBody);
@@ -122,7 +161,7 @@
       });
     }
 
-    renderFooter(data.footer);
+    renderFooter(data.footer, profile);
   };
 
   const targetsExist =
