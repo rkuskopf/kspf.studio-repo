@@ -164,6 +164,36 @@
     const next = root.querySelector(".hero__hit--next");
     if (!img || !video || !prev || !next) return;
 
+    const transitionDuration = 400;
+
+    const cloneMedia = (el, extraClass) => {
+      const clone = el.cloneNode(false);
+      clone.removeAttribute("id");
+      clone.classList.remove("is-visible");
+      clone.classList.add("is-hidden");
+      if (extraClass) clone.classList.add(extraClass);
+      clone.setAttribute("aria-hidden", "true");
+      clone.dataset.slideshowClone = "1";
+      return clone;
+    };
+
+    const imgAlt = cloneMedia(img, "hero__img--alt");
+    img.insertAdjacentElement("afterend", imgAlt);
+
+    const videoAlt = cloneMedia(video, "hero__video--alt");
+    videoAlt.removeAttribute("src");
+    video.insertAdjacentElement("afterend", videoAlt);
+
+    const imageSlots = [img, imgAlt];
+    const videoSlots = [video, videoAlt];
+    const allMedia = [...imageSlots, ...videoSlots];
+
+    allMedia.forEach((media) => {
+      media.classList.add("is-hidden");
+      media.classList.remove("is-active");
+      media.setAttribute("aria-hidden", "true");
+    });
+
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
     setHeroAspect(root, slides, img.getAttribute("src"));
     // Active slideshow is chosen by viewport visibility, not hover/focus.
@@ -173,62 +203,88 @@
     let currentIsVideo = false;
     let currentSrc = null;
     let hasShown = false;
+    let activeMediaEl = null;
+    let activeImageEl = imageSlots[0];
+    let activeVideoEl = videoSlots[0];
     const videoPositions = new Map();
     const shouldPlay = () => isInView && activeRoot === root;
     let wasPlaying = false;
+    let playingVideoEl = null;
 
-    const rememberVideoTime = () => {
-      if (!currentIsVideo || !currentSrc) return;
-      if (Number.isFinite(video.currentTime)) {
-        videoPositions.set(currentSrc, video.currentTime);
+    const pauseVideo = (el) => {
+      if (!el) return;
+      try {
+        el.pause();
+      } catch {
+        /* ignore pause failures */
       }
     };
 
-    const restoreVideoTime = (src) => {
+    const rememberVideoTime = (el, src) => {
+      if (!el || !src) return;
+      if (Number.isFinite(el.currentTime)) {
+        videoPositions.set(src, el.currentTime);
+      }
+    };
+
+    const restoreVideoTime = (el, src) => {
       const saved = videoPositions.get(src);
       if (!Number.isFinite(saved)) return;
       const apply = () => {
         try {
-          if (Number.isFinite(video.duration) && video.duration > 0) {
-            video.currentTime = Math.min(saved, Math.max(0, video.duration - 0.05));
+          if (Number.isFinite(el.duration) && el.duration > 0) {
+            el.currentTime = Math.min(saved, Math.max(0, el.duration - 0.05));
           } else {
-            video.currentTime = Math.max(0, saved);
+            el.currentTime = Math.max(0, saved);
           }
         } catch {
           /* ignore seek failures */
         }
       };
-      if (video.readyState >= 1) {
+      if (el.readyState >= 1) {
         apply();
       } else {
-        video.addEventListener("loadedmetadata", apply, { once: true });
+        el.addEventListener("loadedmetadata", apply, { once: true });
       }
     };
 
-    const getVideoSrc = () => video.getAttribute("src") || "";
-    const ensureVideoSrc = (src) => {
-      if (getVideoSrc() !== src) {
-        video.src = src;
+    const getVideoSrc = (el) => el.getAttribute("src") || "";
+    const ensureVideoSrc = (el, src) => {
+      if (getVideoSrc(el) !== src) {
+        el.src = src;
       }
+    };
+
+    const clearVideoSrc = (el) => {
+      if (!el) return;
+      el.removeAttribute("src");
+      el.load();
     };
 
     const updatePlayback = () => {
-      if (!currentIsVideo) return;
-      const should = shouldPlay();
-      if (should) {
-        ensureVideoSrc(currentSrc);
-        if (!wasPlaying) {
-          restoreVideoTime(currentSrc);
-          video.play().catch(() => {});
-        }
-        wasPlaying = true;
+      if (!currentIsVideo || !currentSrc || !activeVideoEl) {
+        videoSlots.forEach(pauseVideo);
+        wasPlaying = false;
+        playingVideoEl = null;
         return;
       }
-      if (wasPlaying) {
-        rememberVideoTime();
-        video.pause();
+      const should = shouldPlay();
+      if (should) {
+        ensureVideoSrc(activeVideoEl, currentSrc);
+        if (!wasPlaying || playingVideoEl !== activeVideoEl) {
+          restoreVideoTime(activeVideoEl, currentSrc);
+          activeVideoEl.play().catch(() => {});
+        }
+        wasPlaying = true;
+        playingVideoEl = activeVideoEl;
+        return;
+      }
+      if (wasPlaying && playingVideoEl) {
+        rememberVideoTime(playingVideoEl, currentSrc);
+        pauseVideo(playingVideoEl);
       }
       wasPlaying = false;
+      playingVideoEl = null;
     };
     playbackUpdaters.set(root, updatePlayback);
 
@@ -238,50 +294,115 @@
       });
     };
 
-    const showImage = (src) => {
-      rememberVideoTime();
-      wasPlaying = false;
+    const hideMedia = (el) => {
+      if (!el) return;
+      el.classList.add("is-hidden");
+      el.classList.remove("is-active");
+      el.setAttribute("aria-hidden", "true");
+    };
+
+    const showMedia = (el, immediate = false) => {
+      if (!el) return;
+      el.classList.add("is-active");
+      el.setAttribute("aria-hidden", "false");
+      if (immediate) {
+        el.classList.remove("is-hidden");
+        return;
+      }
+      el.classList.add("is-hidden");
+      window.requestAnimationFrame(() => {
+        el.classList.remove("is-hidden");
+      });
+    };
+
+    const hideAllExcept = (el) => {
+      allMedia.forEach((media) => {
+        if (media !== el) hideMedia(media);
+      });
+    };
+
+    const setActiveMedia = (el, immediate = false) => {
+      hideAllExcept(el);
+      showMedia(el, immediate);
+      activeMediaEl = el;
+    };
+
+    const scheduleVideoCleanup = () => {
+      window.setTimeout(() => {
+        videoSlots.forEach((vid) => {
+          if (currentIsVideo && vid === activeVideoEl) return;
+          if (!vid.classList.contains("is-hidden")) return;
+          if (vid.getAttribute("src")) {
+            clearVideoSrc(vid);
+          }
+        });
+      }, transitionDuration + 20);
+    };
+
+    const showImage = (src, immediate = false) => {
+      if (currentIsVideo && currentSrc && activeVideoEl) {
+        rememberVideoTime(activeVideoEl, currentSrc);
+      }
       currentIsVideo = false;
       currentSrc = null;
-      video.pause();
-      video.removeAttribute("src");
-      video.load();
-      video.classList.add("is-hidden");
-      img.classList.remove("is-hidden");
-      img.src = src;
+      wasPlaying = false;
+      playingVideoEl = null;
+
+      const nextImageEl = activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
+      activeImageEl = nextImageEl;
+      nextImageEl.src = src;
+
+      videoSlots.forEach(pauseVideo);
+      setActiveMedia(nextImageEl, immediate);
+      scheduleVideoCleanup();
       updatePortraitFlag(src);
     };
 
-    const showVideo = (src) => {
-      if (currentIsVideo && currentSrc && currentSrc !== src) {
-        rememberVideoTime();
+    const showVideo = (src, immediate = false) => {
+      if (currentIsVideo && currentSrc && currentSrc !== src && activeVideoEl) {
+        rememberVideoTime(activeVideoEl, currentSrc);
       }
       currentIsVideo = true;
       currentSrc = src;
       wasPlaying = false;
-      img.classList.add("is-hidden");
-      video.classList.remove("is-hidden");
+      playingVideoEl = null;
+
+      const nextVideoEl = activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
+      activeVideoEl = nextVideoEl;
+      ensureVideoSrc(nextVideoEl, src);
+
       if (shouldPlay()) {
-        ensureVideoSrc(src);
-        restoreVideoTime(src);
-        video.play().catch(() => {});
+        restoreVideoTime(nextVideoEl, src);
+        nextVideoEl.play().catch(() => {});
         wasPlaying = true;
+        playingVideoEl = nextVideoEl;
       } else {
-        video.pause();
+        pauseVideo(nextVideoEl);
       }
+
+      videoSlots.forEach((vid) => {
+        if (vid !== nextVideoEl) pauseVideo(vid);
+      });
+
+      setActiveMedia(nextVideoEl, immediate);
+      scheduleVideoCleanup();
       updatePortraitFlag(src);
     };
 
-    const showImmediate = (nextIndex) => {
+    const applySlide = (nextIndex, immediate = false) => {
       index = (nextIndex + slides.length) % slides.length;
       const current = slides[index];
       if (isVideo(current)) {
-        showVideo(current);
+        showVideo(current, immediate);
       } else {
-        showImage(current);
+        showImage(current, immediate);
       }
       preload(slides[(index + 1) % slides.length]);
       preload(slides[(index - 1 + slides.length) % slides.length]);
+    };
+
+    const showImmediate = (nextIndex) => {
+      applySlide(nextIndex, true);
     };
 
     const show = (nextIndex) => {
@@ -291,12 +412,10 @@
         return;
       }
       root.classList.add("is-transitioning");
-      window.requestAnimationFrame(() => {
-        showImmediate(nextIndex);
-        window.requestAnimationFrame(() => {
-          root.classList.remove("is-transitioning");
-        });
-      });
+      applySlide(nextIndex);
+      window.setTimeout(() => {
+        root.classList.remove("is-transitioning");
+      }, transitionDuration);
     };
 
     show(index);

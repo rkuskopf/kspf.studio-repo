@@ -412,14 +412,27 @@ body.grid-overlay{
   position: relative;
   z-index: 2;
   margin: 0;
-  transition: opacity 220ms ease;
+  opacity: 1;
+  filter: blur(0);
+  pointer-events: auto;
+  transition: filter 320ms ease-out, opacity 320ms linear;
+  will-change: opacity, filter;
 }
 
 .hero__media.is-hidden{
-  display: none;
+  opacity: 0;
+  filter: blur(4px);
+  pointer-events: none;
 }
 
-.hero.is-transitioning .hero__media{
+.hero__media.is-active{
+  opacity: 1;
+  filter: blur(0);
+  transition: filter 320ms ease-in, opacity 320ms linear;
+}
+
+/* During transition, ensure hidden media is actually fading */
+.hero.is-transitioning .hero__media.is-hidden{
   opacity: 0;
 }
 
@@ -506,14 +519,42 @@ body.grid-overlay{
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
-  row-gap: 28px;
+  row-gap: 60px;
   border-top: 1px solid rgba(0, 0, 0, 0.6);
   align-items: start;
 }
 
-.footer__title{
+.footer__brand{
+  margin: 0;
+  grid-column: 1 / span 2;
+}
+
+.footer__label{
   margin: 0;
   grid-column: 3 / span 2;
+}
+
+.footer__profile-text{
+  margin: 0;
+  grid-column: 6 / -1;
+}
+
+.footer__contact-list{
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  grid-column: 8 / -1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer__contact-list a{
+  color: inherit;
+  display: inline-block;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 0.5px;
 }
 
 .footer__services{
@@ -527,7 +568,7 @@ body.grid-overlay{
 .footer__services-column{
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 46px;
 }
 
 .footer__services-group{
@@ -1077,12 +1118,15 @@ body.grid-overlay{
     margin-top: 50px;
   }
 
-  .footer__title{
+  .footer__brand,
+  .footer__label,
+  .footer__profile-text,
+  .footer__contact-list,
+  .footer__services{
     grid-column: 1 / -1;
   }
 
   .footer__services{
-    grid-column: 1 / -1;
     grid-template-columns: 1fr;
     row-gap: 28px;
   }
