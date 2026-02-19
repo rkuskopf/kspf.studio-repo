@@ -33,6 +33,7 @@
     calc(var(--hero-height) * var(--nav-hero-aspect)),
     calc(100vw - (var(--page-pad) * 2))
   );
+  --type-base: clamp(15px, 0.24vw + 14.1px, 17px);
   --hero-effective: min(var(--hero-width), calc(100vw - (var(--page-pad) * 2)));
   --cursor-prev: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%90%3C/text%3E%3C/svg%3E") 16 16, w-resize;
 	  --cursor-next: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Ctext x='8' y='22' font-family='Times%20New%20Roman%2C%20Times%2C%20serif' font-size='15' fill='black'%3E%E2%86%92%3C/text%3E%3C/svg%3E") 16 16, e-resize;
@@ -58,11 +59,14 @@ body{
 	  margin: 0;
 	  padding: var(--page-pad);
 	  font-family: "Times New Roman", Times, serif;
-	  font-size: 14px;
+	  font-size: var(--type-base);
   line-height: 1.2;
-  font-weight: 300;
+  font-weight: 400;
   color: #000;
-  letter-spacing: 0.21px;
+  letter-spacing: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   background: #fefefe;
   overflow: var(--maintenance-overflow);
 }
@@ -85,7 +89,7 @@ body::before{
   display: var(--maintenance-display);
   z-index: 10001;
   padding: 24px;
-  font-size: 18px;
+  font-size: 1.06em;
   line-height: 1.4;
   text-align: center;
   white-space: pre-wrap;
@@ -589,10 +593,10 @@ body.grid-overlay{
 
 .exp-hero__text{
   margin: 0;
-  font-size: 20px;
+  font-size: 1.18em;
   line-height: 1.20;
   text-align: left;
-  font-weight: 200;
+  font-weight: 400;
   width: 885px;
   max-width: 100%;
 }
@@ -604,7 +608,7 @@ body.grid-overlay{
   align-items: top;
   justify-content: left;
   align-self: flex-start;
-  font-size: 14px;
+  font-size: 1em;
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -622,8 +626,8 @@ body.grid-overlay{
 
 .exp-cases__title{
   margin: 0;
-  font-size: 18px;
-  font-weight: 100;
+  font-size: 1.06em;
+  font-weight: 400;
   text-decoration: none;
 }
 
@@ -668,19 +672,19 @@ body.grid-overlay{
 
 .exp-case__title{
   margin: 0;
-  font-size: 18px;
-  font-weight: 100;
+  font-size: 1.06em;
+  font-weight: 400;
   text-decoration: none;
 }
 
 .exp-case__company{
   color: #666;
-  font-size: 14px;
+  font-size: 1em;
 }
 
 .exp-case__service{
   color: #666;
-  font-size: 14px;
+  font-size: 1em;
 }
 
 /* --- case study page --- */
@@ -717,15 +721,15 @@ body.grid-overlay{
 
 .case-banner__title{
   margin: 0 0 16px;
-  font-size: 36px;
-  font-weight: 600;
+  font-size: 2.12em;
+  font-weight: 400;
   line-height: 1.05;  
   letter-spacing: -1.2px;
 }
 
 .case-banner__summary{
   margin-top: 20px;
-  font-size: 15px;
+  font-size: 1em;
   line-height: 1.50;
   max-width: 1200px;
 }
@@ -745,13 +749,13 @@ body.grid-overlay{
 }
 
 .case-banner__label{
-  font-size: 12px;
+  font-size: 0.71em;
   text-transform: uppercase;
   letter-spacing: 0.12em;
 }
 
 .case-banner__value{
-  font-size: 14px;
+  font-size: 1em;
 }
 
 .case-study-page h1,
@@ -791,7 +795,7 @@ body.grid-overlay{
 }
 
 .case-accordion__title{
-  font-size: 16px;
+  font-size: 0.94em;
   font-weight: 400;
   text-decoration: none;
 }
@@ -810,7 +814,7 @@ body.grid-overlay{
   grid-template-columns: minmax(0, 1fr) 520px;
   column-gap: 60px;
   align-items: start;
-  font-size: 15px;
+  font-size: 1em;
   line-height: 1.35;
 }
 
@@ -855,7 +859,7 @@ body.grid-overlay{
   width: 100%;
   grid-column: 3 / 11;
   margin: 20px 0 28px;
-  font-size: 18px;
+  font-size: 1.06em;
 }
 
 .case-tabs__tab{
@@ -920,7 +924,7 @@ body.grid-overlay{
 .case-tabs__text{
   grid-area: text;
   max-width: 700px;
-  font-size: 15px;
+  font-size: 1em;
   line-height: 1.35;
   align-self: center;
   justify-self: start;
@@ -966,15 +970,15 @@ body.grid-overlay{
 .case-tabs__item-desc{
   margin: 0;
   font-family: "Times New Roman", Times, serif;
-  font-size: 18px;
+  font-size: 1.06em;
   font-weight: 400;
   line-height: 1.35;
 }
 
 .case-study-page .case-tabs__subtitle{
   margin: 0 0 18px;
-  font-size: 24px;
-  font-weight: 100;
+  font-size: 1.41em;
+  font-weight: 400;
   font-family: "Times New Roman", Times, serif;
   line-height: 1.1;
   max-width: 720px;
