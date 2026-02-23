@@ -71,6 +71,21 @@ body{
   overflow: var(--maintenance-overflow);
 }
 
+@keyframes home-fade-in{
+  from{ opacity: 0; }
+  to{ opacity: 1; }
+}
+
+body[data-page="home"]{
+  animation: home-fade-in 520ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce){
+  body[data-page="home"]{
+    animation: none;
+  }
+}
+
 /* maintenance overlay (toggle by setting --maintenance-display to block) */
 body::after{
   content: "";
@@ -363,6 +378,11 @@ body.grid-overlay{
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   row-gap: var(--project-gap);
+  min-height: 100vh;
+}
+
+.projects:not(:empty){
+  min-height: 0;
 }
 
 .project-block{
@@ -1059,7 +1079,7 @@ body.grid-overlay{
 }
 
 /* --- responsive --- */
-@media (max-width: 720px){
+@media (max-width: 1155px){
 	  :root{
 	    --page-pad: 15px;
 	    --gutter: 16px;
@@ -1120,10 +1140,16 @@ body.grid-overlay{
     inset: 0;
   }
 
+  .hero__meta{
+    position: static;
+    margin-top: 12px;
+    width: auto;
+  }
+
   .footer{
     padding: 50px 0 70px;
     margin-top: 50px;
-    row-gap: 28px;
+    row-gap: 60px;
   }
 
   .footer__brand,
@@ -1134,9 +1160,31 @@ body.grid-overlay{
     grid-column: 1 / -1;
   }
 
+  .footer__profile-label{
+    margin-top: -60px;
+  }
+
   .footer__services{
     grid-template-columns: 1fr;
     row-gap: 28px;
+  }
+
+  .footer__profile-text,
+  .footer__contact-list,
+  .footer__services{
+    margin-top: -40px;
+  }
+
+  .footer__profile-label{
+    display: none;
+  }
+
+  .footer__brand{
+    margin-bottom: 20px;
+  }
+
+  .footer__profile-text{
+    margin-top: 0;
   }
 
   .project{ display: block; width: 100%; margin: var(--project-text-gap) 0 0; }
@@ -1163,7 +1211,7 @@ body.grid-overlay{
   }
 }
 
-@media (min-width: 721px){
+@media (min-width: 1156px){
 	  .nav__group{
       margin-left: 0;
       display: contents;
@@ -1221,23 +1269,6 @@ body.grid-overlay{
   }
 }
 
-@media (max-width: 1155px) {
-  .hero{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: var(--hero-height);
-    margin: 0 auto;
-  }
-
-  .hero__meta{
-    position: static;
-    margin-top: 12px;
-    width: auto;
-  }
-}
-
 @media (min-width: 1499px){
   .nav__link--information{
     transform: translateX(-14.6862vw);
@@ -1263,7 +1294,7 @@ body.grid-overlay{
     text-align: left;
   }
 
-  @media (max-width: 720px){
+  @media (max-width: 1155px){
   .information-overlay__services{
     margin-top: 80px;
   }
