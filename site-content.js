@@ -138,12 +138,6 @@
     });
 
     const profile = data.profile;
-    const homeIntro = document.querySelector(".js-home-intro");
-    setText(homeIntro, profile);
-    setTitle(homeIntro, profile);
-    const expIntro = document.querySelector(".js-exp-intro");
-    setText(expIntro, profile);
-    setTitle(expIntro, profile);
 
     setText(document.querySelector(".js-info-contact-title"), info.contactTitle);
     setBodyHtml(document.querySelector(".js-info-contact-body"), info.contactBody);

@@ -1,10 +1,11 @@
 (() => {
+  const navIntroEl = document.querySelector(".js-exp-intro");
   const heroTextEl = document.querySelector(".js-exp-hero-text");
   const ctaEl = document.querySelector(".js-exp-cta");
   const casesTitleEl = document.querySelector(".js-exp-cases-title");
   const casesGridEl = document.querySelector(".js-exp-cases-grid");
 
-  if (!heroTextEl && !ctaEl && !casesTitleEl && !casesGridEl) return;
+  if (!navIntroEl && !heroTextEl && !ctaEl && !casesTitleEl && !casesGridEl) return;
 
   const renderCases = (cases) => {
     if (!casesGridEl) return;
@@ -48,6 +49,10 @@
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
       if (!data) return;
+      if (data.navIntro !== undefined && data.navIntro !== null && navIntroEl) {
+        navIntroEl.textContent = data.navIntro;
+        navIntroEl.setAttribute("title", data.navIntro);
+      }
       if (data.heroText && heroTextEl) heroTextEl.textContent = data.heroText;
       if (data.ctaLabel && ctaEl) ctaEl.textContent = data.ctaLabel;
       if (data.ctaHref && ctaEl) ctaEl.setAttribute("href", data.ctaHref);
