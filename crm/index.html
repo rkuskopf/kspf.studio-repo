@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSPF Lead Table</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; background: #f5f5f3; color: #1a1a1a; }
+
+  /* ── PIN gate ── */
+  #pin-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #f5f5f3;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #pin-gate.hidden { display: none; }
+  .pin-box {
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    padding: 36px 40px; text-align: center; width: 280px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .pin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.08em; margin-bottom: 20px; color: #1a1a1a; }
+  .pin-label { font-size: 12px; color: #888; margin-bottom: 10px; }
+  #pin-form { display: contents; }
+  #pin-input {
+    width: 100%; border: 1px solid #ddd; border-radius: 4px;
+    padding: 9px 12px; font-size: 16px; text-align: center;
+    letter-spacing: 0.2em; outline: none; color: #1a1a1a;
+  }
+  #pin-input:focus { border-color: #999; }
+  #pin-submit {
+    margin-top: 14px; width: 100%;
+    background: #1a1a1a; color: #fff; border: none;
+    border-radius: 4px; padding: 9px 0; font-size: 13px;
+    cursor: pointer; font-weight: 500;
+  }
+  #pin-submit:hover { background: #333; }
+  #pin-error {
+    margin-top: 10px; font-size: 12px; color: #c0392b;
+    min-height: 16px;
+  }
+
+  /* ── Main UI (hidden until auth) ── */
+  #main { display: none; }
+  #main.visible { display: block; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #ddd; padding: 8px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20; }
+  .topbar-title { font-weight: 600; font-size: 14px; white-space: nowrap; }
+  input[type="search"] { border: 1px solid #ddd; border-radius: 4px; padding: 5px 9px; font-size: 12px; width: 180px; outline: none; }
+  input[type="search"]:focus { border-color: #999; }
+  select { border: 1px solid #ddd; border-radius: 4px; padding: 5px 7px; font-size: 12px; background: #fff; cursor: pointer; outline: none; }
+  .count { color: #888; font-size: 12px; margin-left: auto; white-space: nowrap; }
+  button.dl { background: #1a1a1a; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+  button.dl:hover { background: #333; }
+
+  .wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 12px; }
+  thead { position: sticky; top: 45px; z-index: 10; }
+  th { background: #f0f0ee; border: 1px solid #ddd; padding: 6px 9px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #555; white-space: nowrap; cursor: pointer; user-select: none; }
+  th:hover { background: #e8e8e6; }
+  th.sorted { color: #1a1a1a; background: #e2e2e0; }
+  td { border: 1px solid #e8e8e8; padding: 6px 9px; vertical-align: top; }
+  tr:hover td { background: #fafaf8; }
+  tr:hover td.pin { background: #f5f5f3; }
+
+  td.pin, th.pin { position: sticky; left: 0; background: #fff; z-index: 5; min-width: 155px; }
+  th.pin { background: #f0f0ee; z-index: 11; }
+
+  td a { color: #1a6ef5; text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .b-draft   { background: #e6f4ea; color: #1e7e34; }
+  .b-contact { background: #fff3cd; color: #856404; }
+  .b-wave2   { background: #f0e6ff; color: #5a189a; }
+  .b-seed    { background: #f0f0ee; color: #888; }
+  .b-warm    { background: #cce5ff; color: #004085; }
+
+  .sc { text-align: center; white-space: nowrap; }
+  .s-bad { color: #c0392b; font-weight: 700; }
+  .s-mid { color: #e07b00; }
+  .s-ok  { color: #1e7e34; }
+
+  .gcell { font-size: 11px; color: #333; line-height: 1.5; max-width: 300px; min-width: 220px; }
+  .gtag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #5a189a; display: block; margin-bottom: 2px; }
+
+  textarea.note { width: 100%; min-width: 150px; border: 1px solid transparent; border-radius: 3px; padding: 3px 5px; font-family: inherit; font-size: 12px; resize: vertical; background: transparent; min-height: 34px; line-height: 1.4; outline: none; color: #1a1a1a; }
+  textarea.note:hover { border-color: #ddd; background: #fafafa; }
+  textarea.note:focus { border-color: #aaa; background: #fff; }
+
+  .stars { white-space: nowrap; }
+  .star { cursor: pointer; font-size: 14px; color: #ddd; }
+  .star.on { color: #f5a623; }
+
+  select.verdict { font-size: 11px; padding: 3px 5px; width: 100px; }
+  .no-email { color: #c0392b; }
+</style>
+</head>
+<body>
+
+<!-- ── PIN gate overlay ── -->
+<div id="pin-gate">
+  <div class="pin-box">
+    <div class="pin-logo">KSPF</div>
+    <div class="pin-label">Enter PIN to continue</div>
+    <form id="pin-form" autocomplete="off" onsubmit="return false">
+      <input id="pin-input" type="password" inputmode="numeric" autocomplete="off" autofocus>
+      <button id="pin-submit" type="submit">Unlock</button>
+    </form>
+    <div id="pin-error"></div>
+  </div>
+</div>
+
+<!-- ── Main content (shown after auth) ── -->
+<div id="main">
+
+<div class="topbar">
+  <span class="topbar-title">KSPF Leads</span>
+  <input type="search" id="search" placeholder="Search…">
+  <select id="fs">
+    <option value="">All statuses</option>
+    <option value="Ready to draft">Ready to draft</option>
+    <option value="Needs contact">Needs contact</option>
+    <option value="Next wave">Next wave</option>
+    <option value="Seed only">Seed only</option>
+    <option value="Warm">Warm</option>
+  </select>
+  <select id="fc">
+    <option value="">All categories</option>
+    <option value="fashion">Fashion</option>
+    <option value="beauty">Beauty</option>
+    <option value="homewares">Homewares</option>
+    <option value="wellness">Wellness</option>
+    <option value="hospitality">Hospitality</option>
+    <option value="gallery">Gallery</option>
+  </select>
+  <span class="count" id="ct"></span>
+  <button class="dl" onclick="xcsv()">↓ Export CSV</button>
+</div>
+
+<div class="wrap"><table>
+<thead><tr>
+  <th class="pin" data-c="name">Name</th>
+  <th data-c="cat">Cat</th>
+  <th data-c="status">Status</th>
+  <th data-c="email">Email</th>
+  <th data-c="perf" class="sc">Perf</th>
+  <th data-c="a11y" class="sc">A11y</th>
+  <th data-c="bp" class="sc">BP</th>
+  <th data-c="seo" class="sc">SEO</th>
+  <th data-c="pri" class="sc">Priority</th>
+  <th data-c="issue">Primary issue (auto audit)</th>
+  <th data-c="gemini">Gemini findings</th>
+  <th data-c="angle">Outreach angle</th>
+  <th data-c="brand">Brand observation</th>
+  <th data-c="rating">Rating</th>
+  <th data-c="verdict">Verdict</th>
+  <th data-c="notes">Your notes</th>
+</tr></thead>
+<tbody id="tb"></tbody>
+</table></div>
+
+</div><!-- /#main -->
+
+<script>
+// ── PIN gate ──────────────────────────────────────────────────────────────
+// Client-side PIN check via SHA-256 (obfuscation layer — not server-side auth).
+// To change the PIN: node -e "const c=require('crypto');console.log(c.createHash('sha256').update('YOUR_PIN').digest('hex'));"
+const CORRECT_HASH = "a767c0c2f25b2c77a042722b83161d98516dae4389db303845cbbddac74ae97f";
+const SESSION_KEY  = "kspf_crm_auth";
+
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function unlock() {
+  document.getElementById("pin-gate").classList.add("hidden");
+  document.getElementById("main").classList.add("visible");
+  render();
+}
+
+// Wire up PIN gate handlers (always — unlock() closes over render which is defined below)
+{
+  const input = document.getElementById("pin-input");
+  const errEl = document.getElementById("pin-error");
+
+  async function attempt() {
+    const val = input.value.trim();
+    if (!val) return;
+    const hash = await sha256hex(val);
+    if (hash === CORRECT_HASH) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      unlock();
+    } else {
+      errEl.textContent = "Incorrect PIN — try again.";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  document.getElementById("pin-form").addEventListener("submit", attempt);
+}
+
+// ── Lead data ─────────────────────────────────────────────────────────────
+const L = [
+// ─── BATCH A — pipelineaudited.csv ───
+{b:"A",name:"Franco Jewellers",url:"https://franco.com.au",cat:"jewellery",status:"Ready to draft",email:"franco@franco.com.au",perf:59,a11y:67,bp:75,seo:77,pri:52,issue:"Low-contrast text on CTAs and key page elements",angle:"52yr legacy brand — digital doesn't match the craft quality",brand:"'Jewellery Makers in Melbourne' — long-standing reputation, site feels rushed.",gemini:""},
+{b:"A",name:"Top Image Jewellery",url:"https://topimagejewellery.com.au",cat:"jewellery",status:"Ready to draft",email:"jenny@topimagejewellery.com.au",perf:59,a11y:84,bp:59,seo:100,pri:52,issue:"Low-contrast text on product and navigation elements",angle:"Strong SEO presence, readability undermines the conversion path",brand:"'Jewellery Shops Melbourne CBD' — good positioning, site doesn't deliver.",gemini:""},
+{b:"A",name:"Lillypad Florist",url:"https://lillypad.com.au",cat:"florist",status:"Ready to draft",email:"info@lillypad.com.au",perf:42,a11y:81,bp:41,seo:85,pri:51,issue:"Key imagery missing alt text + BP score of 41 (deprecated tech)",angle:"Same-day delivery florist — accessibility gap on a time-sensitive site",brand:"'Flower Delivery Melbourne' — warm local brand, site lacks the same warmth.",gemini:""},
+{b:"A",name:"Heychic Melbourne Central",url:"https://heychic.com.au",cat:"fashion",status:"Needs contact",email:null,perf:50,a11y:87,bp:71,seo:77,pri:50,issue:"Contact email is example@domain.com (placeholder — can't reach them)",angle:"Australian women's fashion — accessibility gap; contact is the blocker",brand:"Fake contact email. Instagram is the only real path in.",gemini:""},
+{b:"A",name:"MONDOPIERO",url:"https://mondopiero.com.au",cat:"homewares",status:"Ready to draft",email:"ciao@mondopiero.com.au",perf:72,a11y:73,bp:59,seo:100,pri:49,issue:"Low-contrast text throughout — affects 'Interiors & Homewares' presentation",angle:"Curated Italian-influenced brand, site contradicts the curatorial standard",brand:"Italian-influenced homewares and interiors. Premium positioning.",gemini:""},
+{b:"A",name:"Zeneli Flowers",url:"https://24hrszeneliflowers.com.au",cat:"florist",status:"Ready to draft",email:"zeneli@24hrszeneliflowers.com.au",perf:54,a11y:78,bp:55,seo:92,pri:47,issue:"Low-contrast text on phone/order CTAs — the most critical elements on the page",angle:"24hr delivery — the phone number is the key CTA and barely readable",brand:"Strong ops (24hr). Site looks like a 2014 template.",gemini:""},
+{b:"A",name:"Chich Boutique",url:"https://chichboutique.com.au",cat:"fashion",status:"Needs contact",email:null,perf:62,a11y:71,bp:59,seo:85,pri:46,issue:"Accessibility gaps + cookie consent wall is effectively the brand opener",angle:"Site is led by a cookie banner — not a brand statement",brand:"Instagram-first. Site is secondary. DM may be better than email.",gemini:""},
+{b:"A",name:"JANAI Jewellery",url:"https://janaijewellery.com.au",cat:"jewellery",status:"Needs contact",email:null,perf:45,a11y:70,bp:71,seo:77,pri:45,issue:"Low-contrast text on engagement ring / wedding ring pages",angle:"High-consideration purchase site — hard-to-read text is a real friction point",brand:"'Engagement rings, Diamonds, Wedding rings in Melbourne' — in-store brand, site is afterthought.",gemini:""},
+{b:"A",name:"Wilkins & Kent Furniture",url:"https://wilkinsandkent.com.au",cat:"homewares",status:"Needs contact",email:null,perf:46,a11y:81,bp:62,seo:61,pri:44,issue:"Low-contrast text + low SEO score (61) for a custom furniture business",angle:"Brunswick St Fitzroy positioning — custom furniture site that's hard to read",brand:"'Custom making and homewares, Brunswick St Fitzroy' — long consideration cycle.",gemini:""},
+{b:"A",name:"Jewellery of Melbourne",url:"https://jewelleryofmelbourne.com.au",cat:"jewellery",status:"Ready to draft",email:"jewellery.of.melbourne23@gmail.com",perf:55,a11y:90,bp:79,seo:85,pri:44,issue:"Low-contrast text on product browsing pages",angle:"Readability friction on a visually-led site where first impression matters",brand:"Gmail address — owner-operated. Approachable tone. A11y score of 90 is notable.",gemini:""},
+
+// ─── BATCH B — next-wave (audit-ready.csv + ranked.csv + Gemini) ───
+{b:"B",name:"Bison Home",url:"https://bisonhome.com",cat:"homewares",status:"Next wave",email:"canberra@bisonhome.com",perf:61,a11y:85,bp:75,seo:77,pri:50,issue:"15.2s LCP + alt text missing in 'Brian Tunks Glass' section + console errors",angle:"'Elevate the everyday' — alt text gaps and load time undercut that promise",brand:"'Fine Australian Design' — strong narrative, ceramics and glass homewares.",gemini:"High-resolution latency + deep menu friction. Ceramics deeply nested (multiple clicks to product). Large unoptimised image assets (2000px wide) without CDN strategy. Lacks keyboard-friendly navigation for shipping inquiries. Performance 50 — visual storytelling is creating load bottleneck. 2026 trend is toward flat information architecture; site is layered. Pitch: 'Aesthetic-Performance Paradox' — the brand quality is real, the site performance isn't."},
+{b:"B",name:"Mud Australia",url:"https://mudaustralia.com",cat:"homewares-ceramics",status:"Next wave",email:null,perf:36,a11y:81,bp:61,seo:92,pri:47,issue:"9.4s LCP + alt text missing ('Beauty meets utility', 'Made for mornings') + deprecated APIs",angle:"Smoother experience where key product imagery isn't described for all users",brand:"Carbon neutral since 2020. 'Quietly confident' physical aesthetic.",gemini:"CRITICAL: Regional cart-wipe when switching AUD→USD — full cart erased due to 'different stock levels'. Video demuxer errors on Visual Essays — brand equity content failing to render on mobile browsers. Performance 36 — stark contrast to physical brand quality. 60% of customers expect consistent cross-regional experience. Pitch: 'Unified Commerce Failure' — the cart wipe is the single biggest conversion killer and directly contradicts the brand's global positioning."},
+{b:"B",name:"Wild Soul Wellness",url:"https://wildsoulwellness.com.au",cat:"wellness",status:"Next wave",email:"info@wildsoulwellness.com.au",perf:55,a11y:83,bp:79,seo:85,pri:46,issue:"60.5s LCP (!) + cramped mobile tap targets + repetitive navigation loops",angle:"'Health and wellness oasis' with a 60-second load time — direct contradiction",brand:"Multi-location Melbourne studio: Mordialloc, Moorabbin, Cheltenham, Hampton.",gemini:"App-dependency bottleneck: site pushes users to Mindbody App but web entry point performs at 33. Highly nested schedule — new users can't find classes without downloading the app first. Repetitive navigation structure creates visual clutter. Wellness sector achieves up to 6.8% conversion — forcing app download kills top-of-funnel. Pitch: 'App-as-Crutch' — the web experience is so broken that users never reach the app, let alone book a class."},
+{b:"B",name:"Papermoon",url:"https://papermoon.com.au",cat:"beauty",status:"Next wave",email:"hello@papermoon.com.au",perf:62,a11y:99,bp:61,seo:92,pri:44,issue:"13.3s LCP + deprecated APIs + redundant alt text (image-redundant-alt)",angle:"'As good for your body as it is for the planet' — accessibility gaps contradict values",brand:"Sustainable deodorant. Clean ingredients, plastic-free, Australian-made. Values-led.",gemini:"Accessibility 99 is outstanding — rare. Primary issues are performance and deprecated tech. The 'AS GOOD FOR YOUR BODY AS IT IS FOR THE PLANET' brand cue is strong pitch material. For a values-led brand, any accessibility contradiction resonates more. Pitch: 'Inclusive Design as Brand Extension' — your sustainability values should extend to your digital experience. The A11y score is 99 but there are gaps; fixing them is on-brand."},
+{b:"B",name:"Happy Melon Studios",url:"https://happymelon.com.au",cat:"wellness",status:"Next wave",email:"hello@happymelon.com.au",perf:72,a11y:88,bp:75,seo:77,pri:44,issue:"Unlabeled nav links + console errors + 3rd party cookies blocking performance",angle:"Intro offer at $110 is the main CTA — navigation gaps cost direct sign-ups",brand:"Multi-studio wellness. Intro offer is the conversion goal.",gemini:"App-as-Crutch syndrome (same as Wild Soul). Mindbody dependency. The $110/month intro offer is the conversion goal — any navigation friction on the path to booking is direct revenue loss. Web-based schedule highly nested for new users. Console errors on key pages. Pitch: 'Web-Last Technical Debt' — the app strategy masks a broken web funnel that's losing the new customer before they ever reach the booking screen."},
+{b:"B",name:"Et Al Australia",url:"https://etal-australia.com",cat:"fashion",status:"Next wave",email:"info@etal-australia.com",perf:55,a11y:96,bp:75,seo:100,pri:44,issue:"12.5s LCP + low-contrast slideshow text ('WOMENS', 'MENS') + console errors",angle:"Melbourne-born brand — slideshow hero text is unreadable on the main entry point",brand:"30yr Melbourne fashion legacy. 'Boring fashion lives elsewhere.' Strong brand voice.",gemini:"Dual nav redundancy (header + sidebar) — eats mobile screen real estate before showing a single product. Search bar triggers full page refresh — older build architecture. Large newsletter error text block in middle of homepage disrupts the editorial tone (next to 'Romantica' collection imagery). Pitch: 'Build Practicality vs Fashion Aesthetic' — 30-year heritage story is strong, the tech is 2015. The brand voice is bold; the site doesn't keep up."},
+{b:"B",name:"Who Is Elijah",url:"https://whoiselijah.com",cat:"beauty",status:"Next wave",email:null,perf:50,a11y:70,bp:75,seo:92,pri:39,issue:"17.0s LCP + low-contrast nav text + brand/URL mismatch (Barcelona barbershop?)",angle:"Identity confusion — fragrance brand or Barcelona barber shop?",brand:"⚠️ Dual identity: AU fragrance + Barcelona barbershop + tattoo studio. May not be right lead.",gemini:"IDENTITY CONFUSION — flag for manual check. Site spans Australian fragrance (Discovery Set, Tea-Tree products) and Barcelona barbershop/tattoo services. Currency and language selectors un-collapsed and overwhelming. The fragrance purchase path is interrupted by unrelated service offerings. The '.com.au' appears to be a redirect subdomain — the main brand may be Barcelona-based. Pitch: Possible — but confirm the right brand entity first. The AU fragrance side has real merit; the dual identity is the confusion."},
+{b:"B",name:"Eun Ceramics",url:"https://eunceramics.com",cat:"homewares-ceramics",status:"Next wave",email:null,perf:82,a11y:93,bp:75,seo:100,pri:38,issue:"Low-contrast text — 'text blending into background' across product pages",angle:"Small-batch Melbourne ceramics — readability friction on a visually-led discovery site",brand:"'One of a kind, handmade' Melbourne ceramics studio. Scarcity is the value prop.",gemini:"Sold-out frustration loop: high percentage of 'Featured Collection' items are sold out yet remain prominently displayed. Free shipping threshold is $300 but insufficient in-stock items to reach it. International currency selector bloat on a small-batch studio site. Pitch: 'Inventory-Led Merchandising' — the sold-out grid is a dead end that negates the free shipping incentive. Fixing this is a direct conversion improvement with no rebuild required."},
+{b:"B",name:"Pan After",url:"https://panafter.com.au",cat:"homewares",status:"Next wave",email:null,perf:46,a11y:78,bp:79,seo:85,pri:35,issue:"21.2s LCP + cramped mobile tap targets on Menu and Search links",angle:"'Carefully sourced objects' — mobile friction directly contradicts the considered brand",brand:"'A collection of carefully sourced objects, chosen for their authentic and unique qualities.'",gemini:"Bulky item shipping friction: extra-large items require a manual 'shipping quote' AFTER the order is received — 2026 consumers won't wait. Five sub-categories for baskets creates navigation friction for broad browsing. Pitch: 'Automated Logistics as Brand Experience' — the manual quote process is a bottom-of-funnel drop-off. The 'carefully sourced' ethos should extend through to checkout, not stop at the product page."},
+{b:"B",name:"Suupaa",url:"https://suupaa.com.au",cat:"hospitality",status:"Next wave",email:"info@suupaa.au",perf:83,a11y:91,bp:100,seo:83,pri:32,issue:"Cramped 'Order Online' and 'Bookings' tap targets + nav links redirect to same URL",angle:"Japanese konbini concept — the digital experience is the opposite of convenient",brand:"Melbourne konbini. Playful 'Konbini Coins' language. Very strong concept.",gemini:"CRITICAL: 'Bookings' and 'About' navigation links both redirect to the SAME URL — navigation loop that frustrates users trying to book. Performance score: 14 in ranked.csv (the worst in the batch). For a 'convenience' brand, the digital experience is fundamentally inconvenient. Decision-to-purchase in hospitality is under 5 minutes — a broken nav at that moment loses the order. Pitch: 'The Convenience Gap' — a performance score of 14 is the direct opposite of your Konbini brand promise."},
+{b:"B",name:"ESS BEE",url:"https://essbee.com.au",cat:"fashion",status:"Warm",email:null,perf:57,a11y:88,bp:75,seo:85,pri:34,issue:"Low-contrast text + header redundancy (menu repeated 3 times) + console errors",angle:"Cart and header are the first hard-to-read elements — before any product",brand:"Active warm lead — nudge sent 23 March. Also appears as cold audit target.",gemini:"Layout redundancy: main menu repeated in top bar, 'More' menu, and footer — consumes mobile screen real estate before the user sees a single product. 'Corporate-cool boutique' niche. No sales transparency on marked-down items. The redundant header means products are below the fold on mobile. Pitch: 'Minimalist Transparency' — the brand aesthetic is clean and restrained; the header architecture contradicts it entirely."},
+
+// ─── SEED ONLY ───
+{b:"seed",name:"Alpha60",url:"https://alpha60.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Kuwaii",url:"https://kuwaii.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Vow Studio",url:"https://vowstudio.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Sister Studios",url:"https://sisterstudios.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Kindling",url:"https://kindling.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Handsom",url:"https://handsomstore.com",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Saive Denim",url:"https://saive.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Romeo Waiting",url:"https://romewaiting.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Ngali",url:"https://ngali.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Caves Collect",url:"https://cavescollect.com",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"FME Apparel",url:"https://fmeapparel.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Dinosaur Designs",url:"https://dinosaurdesigns.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"En Gold",url:"https://engold.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Frank Body",url:"https://frankbody.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Tomorrow Today",url:"https://tomorrow-today.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Roemy",url:"https://roemy.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Strange Luxury",url:"https://strangeluxury.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Conserving Beauty",url:"https://conservingbeauty.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Foile",url:"https://foile.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Junglo",url:"https://junglo.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Dope Skin Co",url:"https://dopeskinco.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Rationale",url:"https://rationale.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Hannah Home",url:"https://hannahome.com.au",cat:"homewares",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Asobimasu Clay",url:"https://asobimasuclay.com",cat:"homewares-ceramics",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Fazeek",url:"https://fazeek.com.au",cat:"homewares",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Infinite Co",url:"https://infiniteco.com.au",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"UPG Studio",url:"https://upg-studio.com.au",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Little Mandarin",url:"https://littlemandarin.melbourne",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Seventh Gallery",url:"https://seventhgallery.org",cat:"gallery",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Blindside",url:"https://blindside.org.au",cat:"gallery",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"No Vacancy",url:"https://no-vacancy.com.au",cat:"gallery",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Outre Gallery",url:"https://outregallery.com",cat:"gallery",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Yellowtrace",url:"https://yellowtrace.com.au",cat:"media",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Palace Coffee",url:"https://palacecoffee.com.au",cat:"hospitality",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Grown Alchemist",url:"https://grownalchemist.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
+{b:"seed",name:"Style Magazines",url:"https://stylemagazines.com.au",cat:"media",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Archived — Safari bug resolved on recheck",angle:"—",brand:"—",gemini:""},
+];
+
+const SK="kspf_v3";
+let sv=()=>{try{return JSON.parse(localStorage.getItem(SK)||"{}");}catch{return{};}};
+let S=sv();
+const ps=()=>localStorage.setItem(SK,JSON.stringify(S));
+const gs=n=>{if(!S[n])S[n]={r:0,v:"",n:""};return S[n];};
+
+let sCol="pri",sDir=-1,fQ="",fSt="",fCt="";
+
+const sc=(v,c)=>{
+  if(v===null||v===undefined)return"<span style='color:#ccc'>—</span>";
+  const cls=c==="pri"?(v>=50?"s-ok":v>=35?"s-mid":"s-bad"):(v>=75?"s-ok":v>=55?"s-mid":"s-bad");
+  return`<span class="${cls}">${v}</span>`;
+};
+const BDGE={"Ready to draft":"b-draft","Needs contact":"b-contact","Next wave":"b-wave2","Seed only":"b-seed","Warm":"b-warm"};
+const stars=(n,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-n="${n.replace(/"/g,"&quot;")}" data-v="${i}">★</span>`).join("");
+
+function filt(){
+  return L.filter(l=>{
+    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand].join(" ").toLowerCase().includes(q))return false;}
+    if(fSt&&l.status!==fSt)return false;
+    if(fCt&&!l.cat.includes(fCt))return false;
+    return true;
+  }).sort((a,b)=>{
+    let av=a[sCol],bv=b[sCol];
+    if(av===null||av===undefined)av=sDir===1?99999:-99999;
+    if(bv===null||bv===undefined)bv=sDir===1?99999:-99999;
+    if(typeof av==="string")av=av.toLowerCase();
+    if(typeof bv==="string")bv=bv.toLowerCase();
+    return av<bv?-sDir:av>bv?sDir:0;
+  });
+}
+
+function render(){
+  const list=filt();
+  document.getElementById("ct").textContent=`${list.length} of ${L.length}`;
+  const tb=document.getElementById("tb");
+  tb.innerHTML=list.map(l=>{
+    const s=gs(l.name);
+    return`<tr>
+      <td class="pin"><a href="${l.url}" target="_blank">${l.name}</a></td>
+      <td>${l.cat}</td>
+      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${l.status}</span></td>
+      <td style="font-size:11px">${l.email?`<a href="mailto:${l.email}">${l.email}</a>`:`<span class="no-email">—</span>`}</td>
+      <td class="sc">${sc(l.perf,"perf")}</td>
+      <td class="sc">${sc(l.a11y,"a11y")}</td>
+      <td class="sc">${sc(l.bp,"bp")}</td>
+      <td class="sc">${sc(l.seo,"seo")}</td>
+      <td class="sc">${sc(l.pri,"pri")}</td>
+      <td style="font-size:11px;max-width:200px">${l.issue}</td>
+      <td class="gcell">${l.gemini?`<span class="gtag">Gemini</span>${l.gemini}`:""}</td>
+      <td style="font-size:11px;max-width:180px;color:#555">${l.angle}</td>
+      <td style="font-size:11px;max-width:160px;color:#666">${l.brand}</td>
+      <td class="stars" data-sf="${l.name}">${stars(l.name,s.r)}</td>
+      <td><select class="verdict" onchange="setV('${l.name.replace(/'/g,"\\'")}',this.value)">
+        <option value=""${!s.v?" selected":""}>—</option>
+        <option value="send"${s.v==="send"?" selected":""}>✓ Send</option>
+        <option value="rework"${s.v==="rework"?" selected":""}>~ Rework</option>
+        <option value="skip"${s.v==="skip"?" selected":""}>✗ Skip</option>
+      </select></td>
+      <td><textarea class="note" oninput="setN('${l.name.replace(/'/g,"\\'")}',this.value)">${s.n||""}</textarea></td>
+    </tr>`;
+  }).join("");
+  tb.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{
+    const n=e.target.dataset.n,v=parseInt(e.target.dataset.v);
+    gs(n).r=v;ps();
+    document.querySelectorAll(`[data-sf="${n}"]`).forEach(c=>{c.innerHTML=stars(n,v);bindS(c);});
+  }));
+}
+function bindS(w){w.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{const n=e.target.dataset.n,v=parseInt(e.target.dataset.v);gs(n).r=v;ps();document.querySelectorAll(`[data-sf="${n}"]`).forEach(c=>{c.innerHTML=stars(n,v);bindS(c);});}));}
+function setV(n,v){gs(n).v=v;ps();}
+function setN(n,v){gs(n).n=v;ps();}
+
+document.querySelectorAll("th[data-c]").forEach(th=>th.addEventListener("click",()=>{
+  const c=th.dataset.c;sDir=sCol===c?-sDir:-1;sCol=c;
+  document.querySelectorAll("th").forEach(t=>t.classList.remove("sorted"));
+  th.classList.add("sorted");render();
+}));
+document.getElementById("search").addEventListener("input",e=>{fQ=e.target.value;render();});
+document.getElementById("fs").addEventListener("change",e=>{fSt=e.target.value;render();});
+document.getElementById("fc").addEventListener("change",e=>{fCt=e.target.value;render();});
+
+function xcsv(){
+  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Rating","Verdict","Notes"];
+  const rows=[cols,...L.map(l=>{const s=gs(l.name);return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,l.gemini.replace(/\n/g,' '),l.angle,l.brand,s.r||'',s.v||'',(s.n||'').replace(/\n/g,' ')];})];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="kspf-leads.csv";a.click();
+}
+
+// Session check — must run after render() is defined above
+if (sessionStorage.getItem(SESSION_KEY) === "1") {
+  unlock();
+}
+</script>
+</body>
+</html>
