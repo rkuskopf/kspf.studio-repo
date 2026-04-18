@@ -55,7 +55,7 @@
   button.dl:hover { background: #333; }
 
   .wrap { overflow-x: auto; }
-  table { width: 100%; border-collapse: collapse; background: #fff; font-size: 12px; }
+  table { width: max-content; min-width: 100%; border-collapse: collapse; background: #fff; font-size: 12px; }
   thead { position: sticky; top: 45px; z-index: 10; }
   th { background: #f0f0ee; border: 1px solid #ddd; padding: 6px 9px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #555; white-space: nowrap; cursor: pointer; user-select: none; }
   th:hover { background: #e8e8e6; }
@@ -82,7 +82,8 @@
   .s-mid { color: #e07b00; }
   .s-ok  { color: #1e7e34; }
 
-  .gcell { font-size: 11px; color: #333; line-height: 1.5; max-width: 300px; min-width: 220px; }
+  th.gemini-col { min-width: 560px; }
+  .gcell { width: 560px; min-width: 560px; max-width: 680px; font-size: 11px; color: #333; line-height: 1.5; }
   .gtag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #5a189a; display: block; margin-bottom: 2px; }
 
   textarea.note { width: 100%; min-width: 150px; border: 1px solid transparent; border-radius: 3px; padding: 3px 5px; font-family: inherit; font-size: 12px; resize: vertical; background: transparent; min-height: 34px; line-height: 1.4; outline: none; color: #1a1a1a; }
@@ -151,7 +152,7 @@
   <th data-c="seo" class="sc">SEO</th>
   <th data-c="pri" class="sc">Priority</th>
   <th data-c="issue">Primary issue (auto audit)</th>
-  <th data-c="gemini">Gemini findings</th>
+  <th class="gemini-col" data-c="gemini">Gemini findings</th>
   <th data-c="angle">Outreach angle</th>
   <th data-c="brand">Brand observation</th>
   <th data-c="rating">Rating</th>
