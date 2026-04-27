@@ -166,7 +166,15 @@
   if (!targetsExist) return;
 
   fetch("content/site.json", { cache: "no-cache" })
-    .then((res) => (res.ok ? res.json() : null))
+    .then((res) => {
+      if (!res.ok) {
+        console.warn(`Failed to fetch site content: HTTP ${res.status}`);
+        return null;
+      }
+      return res.json();
+    })
     .then((data) => applySiteContent(data))
-    .catch(() => {});
+    .catch((error) => {
+      console.error("Error loading site content:", error);
+    });
 })();

@@ -98,7 +98,10 @@
 
   fetch("projects.json", { cache: "no-cache" })
     .then((res) => {
-      if (!res.ok) throw new Error("Projects request failed");
+      if (!res.ok) {
+        console.error(`Failed to fetch projects: HTTP ${res.status} ${res.statusText}`);
+        throw new Error(`HTTP ${res.status}`);
+      }
       return res.json();
     })
     .then((data) => {
@@ -111,9 +114,20 @@
         renderProjects(projects);
         return;
       }
+      console.warn("Projects array is empty");
       container.textContent = "Projects not found.";
     })
-    .catch(() => {
-      container.textContent = "Projects failed to load.";
+    .catch((error) => {
+      console.error("Error loading projects:", error);
+      container.innerHTML = `
+        <div style="padding: 2rem; text-align: center;">
+          <p>Unable to load projects at this time.</p>
+          <p style="margin-top: 1rem;">
+            <button onclick="location.reload()" style="padding: 0.5rem 1rem; cursor: pointer;">
+              Retry
+            </button>
+          </p>
+        </div>
+      `.trim();
     });
 })();

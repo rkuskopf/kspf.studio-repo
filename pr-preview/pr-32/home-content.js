@@ -5,7 +5,13 @@
   if (!metaDescription && !introEl) return;
 
   fetch("content/home.json", { cache: "no-cache" })
-    .then((res) => (res.ok ? res.json() : null))
+    .then((res) => {
+      if (!res.ok) {
+        console.warn(`Failed to fetch home content: HTTP ${res.status}`);
+        return null;
+      }
+      return res.json();
+    })
     .then((data) => {
       if (!data) return;
       if (data.title) document.title = data.title;
@@ -17,5 +23,7 @@
         introEl.setAttribute("title", data.intro);
       }
     })
-    .catch(() => {});
+    .catch((error) => {
+      console.error("Error loading home content:", error);
+    });
 })();
