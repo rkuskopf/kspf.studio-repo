@@ -76,6 +76,8 @@
   .b-wave2   { background: #f0e6ff; color: #5a189a; }
   .b-seed    { background: #f0f0ee; color: #888; }
   .b-warm    { background: #cce5ff; color: #004085; }
+  .b-unver   { background: #fde2e1; color: #a02020; }
+  .verflag   { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 3px; background: #fde2e1; color: #a02020; text-transform: uppercase; letter-spacing: 0.05em; }
 
   .sc { text-align: center; white-space: nowrap; }
   .s-bad { color: #c0392b; font-weight: 700; }
@@ -152,6 +154,7 @@
     <option value="Ready to draft">Ready to draft</option>
     <option value="Needs contact">Needs contact</option>
     <option value="Next wave">Next wave</option>
+    <option value="Unverified">Unverified</option>
     <option value="Seed only">Seed only</option>
     <option value="Warm">Warm</option>
   </select>
@@ -518,7 +521,12 @@ const sc=(v,c)=>{
   const cls=c==="pri"?(v>=50?"s-ok":v>=35?"s-mid":"s-bad"):(v>=75?"s-ok":v>=55?"s-mid":"s-bad");
   return`<span class="${cls}">${v}</span>`;
 };
-const BDGE={"Ready to draft":"b-draft","Needs contact":"b-contact","Next wave":"b-wave2","Seed only":"b-seed","Warm":"b-warm"};
+const BDGE={"Ready to draft":"b-draft","Needs contact":"b-contact","Next wave":"b-wave2","Seed only":"b-seed","Warm":"b-warm","Unverified":"b-unver"};
+// Per #722, technical findings stay flagged as "unverified" until a human or
+// live-DOM check confirms a real visible issue. We render that flag inline
+// next to the status badge so reviewers can see at a glance which rows still
+// rest on Lighthouse signal alone.
+const isUnverified=l=>l.verified==="no"||l.status==="Unverified";
 const stars=(id,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-id="${id}" data-v="${i}">★</span>`).join("");
 
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -597,7 +605,7 @@ function render(){
     return`<tr>
       <td class="pin"><a href="${esc(safeHref(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.name)}</a></td>
       <td>${esc(l.cat)}</td>
-      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${esc(l.status)}</span></td>
+      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${esc(l.status)}</span>${isUnverified(l)?'<span class="verflag" title="Technical findings unverified — Lighthouse signal only">unverified</span>':""}</td>
       <td style="font-size:11px">${l.email?`<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>`:`<span class="no-email">—</span>`}</td>
       <td class="sc">${sc(l.perf,"perf")}</td>
       <td class="sc">${sc(l.a11y,"a11y")}</td>
