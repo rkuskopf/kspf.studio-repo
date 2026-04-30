@@ -95,7 +95,35 @@
   .star.on { color: #f5a623; }
 
   select.verdict { font-size: 11px; padding: 3px 5px; width: 100px; }
+  select.review { font-size: 11px; padding: 3px 5px; width: 100%; min-width: 110px; max-width: 160px; }
+  input.follow-up { font-size: 11px; padding: 3px 5px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: #1a1a1a; width: 110px; }
+  input.follow-up:hover { border-color: #ddd; background: #fafafa; }
+  input.follow-up:focus { border-color: #aaa; background: #fff; outline: none; }
   .no-email { color: #c0392b; }
+
+  /* Rowan-owned vs agent-generated columns */
+  th.rowan { background: #faf5e8; color: #6b4d00; }
+  th.rowan:hover { background: #f3ecd8; }
+  th.rowan.sorted { background: #ebe2c8; }
+  td.rowan { background: #fffdf3; }
+  tr:hover td.rowan { background: #faf5e0; }
+
+  /* Save state pill */
+  #save-state {
+    font-size: 11px; padding: 3px 9px; border-radius: 10px;
+    font-weight: 500; white-space: nowrap; border: 1px solid transparent;
+  }
+  #save-state[data-state="unsaved"]     { color: #856404; background: #fff3cd; border-color: #f0e1a0; }
+  #save-state[data-state="saved-local"] { color: #1e7e34; background: #e6f4ea; border-color: #cfe6d4; }
+  #save-state[data-state="saved-repo"]  { color: #004085; background: #cce5ff; border-color: #b3d4f5; }
+  #save-state[data-state="failed"]      { color: #c0392b; background: #fbe5e0; border-color: #f0c4bb; }
+
+  /* Hide-skipped toggle */
+  .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #555; cursor: pointer; user-select: none; }
+  .toggle input { margin: 0; cursor: pointer; }
+
+  button.ghost { background: #fff; color: #1a1a1a; border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+  button.ghost:hover { background: #f5f5f3; border-color: #bbb; }
 </style>
 </head>
 <body>
@@ -136,7 +164,10 @@
     <option value="hospitality">Hospitality</option>
     <option value="gallery">Gallery</option>
   </select>
+  <label class="toggle"><input type="checkbox" id="show-archived"> Show skipped/archived</label>
+  <span id="save-state" data-state="saved-local">Saved locally</span>
   <span class="count" id="ct"></span>
+  <button class="ghost" onclick="downloadRowanReview()" title="Download rowan-review.json — then commit it to data/leads/current/ in studio-os">↓ Download review JSON</button>
   <button class="dl" onclick="xcsv()">↓ Export CSV</button>
 </div>
 
@@ -155,9 +186,13 @@
   <th class="gemini-col" data-c="gemini">Gemini findings</th>
   <th data-c="angle">Outreach angle</th>
   <th data-c="brand">Brand observation</th>
-  <th data-c="rating">Rating</th>
-  <th data-c="verdict">Verdict</th>
-  <th data-c="notes">Your notes</th>
+  <th class="rowan" data-c="lane">Lane</th>
+  <th class="rowan" data-c="evidence">Evidence</th>
+  <th class="rowan" data-c="rating">Rating</th>
+  <th class="rowan" data-c="verdict">Verdict</th>
+  <th class="rowan" data-c="next_action">Next action</th>
+  <th class="rowan" data-c="follow_up_date">Follow-up</th>
+  <th class="rowan" data-c="notes">Notes (Rowan)</th>
 </tr></thead>
 <tbody id="tb"></tbody>
 </table></div>
@@ -179,7 +214,9 @@ async function sha256hex(str) {
 function unlock() {
   document.getElementById("pin-gate").classList.add("hidden");
   document.getElementById("main").classList.add("visible");
+  setSaveState("saved-local");
   render();
+  hydrateFromRepo();
 }
 
 // Wire up PIN gate handlers (always — unlock() closes over render which is defined below)
@@ -288,13 +325,133 @@ const L = [
 {b:"seed",name:"Grown Alchemist",url:"https://grownalchemist.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"Not audited",angle:"—",brand:"—",gemini:""},
 ];
 
-const SK="kspf_v3";
-let sv=()=>{try{return JSON.parse(localStorage.getItem(SK)||"{}");}catch{return{};}};
-let S=sv();
-const ps=()=>localStorage.setItem(SK,JSON.stringify(S));
-const gs=n=>{if(!S[n])S[n]={r:0,v:"",n:""};return S[n];};
+// ── Rowan review state (issue #720) ───────────────────────────────────────
+// Persists Rowan-owned lead review fields keyed by stable id derived from URL.
+// Source of truth on disk: data/leads/current/rowan-review.json
+// localStorage mirror under SK acts as the offline buffer between commits.
+const SK_LEGACY = "kspf_v3";              // old store, keyed by lead.name with {r,v,n}
+const SK = "kspf_v4";                     // new store, keyed by leadId(url) with full review shape
+const ROWAN_REVIEW_PATH = "../data/leads/current/rowan-review.json";
 
-let sCol="pri",sDir=-1,fQ="",fSt="",fCt="";
+const LANES = ["technical-audit","brand-translation","intent-signals","warm-relationships","agency-partners","inbound-authority"];
+const EVIDENCE = ["unverified","partially_verified","verified","false"];
+const NEXT_ACTIONS = ["manual-check","enrich","draft","send","follow-up","skip","archive"];
+const VERDICTS = [["send","✓ Send"],["rework","~ Rework"],["maybe","? Maybe"],["skip","✗ Skip"]];
+
+function leadId(url){
+  return String(url||"")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/+$/g, "")
+    .toLowerCase()
+    .replace(/[\/.]/g, "-")
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Tag every lead with its stable id once, up front.
+for (const lead of L) { lead.id = leadId(lead.url); }
+
+function blankReview(){
+  return { lane:"", verdict:"", evidence_status:"", rating:0, notes:"", next_action:"", follow_up_date:null, updated_at:"" };
+}
+
+function loadStore(){
+  try { return JSON.parse(localStorage.getItem(SK) || "{}"); } catch { return {}; }
+}
+let S = loadStore();
+
+// One-shot migration from kspf_v3 (keyed by lead name, {r,v,n}) → kspf_v4 (keyed by id).
+(function migrateLegacy(){
+  if (localStorage.getItem(SK)) return;
+  let legacy = {};
+  try { legacy = JSON.parse(localStorage.getItem(SK_LEGACY) || "{}"); } catch { return; }
+  if (!legacy || typeof legacy !== "object") return;
+  const byName = {};
+  for (const lead of L) byName[lead.name] = lead;
+  const now = new Date().toISOString();
+  for (const [name, v] of Object.entries(legacy)){
+    const lead = byName[name]; if (!lead || !lead.id) continue;
+    if (!v || (v.r === 0 && !v.v && !v.n)) continue;
+    const r = blankReview();
+    if (typeof v.r === "number") r.rating = v.r;
+    if (typeof v.v === "string") r.verdict = v.v;
+    if (typeof v.n === "string") r.notes = v.n;
+    r.updated_at = now;
+    S[lead.id] = r;
+  }
+  try { localStorage.setItem(SK, JSON.stringify(S)); } catch {}
+})();
+
+const BLANK = Object.freeze(blankReview());
+function peekReview(id){ return S[id] || BLANK; }     // read-only; never mutates S
+function ensureReview(id){                            // write-path; auto-creates
+  if (!S[id]) S[id] = blankReview();
+  return S[id];
+}
+
+let saveTimer = null;
+function setSaveState(state){
+  const el = document.getElementById("save-state"); if (!el) return;
+  const labels = { unsaved:"Unsaved", "saved-local":"Saved locally", "saved-repo":"Downloaded — commit to repo", failed:"Save failed" };
+  el.dataset.state = state;
+  el.textContent = labels[state] || "";
+}
+function saveStore(){
+  try {
+    localStorage.setItem(SK, JSON.stringify(S));
+    setSaveState("saved-local");
+  } catch { setSaveState("failed"); }
+}
+function patchReview(id, patch){
+  const r = ensureReview(id);
+  Object.assign(r, patch);
+  r.updated_at = new Date().toISOString();
+  setSaveState("unsaved");
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveStore, 250);
+}
+
+// Best-effort fetch of rowan-review.json so committed values survive a fresh browser.
+// Local edits (newer updated_at) win to avoid clobbering work in progress.
+async function hydrateFromRepo(){
+  try {
+    const res = await fetch(ROWAN_REVIEW_PATH, { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!remote || typeof remote !== "object") return;
+    let applied = 0;
+    for (const [id, rRemote] of Object.entries(remote)){
+      const rLocal = S[id];
+      const remoteAt = rRemote && rRemote.updated_at ? Date.parse(rRemote.updated_at) : 0;
+      const localAt  = rLocal  && rLocal.updated_at  ? Date.parse(rLocal.updated_at)  : 0;
+      if (!rLocal || remoteAt > localAt){
+        S[id] = { ...blankReview(), ...rRemote };
+        applied += 1;
+      }
+    }
+    if (applied === 0) return;   // nothing newer remote — don't clobber focus / in-flight edits
+    try { localStorage.setItem(SK, JSON.stringify(S)); } catch {}
+    render();
+  } catch { /* file:// or 404 — fine, localStorage-only */ }
+}
+
+function downloadRowanReview(){
+  // Sort keys for stable diffs.
+  const sorted = Object.keys(S).sort().reduce((acc, k) => { acc[k] = S[k]; return acc; }, {});
+  const blob = new Blob([JSON.stringify(sorted, null, 2) + "\n"], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "rowan-review.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  setSaveState("saved-repo");
+}
+
+let sCol="pri",sDir=-1,fQ="",fSt="",fCt="",fHideArchived=true;
 
 const sc=(v,c)=>{
   if(v===null||v===undefined)return"<span style='color:#ccc'>—</span>";
@@ -302,22 +459,68 @@ const sc=(v,c)=>{
   return`<span class="${cls}">${v}</span>`;
 };
 const BDGE={"Ready to draft":"b-draft","Needs contact":"b-contact","Next wave":"b-wave2","Seed only":"b-seed","Warm":"b-warm"};
-const stars=(n,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-n="${n.replace(/"/g,"&quot;")}" data-v="${i}">★</span>`).join("");
+const stars=(id,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-id="${id}" data-v="${i}">★</span>`).join("");
+
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const opt=(v,sel,label)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(label||v||"—")}</option>`;
+const selectOptions=(values,sel)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...values.map(v=>opt(v,sel))].join("");
+const selectVerdict=(sel)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...VERDICTS.map(([v,l])=>opt(v,sel,l))].join("");
+
+// Sortable values for Rowan-owned columns key off the review record.
+const NUMERIC_COLS = new Set(["perf","a11y","bp","seo","pri","rating"]);
+function sortKey(l, col){
+  const r = peekReview(l.id);
+  switch(col){
+    case "lane": return r.lane;
+    case "evidence": return r.evidence_status;
+    case "rating": return r.rating || 0;
+    case "verdict": return r.verdict;
+    case "next_action": return r.next_action;
+    case "follow_up_date": return r.follow_up_date;
+    case "notes": return r.notes;
+    default: return l[col];
+  }
+}
 
 function filt(){
+  const numericSort = NUMERIC_COLS.has(sCol);
+  // Empty/null sort sentinels: numeric columns use ±Infinity so missing
+  // values consistently sort to one end; string columns use lex extremes.
+  const lo = numericSort ? -Infinity : "";
+  const hi = numericSort ?  Infinity : "￿";
   return L.filter(l=>{
-    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand].join(" ").toLowerCase().includes(q))return false;}
+    const r=peekReview(l.id);
+    if(fHideArchived && (r.next_action==="skip" || r.next_action==="archive" || r.verdict==="skip")) return false;
+    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.verdict,r.next_action].join(" ").toLowerCase().includes(q))return false;}
     if(fSt&&l.status!==fSt)return false;
     if(fCt&&!l.cat.includes(fCt))return false;
     return true;
   }).sort((a,b)=>{
-    let av=a[sCol],bv=b[sCol];
-    if(av===null||av===undefined)av=sDir===1?99999:-99999;
-    if(bv===null||bv===undefined)bv=sDir===1?99999:-99999;
-    if(typeof av==="string")av=av.toLowerCase();
-    if(typeof bv==="string")bv=bv.toLowerCase();
+    let av=sortKey(a,sCol),bv=sortKey(b,sCol);
+    if(av===null||av===undefined||av==="")av=sDir===1?hi:lo;
+    if(bv===null||bv===undefined||bv==="")bv=sDir===1?hi:lo;
+    if(!numericSort){
+      if(typeof av==="string")av=av.toLowerCase();
+      if(typeof bv==="string")bv=bv.toLowerCase();
+    }
     return av<bv?-sDir:av>bv?sDir:0;
   });
+}
+
+// Safe href for the lead's name link. Many entries are bare hosts ("dotcomme.net"),
+// which browsers treat as a relative URL, and we never want javascript:/data: URIs
+// reaching the DOM. Prefix https:// when missing; reject anything that isn't http(s).
+function safeHref(url){
+  const raw = String(url || "").trim();
+  if (!raw) return "#";
+  // Any non-http(s) scheme is rejected outright (covers javascript:, data:, ftp:, etc).
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) && !/^https?:\/\//i.test(raw)) return "#";
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw.replace(/^\/+/, "")}`;
+  try {
+    const u = new URL(withScheme);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return "#";
+    return u.toString();
+  } catch { return "#"; }
 }
 
 function render(){
@@ -325,40 +528,55 @@ function render(){
   document.getElementById("ct").textContent=`${list.length} of ${L.length}`;
   const tb=document.getElementById("tb");
   tb.innerHTML=list.map(l=>{
-    const s=gs(l.name);
+    const r=peekReview(l.id);
+    const id=esc(l.id);
     return`<tr>
-      <td class="pin"><a href="${l.url}" target="_blank">${l.name}</a></td>
-      <td>${l.cat}</td>
-      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${l.status}</span></td>
-      <td style="font-size:11px">${l.email?`<a href="mailto:${l.email}">${l.email}</a>`:`<span class="no-email">—</span>`}</td>
+      <td class="pin"><a href="${esc(safeHref(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.name)}</a></td>
+      <td>${esc(l.cat)}</td>
+      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${esc(l.status)}</span></td>
+      <td style="font-size:11px">${l.email?`<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>`:`<span class="no-email">—</span>`}</td>
       <td class="sc">${sc(l.perf,"perf")}</td>
       <td class="sc">${sc(l.a11y,"a11y")}</td>
       <td class="sc">${sc(l.bp,"bp")}</td>
       <td class="sc">${sc(l.seo,"seo")}</td>
       <td class="sc">${sc(l.pri,"pri")}</td>
-      <td style="font-size:11px;max-width:200px">${l.issue}</td>
-      <td class="gcell">${l.gemini?`<span class="gtag">Gemini</span>${l.gemini}`:""}</td>
-      <td style="font-size:11px;max-width:180px;color:#555">${l.angle}</td>
-      <td style="font-size:11px;max-width:160px;color:#666">${l.brand}</td>
-      <td class="stars" data-sf="${l.name}">${stars(l.name,s.r)}</td>
-      <td><select class="verdict" onchange="setV('${l.name.replace(/'/g,"\\'")}',this.value)">
-        <option value=""${!s.v?" selected":""}>—</option>
-        <option value="send"${s.v==="send"?" selected":""}>✓ Send</option>
-        <option value="rework"${s.v==="rework"?" selected":""}>~ Rework</option>
-        <option value="skip"${s.v==="skip"?" selected":""}>✗ Skip</option>
-      </select></td>
-      <td><textarea class="note" oninput="setN('${l.name.replace(/'/g,"\\'")}',this.value)">${s.n||""}</textarea></td>
+      <td style="font-size:11px;max-width:200px">${esc(l.issue)}</td>
+      <td class="gcell">${l.gemini?`<span class="gtag">Gemini</span>${esc(l.gemini)}`:""}</td>
+      <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
+      <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
+      <td class="rowan"><select class="review" data-field="lane" data-id="${id}">${selectOptions(LANES,r.lane)}</select></td>
+      <td class="rowan"><select class="review" data-field="evidence_status" data-id="${id}">${selectOptions(EVIDENCE,r.evidence_status)}</select></td>
+      <td class="rowan stars" data-sf="${id}">${stars(id,r.rating||0)}</td>
+      <td class="rowan"><select class="verdict" data-field="verdict" data-id="${id}">${selectVerdict(r.verdict)}</select></td>
+      <td class="rowan"><select class="review" data-field="next_action" data-id="${id}">${selectOptions(NEXT_ACTIONS,r.next_action)}</select></td>
+      <td class="rowan"><input class="follow-up" type="date" data-field="follow_up_date" data-id="${id}" value="${esc(r.follow_up_date||"")}"></td>
+      <td class="rowan"><textarea class="note" data-field="notes" data-id="${id}">${esc(r.notes||"")}</textarea></td>
     </tr>`;
   }).join("");
-  tb.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{
-    const n=e.target.dataset.n,v=parseInt(e.target.dataset.v);
-    gs(n).r=v;ps();
-    document.querySelectorAll(`[data-sf="${n}"]`).forEach(c=>{c.innerHTML=stars(n,v);bindS(c);});
+  bindReviewHandlers(tb);
+}
+
+function bindStarHandlers(scope){
+  scope.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{
+    const id=e.target.dataset.id, v=parseInt(e.target.dataset.v,10);
+    patchReview(id,{rating:v});
+    document.querySelectorAll(`[data-sf="${id}"]`).forEach(c=>{c.innerHTML=stars(id,v);bindStarHandlers(c);});
   }));
 }
-function bindS(w){w.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{const n=e.target.dataset.n,v=parseInt(e.target.dataset.v);gs(n).r=v;ps();document.querySelectorAll(`[data-sf="${n}"]`).forEach(c=>{c.innerHTML=stars(n,v);bindS(c);});}));}
-function setV(n,v){gs(n).v=v;ps();}
-function setN(n,v){gs(n).n=v;ps();}
+
+function bindReviewHandlers(scope){
+  bindStarHandlers(scope);
+  scope.querySelectorAll("select.review, select.verdict").forEach(el=>el.addEventListener("change",e=>{
+    patchReview(e.target.dataset.id,{[e.target.dataset.field]:e.target.value});
+  }));
+  scope.querySelectorAll("input.follow-up").forEach(el=>el.addEventListener("change",e=>{
+    const followUpDate=e.target.value===""?null:e.target.value;
+    patchReview(e.target.dataset.id,{follow_up_date:followUpDate});
+  }));
+  scope.querySelectorAll("textarea.note").forEach(el=>el.addEventListener("input",e=>{
+    patchReview(e.target.dataset.id,{notes:e.target.value});
+  }));
+}
 
 document.querySelectorAll("th[data-c]").forEach(th=>th.addEventListener("click",()=>{
   const c=th.dataset.c;sDir=sCol===c?-sDir:-1;sCol=c;
@@ -368,10 +586,14 @@ document.querySelectorAll("th[data-c]").forEach(th=>th.addEventListener("click",
 document.getElementById("search").addEventListener("input",e=>{fQ=e.target.value;render();});
 document.getElementById("fs").addEventListener("change",e=>{fSt=e.target.value;render();});
 document.getElementById("fc").addEventListener("change",e=>{fCt=e.target.value;render();});
+document.getElementById("show-archived").addEventListener("change",e=>{fHideArchived=!e.target.checked;render();});
 
 function xcsv(){
-  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Rating","Verdict","Notes"];
-  const rows=[cols,...L.map(l=>{const s=gs(l.name);return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,l.gemini.replace(/\n/g,' '),l.angle,l.brand,s.r||'',s.v||'',(s.n||'').replace(/\n/g,' ')];})];
+  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Lane","Evidence Status","Rating","Verdict","Next Action","Follow-up Date","Notes (Rowan)","Updated At"];
+  const rows=[cols,...L.map(l=>{
+    const r=peekReview(l.id);
+    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,(l.gemini||'').replace(/\n/g,' '),l.angle,l.brand,r.lane||'',r.evidence_status||'',r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',(r.notes||'').replace(/\n/g,' '),r.updated_at||''];
+  })];
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="kspf-leads.csv";a.click();
 }
