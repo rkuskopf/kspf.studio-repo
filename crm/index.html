@@ -164,6 +164,22 @@
     <option value="hospitality">Hospitality</option>
     <option value="gallery">Gallery</option>
   </select>
+  <select id="fl">
+    <option value="">All lanes</option>
+    <option value="technical-audit">Technical audit</option>
+    <option value="brand-translation">Brand translation</option>
+    <option value="intent-signals">Intent signals</option>
+    <option value="warm-relationships">Warm relationships</option>
+    <option value="agency-partners">Agency partners</option>
+    <option value="inbound-authority">Inbound authority</option>
+  </select>
+  <select id="fe">
+    <option value="">All evidence</option>
+    <option value="unverified">Unverified</option>
+    <option value="partially_verified">Partially verified</option>
+    <option value="verified">Verified</option>
+    <option value="false">False</option>
+  </select>
   <label class="toggle"><input type="checkbox" id="show-archived"> Show skipped/archived</label>
   <span id="save-state" data-state="saved-local">Saved locally</span>
   <span class="count" id="ct"></span>
@@ -187,7 +203,9 @@
   <th data-c="angle">Outreach angle</th>
   <th data-c="brand">Brand observation</th>
   <th class="rowan" data-c="lane">Lane</th>
+  <th class="rowan" data-c="lane_confidence">Lane conf</th>
   <th class="rowan" data-c="evidence">Evidence</th>
+  <th class="rowan" data-c="draft_safe">Draft safe</th>
   <th class="rowan" data-c="rating">Rating</th>
   <th class="rowan" data-c="verdict">Verdict</th>
   <th class="rowan" data-c="next_action">Next action</th>
@@ -334,6 +352,7 @@ const SK = "kspf_v4";                     // new store, keyed by leadId(url) wit
 const ROWAN_REVIEW_PATH = "../data/leads/current/rowan-review.json";
 
 const LANES = ["technical-audit","brand-translation","intent-signals","warm-relationships","agency-partners","inbound-authority"];
+const LANE_CONFIDENCE = ["low","medium","high"];
 const EVIDENCE = ["unverified","partially_verified","verified","false"];
 const NEXT_ACTIONS = ["manual-check","enrich","draft","send","follow-up","skip","archive"];
 const VERDICTS = [["send","✓ Send"],["rework","~ Rework"],["maybe","? Maybe"],["skip","✗ Skip"]];
@@ -354,8 +373,24 @@ function leadId(url){
 // Tag every lead with its stable id once, up front.
 for (const lead of L) { lead.id = leadId(lead.url); }
 
+// Ensure acceptance criteria: every lead has a lane.
+// Bootstraps a lightweight default classification that Rowan can override.
+// Heuristic: audited leads → technical-audit; seed-only → intent-signals.
+for (const lead of L) {
+  if (!lead.lane) {
+    // Legacy heuristics only (for this embedded dataset):
+    // - Warm leads should land in warm-relationships
+    // - Seed-only leads are intent-signals
+    // - Historic audit batches default to technical-audit
+    // Future imports should provide lane explicitly rather than relying on inference.
+    if (lead.status === "Warm") lead.lane = "warm-relationships";
+    else if (lead.status === "Seed only") lead.lane = "intent-signals";
+    else lead.lane = "technical-audit";
+  }
+}
+
 function blankReview(){
-  return { lane:"", verdict:"", evidence_status:"", rating:0, notes:"", next_action:"", follow_up_date:null, updated_at:"" };
+  return { lane:"", lane_confidence:"", verdict:"", evidence_status:"", draft_safe:false, rating:0, notes:"", next_action:"", follow_up_date:null, updated_at:"" };
 }
 
 function loadStore(){
@@ -391,6 +426,31 @@ function ensureReview(id){                            // write-path; auto-create
   if (!S[id]) S[id] = blankReview();
   return S[id];
 }
+
+// Backfill missing per-lead schema so filters + exports behave consistently.
+// Only fills empty fields; never overwrites Rowan's explicit values.
+(function ensureSchema(){
+  const now = new Date().toISOString();
+  let changedAny = false;
+  for (const lead of L) {
+    const id = lead.id;
+    const r = ensureReview(id);
+    let changed = false;
+
+    if (!r.lane) { r.lane = lead.lane; changed = true; }
+    if (!r.evidence_status) { r.evidence_status = "unverified"; changed = true; }
+    // draft_safe must be explicitly opted-in: only true after verified evidence or Rowan approval.
+    if (r.draft_safe === undefined) { r.draft_safe = false; changed = true; }
+    if (!r.next_action) { r.next_action = "manual-check"; changed = true; }
+
+    // Set updated_at only for the specific record(s) we changed.
+    if (changed) {
+      r.updated_at = now;
+      changedAny = true;
+    }
+  }
+  if (changedAny) saveSoon();
+})();
 
 let saveTimer = null;
 function setSaveState(state){
@@ -451,7 +511,7 @@ function downloadRowanReview(){
   setSaveState("saved-repo");
 }
 
-let sCol="pri",sDir=-1,fQ="",fSt="",fCt="",fHideArchived=true;
+let sCol="pri",sDir=-1,fQ="",fSt="",fCt="",fLane="",fEv="",fHideArchived=true;
 
 const sc=(v,c)=>{
   if(v===null||v===undefined)return"<span style='color:#ccc'>—</span>";
@@ -472,7 +532,9 @@ function sortKey(l, col){
   const r = peekReview(l.id);
   switch(col){
     case "lane": return r.lane;
+    case "lane_confidence": return r.lane_confidence;
     case "evidence": return r.evidence_status;
+    case "draft_safe": return r.draft_safe ? 1 : 0;
     case "rating": return r.rating || 0;
     case "verdict": return r.verdict;
     case "next_action": return r.next_action;
@@ -491,9 +553,11 @@ function filt(){
   return L.filter(l=>{
     const r=peekReview(l.id);
     if(fHideArchived && (r.next_action==="skip" || r.next_action==="archive" || r.verdict==="skip")) return false;
-    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.verdict,r.next_action].join(" ").toLowerCase().includes(q))return false;}
+    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.lane_confidence,r.evidence_status,r.verdict,r.next_action].join(" ").toLowerCase().includes(q))return false;}
     if(fSt&&l.status!==fSt)return false;
     if(fCt&&!l.cat.includes(fCt))return false;
+    if(fLane&&(r.lane||"")!==fLane)return false;
+    if(fEv&&(r.evidence_status||"")!==fEv)return false;
     return true;
   }).sort((a,b)=>{
     let av=sortKey(a,sCol),bv=sortKey(b,sCol);
@@ -545,7 +609,9 @@ function render(){
       <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
       <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
       <td class="rowan"><select class="review" data-field="lane" data-id="${id}">${selectOptions(LANES,r.lane)}</select></td>
+      <td class="rowan"><select class="review" data-field="lane_confidence" data-id="${id}">${selectOptions(LANE_CONFIDENCE,r.lane_confidence)}</select></td>
       <td class="rowan"><select class="review" data-field="evidence_status" data-id="${id}">${selectOptions(EVIDENCE,r.evidence_status)}</select></td>
+      <td class="rowan"><select class="review" data-field="draft_safe" data-id="${id}">${selectOptions(["true","false"], r.draft_safe ? "true" : "false")}</select></td>
       <td class="rowan stars" data-sf="${id}">${stars(id,r.rating||0)}</td>
       <td class="rowan"><select class="verdict" data-field="verdict" data-id="${id}">${selectVerdict(r.verdict)}</select></td>
       <td class="rowan"><select class="review" data-field="next_action" data-id="${id}">${selectOptions(NEXT_ACTIONS,r.next_action)}</select></td>
@@ -567,7 +633,10 @@ function bindStarHandlers(scope){
 function bindReviewHandlers(scope){
   bindStarHandlers(scope);
   scope.querySelectorAll("select.review, select.verdict").forEach(el=>el.addEventListener("change",e=>{
-    patchReview(e.target.dataset.id,{[e.target.dataset.field]:e.target.value});
+    const field = e.target.dataset.field;
+    const raw = e.target.value;
+    const value = field === "draft_safe" ? (raw !== "false") : raw;
+    patchReview(e.target.dataset.id,{[field]:value});
   }));
   scope.querySelectorAll("input.follow-up").forEach(el=>el.addEventListener("change",e=>{
     const followUpDate=e.target.value===""?null:e.target.value;
@@ -586,13 +655,15 @@ document.querySelectorAll("th[data-c]").forEach(th=>th.addEventListener("click",
 document.getElementById("search").addEventListener("input",e=>{fQ=e.target.value;render();});
 document.getElementById("fs").addEventListener("change",e=>{fSt=e.target.value;render();});
 document.getElementById("fc").addEventListener("change",e=>{fCt=e.target.value;render();});
+document.getElementById("fl").addEventListener("change",e=>{fLane=e.target.value;render();});
+document.getElementById("fe").addEventListener("change",e=>{fEv=e.target.value;render();});
 document.getElementById("show-archived").addEventListener("change",e=>{fHideArchived=!e.target.checked;render();});
 
 function xcsv(){
-  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Lane","Evidence Status","Rating","Verdict","Next Action","Follow-up Date","Notes (Rowan)","Updated At"];
+  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Lane","Lane Confidence","Evidence Status","Draft Safe","Rating","Verdict","Next Action","Follow-up Date","Notes (Rowan)","Updated At"];
   const rows=[cols,...L.map(l=>{
     const r=peekReview(l.id);
-    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,(l.gemini||'').replace(/\n/g,' '),l.angle,l.brand,r.lane||'',r.evidence_status||'',r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',(r.notes||'').replace(/\n/g,' '),r.updated_at||''];
+    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,(l.gemini||'').replace(/\n/g,' '),l.angle,l.brand,r.lane||'',r.lane_confidence||'',r.evidence_status||'',(r.draft_safe?"true":"false"),r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',(r.notes||'').replace(/\n/g,' '),r.updated_at||''];
   })];
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="kspf-leads.csv";a.click();
