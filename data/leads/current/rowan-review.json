@@ -1,1 +1,90 @@
-{}
+{
+  "alpha60-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the homepage hero. The homepage shows live sale, lookbook, and store content; rerun audit from the visible landing state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "dotcomme-net": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live store is already on HTTPS at www.dotcomme.net; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "fmeapparel-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the landing-state hero. The homepage shows product listings and About content; rerun audit from the visible page state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "happymelon-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: The app-only funnel claim was overstated. The site has direct Classes, Pricing, and Start Trial paths, and the intro offer links to booking from the page; rerun audit from the current booking flow.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "idreamahighway-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and exposes contact and shipping pages; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "lanaberg-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "rpmmelbourne-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and has direct contact and product pages; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "sisterstudios-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the shop landing state. The page shows product cards below the header; rerun audit from the visible shop content.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "suupaa-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: I could not reproduce the claimed Bookings/About nav loop. The About page and SevenRooms booking path were live; rerun audit on the current navigation.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "whoiselijah-com": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: This row points at the wrong domain and entity. whoiselijah.com resolves to a Barcelona barber/tattoo site; use whoiselijah.com.au for the fragrance brand before reuse.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "wildsoulwellness-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: The app-only claim was overstated. Classes, offerings, studios, memberships, and contact pages are browseable on-site; rerun audit from the current booking flow.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  }
+}
