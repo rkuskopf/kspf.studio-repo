@@ -224,6 +224,14 @@
 
 <script id="rowan-review-seed" type="application/json">
 {
+  "5elementsboutique-shop": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Site is live, but I did not reproduce the claimed layout shift from a static pass. Mobile/tap-target concerns remain plausible, but the current note is not strong enough for outreach without a real device check.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
   "alpha60-com-au": {
     "verdict": "rework",
     "evidence_status": "false",
@@ -231,6 +239,62 @@
     "next_action": "redo-audit",
     "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the homepage hero. The homepage shows live sale, lookbook, and store content; rerun audit from the visible landing state.",
     "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "bisonhome-com": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Homepage shows Brian Tunks Glass and Bison Ceramics directly in primary navigation, so the \"deeply nested\" claim is overstated. I did not verify the image-weight/CDN or keyboard-navigation assertions; rerun from the current site state.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "blindside-org-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Current site still exposes newsletter/contact elements, but the quoted example text from the audit did not appear in this pass. Treat the accessibility claim as plausible but the current example set as stale.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "blondiesboutique-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still contains \"Original Designer Boutique. Established 1981.\" and \"View our latest products\", so the cited content is current. The specific low-contrast/tap-target claim still needs a phone/contrast check.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "boteh-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Current site still shows Complimentary Shipping and New Arrivals, but I did not independently verify the low-contrast/tap-target claim from this pass. Keep the \"elevated ease\" framing out of outreach until evidence is refreshed.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "cavescollect-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes Australian Made Classics plus Previous/Next controls, so the cited UI anchors are current. Slow-load and tap-target severity still need a device pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "designbyjude-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still exposes currency/code artefacts and noisy selector output, so the broken-presentation claim has live support. I did not retest mobile tap targets, but the professionalism issue itself is current.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "dinosaurdesigns-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current homepage still opens with a currency/country selector before collection content, so the first-impression interruption is live. Mobile tap-target and missing-name details still need a device/accessibility pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
   },
   "dotcomme-net": {
     "verdict": "rework",
@@ -240,6 +304,54 @@
     "notes": "2026-05-01 cross-check: HTTPS claim false. The live store is already on HTTPS at www.dotcomme.net; rerun audit from the current site state.",
     "updated_at": "2026-05-01T00:00:00Z"
   },
+  "engold-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes the Zephyr collection CTA and dense navigation structure, so the cited mobile/UI friction remains plausible. I did not benchmark load speed or tap targets on device, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "essbee-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current markup still repeats menu/search/sale structures, so header redundancy looks real. I did not verify the \"no sales transparency\" part from this pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "etal-australia-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Duplicate menu structures are visible in current HTML, so the nav-redundancy point has support. I did not reproduce the newsletter error block or search-refresh behaviour from this static pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "eunceramics-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes a large country/region selector and the $300 free-shipping threshold, so some of the merchandising friction is current. I did not quantify the sold-out ratio, so keep the broader inventory claim partial only.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "favrik-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Site is live, but this pass did not benchmark the claimed extreme slowness across devices or networks. Keep performance-led outreach unverified until measured manually.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "feathers-com-au": {
+    "verdict": "skip",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "archive",
+    "notes": "2026-05-01 quick pass: Final-sale messaging is still live on the site, so this is not an active growth lead. Archive rather than drafting outreach.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
   "fmeapparel-com-au": {
     "verdict": "rework",
     "evidence_status": "false",
@@ -247,6 +359,14 @@
     "next_action": "redo-audit",
     "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the landing-state hero. The homepage shows product listings and About content; rerun audit from the visible page state.",
     "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "glowdy-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains the cited \"GREAT VALUE, NO FUSS\", \"STRESS-FREE\", and \"Cozy meets cool / Tops / Outerwear\" copy. The exact speed claim still needs measurement, but the referenced content is current.",
+    "updated_at": "2026-05-01T08:00:00Z"
   },
   "happymelon-com-au": {
     "verdict": "rework",
@@ -264,6 +384,22 @@
     "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and exposes contact and shipping pages; rerun audit from the current site state.",
     "updated_at": "2026-05-01T00:00:00Z"
   },
+  "kittendamour-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains Listen Live, Kitten Rewards, and sold-out inventory markers, so the cited UI context is current. I did not benchmark load time or tap-target difficulty on device, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "kuwaii-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Current homepage entry state differs from the cited \"Echoes of Time in Every Detail\" example, so this note is stale as written. I did not independently confirm the low-contrast/tap-target framing from the current page.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
   "lanaberg-com-au": {
     "verdict": "rework",
     "evidence_status": "false",
@@ -271,6 +407,78 @@
     "next_action": "redo-audit",
     "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS; rerun audit from the current site state.",
     "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "lestyle-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Site currently resolves on HTTPS, so the no-HTTPS framing is wrong. I did not retest the load-time claim, but the trust-angle as written should not be reused.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "melko-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still shows Long Sleeve Dresses / Dresses / Tops / Bottoms plus dense menu structure, so the cited first-screen navigation friction is plausible. Contrast/tap-target specifics still need a phone pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "mudaustralia-com": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: The region selector, Visual Essays, and \"different stock levels\" text are live, but I did not reproduce an actual cart wipe or mobile video failure from this pass. Keep this unverified until a real currency-switch / mobile-browser check.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "ngali-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current homepage still shows End of Season Savings, About/Runways links, and multiple compact nav layers, so the cited accessibility/mobile friction is plausible. I did not device-test contrast or tap targets, so this stays partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "no-vacancy-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still carries the cited hero line and Home/Current navigation. The performance claim still needs a timed device check, but the current page context matches the audited example.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "outregallery-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes Skip to content and Facebook/social links, so part of the accessibility note still maps to the live site. I did not reproduce the exact currency-selector example from this pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "panafter-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Homepage still has category-heavy navigation, but I did not find the claimed manual shipping-quote friction from this pass. Keep the logistics claim unverified until it is reproduced on a live product/checkout path.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "papermoon-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Live homepage shows current product, values, and cart/sidebar content, but this Gemini note is mostly score/brand framing rather than a concrete visitor-facing issue. I could not verify a specific outreach-worthy problem from the static pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "reinamelbourne-com": {
+    "verdict": "maybe",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current homepage still shows the out-of-date browser warning over the store entry state, so the broken first-impression issue is live. This is a real current issue, though device/browser persistence still needs one final confirmation.",
+    "updated_at": "2026-05-01T08:00:00Z"
   },
   "rpmmelbourne-com-au": {
     "verdict": "rework",
@@ -280,6 +488,22 @@
     "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and has direct contact and product pages; rerun audit from the current site state.",
     "updated_at": "2026-05-01T00:00:00Z"
   },
+  "runwaysecrets-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains the jumbled hero/currency copy cited in the audit, including NZD / Saudi Arabia strings on the homepage. The confusing first-impression claim is current; mobile tap-targets still need a real device check.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "seventhgallery-org": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still contains the mailing-list/email/event markers referenced in the audit, so the accessibility/mobile concerns remain plausible. I did not reproduce the exact button-state issue, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
   "sisterstudios-com-au": {
     "verdict": "rework",
     "evidence_status": "false",
@@ -288,6 +512,14 @@
     "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the shop landing state. The page shows product cards below the header; rerun audit from the visible shop content.",
     "updated_at": "2026-05-01T00:00:00Z"
   },
+  "stylemagazines-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Current site still shows dense content and signup flows, but I did not reproduce the cited \"Beauty BeautyHair\" concatenation. Accessibility/mobile concerns remain plausible, but the current examples need fresh verification.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
   "suupaa-com-au": {
     "verdict": "rework",
     "evidence_status": "false",
@@ -295,6 +527,14 @@
     "next_action": "redo-audit",
     "notes": "2026-05-01 cross-check: I could not reproduce the claimed Bookings/About nav loop. The About page and SevenRooms booking path were live; rerun audit on the current navigation.",
     "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "vowstudio-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains the cited \"colourful and happy\", Login/Search, JACKETS & COATS, and Previous/Next anchors, so the navigation/UI note has live support. I did not device-test tap targets, so this stays partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
   },
   "whoiselijah-com": {
     "verdict": "rework",
