@@ -109,6 +109,8 @@
   th.rowan.sorted { background: #ebe2c8; }
   td.rowan { background: #fffdf3; }
   tr:hover td.rowan { background: #faf5e0; }
+  tr.qa-rework td.rowan { background: #fff7f3; }
+  tr.qa-rework:hover td.rowan { background: #feeee7; }
 
   /* Save state pill */
   #save-state {
@@ -196,15 +198,8 @@
   <th data-c="cat">Cat</th>
   <th data-c="status">Status</th>
   <th data-c="email">Email</th>
-  <th data-c="perf" class="sc">Perf</th>
-  <th data-c="a11y" class="sc">A11y</th>
-  <th data-c="bp" class="sc">BP</th>
-  <th data-c="seo" class="sc">SEO</th>
-  <th data-c="pri" class="sc">Priority</th>
-  <th data-c="issue">Primary issue (auto audit)</th>
   <th class="gemini-col" data-c="gemini">Gemini findings</th>
-  <th data-c="angle">Outreach angle</th>
-  <th data-c="brand">Brand observation</th>
+  <th class="rowan" data-c="notes">Notes / QA</th>
   <th class="rowan" data-c="lane">Lane</th>
   <th class="rowan" data-c="lane_confidence">Lane conf</th>
   <th class="rowan" data-c="evidence">Evidence</th>
@@ -213,12 +208,112 @@
   <th class="rowan" data-c="verdict">Verdict</th>
   <th class="rowan" data-c="next_action">Next action</th>
   <th class="rowan" data-c="follow_up_date">Follow-up</th>
-  <th class="rowan" data-c="notes">Notes (Rowan)</th>
+  <th data-c="perf" class="sc">Perf</th>
+  <th data-c="a11y" class="sc">A11y</th>
+  <th data-c="bp" class="sc">BP</th>
+  <th data-c="seo" class="sc">SEO</th>
+  <th data-c="pri" class="sc">Priority</th>
+  <th data-c="issue">Primary issue (auto audit)</th>
+  <th data-c="angle">Outreach angle</th>
+  <th data-c="brand">Brand observation</th>
 </tr></thead>
 <tbody id="tb"></tbody>
 </table></div>
 
 </div><!-- /#main -->
+
+<script id="rowan-review-seed" type="application/json">
+{
+  "alpha60-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the homepage hero. The homepage shows live sale, lookbook, and store content; rerun audit from the visible landing state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "dotcomme-net": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live store is already on HTTPS at www.dotcomme.net; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "fmeapparel-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the landing-state hero. The homepage shows product listings and About content; rerun audit from the visible page state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "happymelon-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: The app-only funnel claim was overstated. The site has direct Classes, Pricing, and Start Trial paths, and the intro offer links to booking from the page; rerun audit from the current booking flow.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "idreamahighway-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and exposes contact and shipping pages; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "lanaberg-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "rpmmelbourne-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and has direct contact and product pages; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "sisterstudios-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the shop landing state. The page shows product cards below the header; rerun audit from the visible shop content.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "suupaa-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: I could not reproduce the claimed Bookings/About nav loop. The About page and SevenRooms booking path were live; rerun audit on the current navigation.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "whoiselijah-com": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: This row points at the wrong domain and entity. whoiselijah.com resolves to a Barcelona barber/tattoo site; use whoiselijah.com.au for the fragrance brand before reuse.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "wildsoulwellness-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: The app-only claim was overstated. Classes, offerings, studios, memberships, and contact pages are browseable on-site; rerun audit from the current booking flow.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  }
+}
+</script>
 
 <script>
 // ── PIN gate ──────────────────────────────────────────────────────────────
@@ -357,7 +452,17 @@ const ROWAN_REVIEW_PATH = "../data/leads/current/rowan-review.json";
 const LANES = ["technical-audit","brand-translation","intent-signals","warm-relationships","agency-partners","inbound-authority"];
 const LANE_CONFIDENCE = ["low","medium","high"];
 const EVIDENCE = ["unverified","partially_verified","verified","false"];
-const NEXT_ACTIONS = ["manual-check","enrich","draft","send","follow-up","skip","archive"];
+const NEXT_ACTIONS = ["manual-check","enrich","draft","redo-audit","send","follow-up","skip","archive"];
+const NEXT_ACTION_LABELS = {
+  "manual-check": "Manual check",
+  enrich: "Enrich",
+  draft: "Draft",
+  "redo-audit": "Redo audit",
+  send: "Send",
+  "follow-up": "Follow-up",
+  skip: "Skip",
+  archive: "Archive",
+};
 const VERDICTS = [["send","✓ Send"],["rework","~ Rework"],["maybe","? Maybe"],["skip","✗ Skip"]];
 
 function leadId(url){
@@ -396,10 +501,62 @@ function blankReview(){
   return { lane:"", lane_confidence:"", verdict:"", evidence_status:"", draft_safe:false, rating:0, notes:"", next_action:"", follow_up_date:null, updated_at:"" };
 }
 
+function loadSeedReview(){
+  try {
+    const el = document.getElementById("rowan-review-seed");
+    return el ? JSON.parse(el.textContent || "{}") : {};
+  } catch {
+    return {};
+  }
+}
+
 function loadStore(){
   try { return JSON.parse(localStorage.getItem(SK) || "{}"); } catch { return {}; }
 }
-let S = loadStore();
+
+const LEAD_BY_ID = Object.fromEntries(L.map(lead => [lead.id, lead]));
+
+function normalizedReview(review){
+  return { ...blankReview(), ...(review || {}) };
+}
+
+function isDefaultOnlyReview(id, review){
+  const r = normalizedReview(review);
+  const lead = LEAD_BY_ID[id];
+  const defaultLane = lead ? (lead.lane || "") : "";
+  return (!String(r.notes || "").trim())
+    && !r.verdict
+    && !r.follow_up_date
+    && !r.lane_confidence
+    && !(Number(r.rating || 0) > 0)
+    && r.draft_safe !== true
+    && (!r.next_action || r.next_action === "manual-check")
+    && (!r.evidence_status || r.evidence_status === "unverified")
+    && (!r.lane || r.lane === defaultLane);
+}
+
+function mergeReviewState(seed, local){
+  const merged = {};
+  const ids = new Set([...Object.keys(seed || {}), ...Object.keys(local || {})]);
+  for (const id of ids){
+    const fromSeed = seed && seed[id];
+    const fromLocal = local && local[id];
+    if (fromSeed && fromLocal){
+      merged[id] = isDefaultOnlyReview(id, fromLocal)
+        ? { ...blankReview(), ...fromLocal, ...fromSeed }
+        : { ...blankReview(), ...fromSeed, ...fromLocal };
+      continue;
+    }
+    if (fromSeed){
+      merged[id] = { ...blankReview(), ...fromSeed };
+      continue;
+    }
+    merged[id] = { ...blankReview(), ...fromLocal };
+  }
+  return merged;
+}
+
+let S = mergeReviewState(loadSeedReview(), loadStore());
 
 // One-shot migration from kspf_v3 (keyed by lead name, {r,v,n}) → kspf_v4 (keyed by id).
 (function migrateLegacy(){
@@ -452,7 +609,7 @@ function ensureReview(id){                            // write-path; auto-create
       changedAny = true;
     }
   }
-  if (changedAny) saveSoon();
+  if (changedAny) saveStore();
 })();
 
 let saveTimer = null;
@@ -490,8 +647,8 @@ async function hydrateFromRepo(){
       const rLocal = S[id];
       const remoteAt = rRemote && rRemote.updated_at ? Date.parse(rRemote.updated_at) : 0;
       const localAt  = rLocal  && rLocal.updated_at  ? Date.parse(rLocal.updated_at)  : 0;
-      if (!rLocal || remoteAt > localAt){
-        S[id] = { ...blankReview(), ...rRemote };
+      if (!rLocal || remoteAt > localAt || isDefaultOnlyReview(id, rLocal)){
+        S[id] = { ...blankReview(), ...(rLocal || {}), ...rRemote };
         applied += 1;
       }
     }
@@ -531,8 +688,13 @@ const stars=(id,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-
 
 const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 const opt=(v,sel,label)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(label||v||"—")}</option>`;
-const selectOptions=(values,sel)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...values.map(v=>opt(v,sel))].join("");
+const selectOptions=(values,sel,labels)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...values.map(v=>opt(v,sel,labels && labels[v] ? labels[v] : v))].join("");
 const selectVerdict=(sel)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...VERDICTS.map(([v,l])=>opt(v,sel,l))].join("");
+const nextActionSearchText=value=>{
+  const raw = String(value || "");
+  if (!raw) return "";
+  return [raw, raw.replace(/-/g, " "), NEXT_ACTION_LABELS[raw] || raw].join(" ");
+};
 
 // Sortable values for Rowan-owned columns key off the review record.
 const NUMERIC_COLS = new Set(["perf","a11y","bp","seo","pri","rating"]);
@@ -561,7 +723,7 @@ function filt(){
   return L.filter(l=>{
     const r=peekReview(l.id);
     if(fHideArchived && (r.next_action==="skip" || r.next_action==="archive" || r.verdict==="skip")) return false;
-    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.lane_confidence,r.evidence_status,r.verdict,r.next_action].join(" ").toLowerCase().includes(q))return false;}
+    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.lane_confidence,r.evidence_status,r.verdict,r.next_action,nextActionSearchText(r.next_action)].join(" ").toLowerCase().includes(q))return false;}
     if(fSt&&l.status!==fSt)return false;
     if(fCt&&!l.cat.includes(fCt))return false;
     if(fLane&&(r.lane||"")!==fLane)return false;
@@ -602,29 +764,29 @@ function render(){
   tb.innerHTML=list.map(l=>{
     const r=peekReview(l.id);
     const id=esc(l.id);
-    return`<tr>
+    return`<tr class="${r.verdict==="rework"?"qa-rework":""}">
       <td class="pin"><a href="${esc(safeHref(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.name)}</a></td>
       <td>${esc(l.cat)}</td>
       <td><span class="badge ${BDGE[l.status]||"b-seed"}">${esc(l.status)}</span>${isUnverified(l)?'<span class="verflag" title="Technical findings unverified — Lighthouse signal only">unverified</span>':""}</td>
       <td style="font-size:11px">${l.email?`<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>`:`<span class="no-email">—</span>`}</td>
-      <td class="sc">${sc(l.perf,"perf")}</td>
-      <td class="sc">${sc(l.a11y,"a11y")}</td>
-      <td class="sc">${sc(l.bp,"bp")}</td>
-      <td class="sc">${sc(l.seo,"seo")}</td>
-      <td class="sc">${sc(l.pri,"pri")}</td>
-      <td style="font-size:11px;max-width:200px">${esc(l.issue)}</td>
       <td class="gcell">${l.gemini?`<span class="gtag">Gemini</span>${esc(l.gemini)}`:""}</td>
-      <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
-      <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
+      <td class="rowan"><textarea class="note" data-field="notes" data-id="${id}">${esc(r.notes||"")}</textarea></td>
       <td class="rowan"><select class="review" data-field="lane" data-id="${id}">${selectOptions(LANES,r.lane)}</select></td>
       <td class="rowan"><select class="review" data-field="lane_confidence" data-id="${id}">${selectOptions(LANE_CONFIDENCE,r.lane_confidence)}</select></td>
       <td class="rowan"><select class="review" data-field="evidence_status" data-id="${id}">${selectOptions(EVIDENCE,r.evidence_status)}</select></td>
       <td class="rowan"><select class="review" data-field="draft_safe" data-id="${id}">${selectOptions(["true","false"], r.draft_safe ? "true" : "false")}</select></td>
       <td class="rowan stars" data-sf="${id}">${stars(id,r.rating||0)}</td>
       <td class="rowan"><select class="verdict" data-field="verdict" data-id="${id}">${selectVerdict(r.verdict)}</select></td>
-      <td class="rowan"><select class="review" data-field="next_action" data-id="${id}">${selectOptions(NEXT_ACTIONS,r.next_action)}</select></td>
+      <td class="rowan"><select class="review" data-field="next_action" data-id="${id}">${selectOptions(NEXT_ACTIONS,r.next_action,NEXT_ACTION_LABELS)}</select></td>
       <td class="rowan"><input class="follow-up" type="date" data-field="follow_up_date" data-id="${id}" value="${esc(r.follow_up_date||"")}"></td>
-      <td class="rowan"><textarea class="note" data-field="notes" data-id="${id}">${esc(r.notes||"")}</textarea></td>
+      <td class="sc">${sc(l.perf,"perf")}</td>
+      <td class="sc">${sc(l.a11y,"a11y")}</td>
+      <td class="sc">${sc(l.bp,"bp")}</td>
+      <td class="sc">${sc(l.seo,"seo")}</td>
+      <td class="sc">${sc(l.pri,"pri")}</td>
+      <td style="font-size:11px;max-width:200px">${esc(l.issue)}</td>
+      <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
+      <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
     </tr>`;
   }).join("");
   bindReviewHandlers(tb);
@@ -668,10 +830,10 @@ document.getElementById("fe").addEventListener("change",e=>{fEv=e.target.value;r
 document.getElementById("show-archived").addEventListener("change",e=>{fHideArchived=!e.target.checked;render();});
 
 function xcsv(){
-  const cols=["Name","URL","Category","Status","Batch","Email","Perf","A11y","BP","SEO","Priority","Issue","Gemini Findings","Outreach Angle","Brand Observation","Lane","Lane Confidence","Evidence Status","Draft Safe","Rating","Verdict","Next Action","Follow-up Date","Notes (Rowan)","Updated At"];
+  const cols=["Name","URL","Category","Status","Batch","Email","Gemini Findings","Notes (Rowan)","Lane","Lane Confidence","Evidence Status","Draft Safe","Rating","Verdict","Next Action","Follow-up Date","Updated At","Perf","A11y","BP","SEO","Priority","Issue","Outreach Angle","Brand Observation"];
   const rows=[cols,...L.map(l=>{
     const r=peekReview(l.id);
-    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,(l.gemini||'').replace(/\n/g,' '),l.angle,l.brand,r.lane||'',r.lane_confidence||'',r.evidence_status||'',(r.draft_safe?"true":"false"),r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',(r.notes||'').replace(/\n/g,' '),r.updated_at||''];
+    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",(l.gemini||'').replace(/\n/g,' '),(r.notes||'').replace(/\n/g,' '),r.lane||'',r.lane_confidence||'',r.evidence_status||'',(r.draft_safe?"true":"false"),r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',r.updated_at||'',l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,l.angle,l.brand];
   })];
   const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="kspf-leads.csv";a.click();
