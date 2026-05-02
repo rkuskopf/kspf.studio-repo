@@ -67,6 +67,11 @@
   td.pin, th.pin { position: sticky; left: 0; background: #fff; z-index: 5; min-width: 155px; }
   th.pin { background: #f0f0ee; z-index: 11; }
 
+  @media (max-width: 600px) {
+    td.pin, th.pin { position: static; min-width: 0; }
+    th.pin { z-index: 10; }
+  }
+
   td a { color: #1a6ef5; text-decoration: none; }
   td a:hover { text-decoration: underline; }
 
