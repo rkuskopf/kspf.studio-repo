@@ -221,6 +221,7 @@
   <th data-c="issue">Primary issue (auto audit)</th>
   <th data-c="angle">Outreach angle</th>
   <th data-c="brand">Brand observation</th>
+  <th data-c="a11yNotes" title="axe-core WCAG 2.1 AA findings — internal use, never paste into outreach">A11y notes (internal)</th>
 </tr></thead>
 <tbody id="tb"></tbody>
 </table></div>
@@ -1032,6 +1033,7 @@ function render(){
       <td style="font-size:11px;max-width:200px">${esc(l.issue)}</td>
       <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
       <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
+      <td style="font-size:10px;max-width:220px;color:#888;font-family:ui-monospace,Menlo,Consolas,monospace">${esc(l.a11yNotes||"")}</td>
     </tr>`;
   }).join("");
   bindReviewHandlers(tb);
