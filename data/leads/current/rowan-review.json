@@ -326,5 +326,13 @@
     "next_action": "redo-audit",
     "notes": "2026-05-01 cross-check: The app-only claim was overstated. Classes, offerings, studios, memberships, and contact pages are browseable on-site; rerun audit from the current booking flow.",
     "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "tender-place": {
+    "verdict": "maybe",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "draft",
+    "notes": "2026-05-05 manual enrichment: Official site confirms the root Enter gate, the About slug /new-page-1, hello@tender.place, and About copy signed Steph and Nik. Strong fit, but roles are not verified from the site.",
+    "updated_at": "2026-05-05T05:11:31Z"
   }
 }
