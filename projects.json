@@ -23,6 +23,13 @@
       "alt": "Project preview"
     },
     {
+      "title": "The Athenaeum",
+      "description": "",
+      "slides": [
+        "/assets/uploads/ath-3.png"
+      ]
+    },
+    {
       "title": "AP-REPS",
       "description": "Refined and customised a Squarespace build for AP—REPS through bespoke front-end fixes, responsive behaviour and bespoke mobile animations. Collaborated with Lulu Chia to refresh the website for AP-REPS, a leading Australian talent agency.",
       "viewUrl": "https://apreps.com.au",
@@ -46,13 +53,6 @@
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.46.04am.png"
       ],
       "alt": "Project preview"
-    },
-    {
-      "title": "The Athenaeum",
-      "description": "",
-      "slides": [
-        "/assets/uploads/ath-3.png"
-      ]
     }
   ]
 }
