@@ -20,6 +20,8 @@
     }
   };
 
+  const isVisibleOnHome = (project) => project && project.showOnHome !== false;
+
   const createHero = (project, index) => {
     const figure = document.createElement("figure");
     figure.className = "hero js-slideshow";
@@ -84,7 +86,13 @@
 
   const renderProjects = (projects) => {
     container.innerHTML = "";
-    projects.forEach((project, index) => {
+    const visibleProjects = projects.filter(isVisibleOnHome);
+    if (!visibleProjects.length) {
+      container.textContent = "Projects not found.";
+      return;
+    }
+
+    visibleProjects.forEach((project, index) => {
       const block = document.createElement("section");
       block.className = "project-block";
       block.append(createHero(project, index), createProjectText(project));
