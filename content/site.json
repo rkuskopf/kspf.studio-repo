@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "homeLabel": "kspf",
+    "homeHref": "/",
+    "informationLabel": "information",
+    "informationHref": "#services",
+    "closeLabel": "x",
+    "servicesLabel": "services",
+    "servicesHref": "#services"
+  },
+  "informationOverlay": {
+    "contactTitle": "Contact",
+    "contactBody": "We offer free consultations to discuss your project needs.\nPlease email us to arrange this or for for more information about our services",
+    "contactEmail": "hello@kspf.au",
+    "servicesTitle": "Services",
+    "services": [
+      "Custom web Development",
+      "Shopify",
+      "Squarespace",
+      "UI/UX Design",
+      "Creative Direction",
+      "Design Research"
+    ]
+  },
+  "profile": "kspf is a design and research practice, run by Rowan Kuskopf, in collaboration with a community of local creatives. We design and build web experiences, custom fit and purpose built for each brand’s unique taste and story.",
+  "footer": {
+    "brand": "kspf",
+    "profileLabel": "Profile",
+    "contactLabel": "Contact",
+    "title": "Services",
+    "contact": [
+      {
+        "label": "hello@kspf.au",
+        "href": "mailto:hello@kspf.au"
+      },
+      {
+        "label": "(+64) 22785041",
+        "href": "tel:+6422785041"
+      }
+    ],
+    "columns": [
+      {
+        "groups": [
+          {
+            "heading": "Web Development",
+            "items": [
+              "Web Design",
+              "Shopify",
+              "Cargo | Squarespace",
+              "Custom HTML/CSS/ Java Script"
+            ]
+          },
+          {
+            "heading": "Experience",
+            "href": "",
+            "items": [
+              "Product Design",
+              "Research",
+              "UX Strategy",
+              "Accessibility Consulting"
+            ]
+          }
+        ]
+      },
+      {
+        "groups": [
+          {
+            "heading": "Visual Design",
+            "items": [
+              "Identity",
+              "Editorial",
+              "Art Direction"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}
