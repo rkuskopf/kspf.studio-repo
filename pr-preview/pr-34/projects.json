@@ -7,7 +7,8 @@
       "slides": [
         "/assets/uploads/albus-01.png",
         "/assets/uploads/albus-03.png",
-        "/assets/uploads/albus-04.png"
+        "/assets/uploads/albus-04.png",
+        "/assets/uploads/albus-video-01-720.mp4"
       ],
       "alt": "Project preview"
     },
@@ -21,6 +22,17 @@
         "/assets/uploads/jakarchitecture.com_-14_-3-1.png"
       ],
       "alt": "Jak Architecture website preview"
+    },
+    {
+      "title": "Albus Lumen",
+      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
+      "viewUrl": "https://www.albuslumen.com",
+      "slides": [
+        "/assets/uploads/albus-01.png",
+        "/assets/uploads/albus-03.png",
+        "/assets/uploads/albus-04.png"
+      ],
+      "alt": "Project preview"
     },
     {
       "title": "AP-REPS",
