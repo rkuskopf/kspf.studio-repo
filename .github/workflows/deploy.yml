@@ -1,0 +1,61 @@
+name: Deploy Production Site
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: gh-pages-branch
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: .gh-pages
+          fetch-depth: 0
+
+      - name: Sync site to gh-pages root
+        run: |
+          find .gh-pages -mindepth 1 -maxdepth 1 \
+            ! -name '.git' \
+            ! -name 'pr-preview' \
+            -exec rm -rf {} +
+
+          rsync -av \
+            --exclude '.git' \
+            --exclude '.github' \
+            --exclude '.DS_Store' \
+            --exclude '.gh-pages' \
+            ./ .gh-pages/
+
+          touch .gh-pages/.nojekyll
+
+      - name: Commit and push deployment
+        run: |
+          cd .gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if [[ -z "$(git status --short)" ]]; then
+            echo "No changes to deploy."
+            exit 0
+          fi
+
+          git add --all
+          git commit -m "Deploy site from main"
+          git push origin HEAD:gh-pages
