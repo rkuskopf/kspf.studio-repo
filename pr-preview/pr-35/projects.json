@@ -33,6 +33,7 @@
     {
       "title": "Christopher Myles Henderson",
       "description": "Porrtfolio website for Chris Henderson – multidiciplinary artist. The site provides a minimal canvas allowing the diversity and eccentricity of his work to take centre stage.",
+      "showOnHome": false,
       "viewUrl": "https://christophermyles.com",
       "slides": [
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.43.51am.png",
