@@ -4,6 +4,10 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
+concurrency:
+  group: gh-pages-branch
+  cancel-in-progress: false
+
 permissions:
   contents: write
   pull-requests: write

@@ -1,7 +1,7 @@
 backend:
   name: github
   repo: rkuskopf/kspf.studio-repo
-  branch: main
+  branch: cms-staging
   base_url: https://dms-cms-proxy.studio-3cc.workers.dev
   auth_endpoint: /auth
 
@@ -109,10 +109,12 @@ collections:
               - { label: "Description", name: "description", widget: "text" }
               - { label: "View URL", name: "viewUrl", widget: "string", required: false }
               - { label: "Alt Text", name: "alt", widget: "string", required: false }
+              - { label: "Show on Home", name: "showOnHome", widget: "boolean", default: true, required: false, hint: "Turn this off to keep the project in CMS without rendering it on the homepage." }
               - label: "Slides"
                 name: "slides"
                 widget: "list"
-                field: { label: "Slide", name: "slide", widget: "image" }
+                hint: "Upload images or video files for the project slideshow."
+                field: { label: "Slide", name: "slide", widget: "file" }
 
   - name: "caseStudies"
     label: "Case Studies"
@@ -129,7 +131,8 @@ collections:
       - label: "Slides"
         name: "slides"
         widget: "list"
-        field: { label: "Slide", name: "slide", widget: "image" }
+        hint: "Upload images or video files for the case-study hero slideshow."
+        field: { label: "Slide", name: "slide", widget: "file" }
       - label: "Tabs"
         name: "tabs"
         widget: "list"
@@ -164,4 +167,5 @@ collections:
           - label: "Slides"
             name: "slides"
             widget: "list"
-            field: { label: "Slide", name: "slide", widget: "image" }
+            hint: "Upload images or video files for this tab."
+            field: { label: "Slide", name: "slide", widget: "file" }
