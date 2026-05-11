@@ -58,4 +58,5 @@ jobs:
 
           git add --all
           git commit -m "Deploy site from main"
+          git pull --rebase origin gh-pages
           git push origin HEAD:gh-pages
