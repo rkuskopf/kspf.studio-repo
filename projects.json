@@ -1,20 +1,8 @@
 {
   "projects": [
     {
-      "title": "Albus Lumen",
-      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
-      "viewUrl": "https://www.albuslumen.com",
-      "slides": [
-        "/assets/uploads/albus-01.png",
-        "/assets/uploads/albus-03.png",
-        "/assets/uploads/albus-04.png",
-        "/assets/uploads/albus-video-01-720.mp4"
-      ],
-      "alt": "Project preview"
-    },
-    {
       "title": "Jak Architecture",
-      "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
+      "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. \nThe site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
       "viewUrl": "https://www.jakarchitecture.com",
       "slides": [
         "/assets/uploads/jakarchitecture.com_-14_-1.png",
@@ -28,16 +16,24 @@
       "description": "Refined and customised a Squarespace build for AP—REPS through bespoke front-end fixes, responsive behaviour and bespoke mobile animations. Collaborated with Lulu Chia to refresh the website for AP-REPS, a leading Australian talent agency.",
       "viewUrl": "https://apreps.com.au",
       "slides": [
-        "assets/images/Websites%20local/Ap-reps/AP-5.mov",
-        "assets/images/Websites%20local/Ap-reps/AP-2.1.png",
-        "assets/images/Websites%20local/Ap-reps/AP-3.1.png",
-        "assets/images/Websites%20local/Ap-reps/AP-10mov.mov"
+        "/assets/uploads/ap-desk-movie-02.mov",
+        "/assets/uploads/ap-reps-mobile-01.mov",
+        "assets/images/Websites%20local/Ap-reps/AP-3.1.png"
       ],
       "alt": "Project preview"
     },
     {
+      "title": "The Athenaeum",
+      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
+      "slides": [
+        "/assets/uploads/ath-3.png",
+        "/assets/uploads/ath-04.png"
+      ]
+    },
+    {
       "title": "Christopher Myles Henderson",
       "description": "Porrtfolio website for Chris Henderson – multidiciplinary artist. The site provides a minimal canvas allowing the diversity and eccentricity of his work to take centre stage.",
+      "showOnHome": false,
       "viewUrl": "https://christophermyles.com",
       "slides": [
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.43.51am.png",
