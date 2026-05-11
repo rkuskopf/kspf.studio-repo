@@ -20,7 +20,8 @@
         "/assets/uploads/albus-03.png",
         "/assets/uploads/albus-04.png"
       ],
-      "alt": "Project preview"
+      "alt": "Project preview",
+      "showOnHome": true
     },
     {
       "title": "AP-REPS",
