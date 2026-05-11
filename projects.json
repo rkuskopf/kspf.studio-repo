@@ -49,7 +49,10 @@
     },
     {
       "title": "The Athenaeum",
-      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)"
+      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
+      "slides": [
+        "/assets/uploads/ath-01.png"
+      ]
     }
   ]
 }
