@@ -187,6 +187,7 @@
     const imageSlots = [img, imgAlt];
     const videoSlots = [video, videoAlt];
     const allMedia = [...imageSlots, ...videoSlots];
+    const previewImageSrc = root.dataset.previewImageSrc || "";
 
     allMedia.forEach((media) => {
       media.classList.add("is-hidden");
@@ -384,9 +385,32 @@
         if (vid !== nextVideoEl) pauseVideo(vid);
       });
 
-      setActiveMedia(nextVideoEl, immediate);
-      scheduleVideoCleanup();
-      updatePortraitFlag(src);
+      const revealVideo = () => {
+        if (currentSrc !== src || activeVideoEl !== nextVideoEl) return;
+        setActiveMedia(nextVideoEl, immediate);
+        scheduleVideoCleanup();
+        updatePortraitFlag(src);
+      };
+
+      const keepPreviewVisible =
+        immediate &&
+        activeMediaEl &&
+        activeMediaEl.tagName === "IMG" &&
+        nextVideoEl.readyState < 2;
+
+      if (keepPreviewVisible) {
+        const onReady = () => {
+          nextVideoEl.removeEventListener("loadeddata", onReady);
+          nextVideoEl.removeEventListener("error", onReady);
+          revealVideo();
+        };
+        nextVideoEl.addEventListener("loadeddata", onReady, { once: true });
+        nextVideoEl.addEventListener("error", onReady, { once: true });
+        updatePortraitFlag(activeMediaEl.getAttribute("src") || src);
+        return;
+      }
+
+      revealVideo();
     };
 
     const applySlide = (nextIndex, immediate = false) => {
@@ -417,6 +441,12 @@
         root.classList.remove("is-transitioning");
       }, transitionDuration);
     };
+
+    if (previewImageSrc && slides.length && isVideo(slides[0])) {
+      activeImageEl.src = previewImageSrc;
+      setActiveMedia(activeImageEl, true);
+      updatePortraitFlag(previewImageSrc);
+    }
 
     show(index);
     if (slides.length <= 1) {

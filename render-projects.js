@@ -2,6 +2,12 @@
   const container = document.getElementById("projects");
   if (!container) return;
 
+  const markReady = () => {
+    container.classList.remove("is-loading");
+    container.classList.add("is-ready");
+    container.setAttribute("aria-busy", "false");
+  };
+
   const isVideoSrc = (src) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(src || "");
   const normalizeViewUrl = (url) => {
     if (!url) return "";
@@ -57,8 +63,13 @@
     if (startsWithVideo) {
       video.src = firstSlide;
     }
-    img.classList.toggle("is-hidden", startsWithVideo);
-    video.classList.toggle("is-hidden", !startsWithVideo);
+    const hasPreviewImage = Boolean(firstImage);
+    if (startsWithVideo && hasPreviewImage) {
+      figure.dataset.previewImageSrc = firstImage;
+    }
+    const showImageOnLoad = !startsWithVideo || hasPreviewImage;
+    img.classList.toggle("is-hidden", !showImageOnLoad);
+    video.classList.toggle("is-hidden", showImageOnLoad);
 
     figure.append(prev, next, img, video);
     return figure;
@@ -85,26 +96,30 @@
   };
 
   const renderProjects = (projects) => {
-    container.innerHTML = "";
     const visibleProjects = projects.filter(isVisibleOnHome);
     if (!visibleProjects.length) {
+      container.replaceChildren();
       container.textContent = "Projects not found.";
+      markReady();
       return;
     }
 
+    const fragment = document.createDocumentFragment();
     visibleProjects.forEach((project, index) => {
       const block = document.createElement("section");
       block.className = "project-block";
       block.append(createHero(project, index), createProjectText(project));
-      container.appendChild(block);
+      fragment.appendChild(block);
     });
+    container.replaceChildren(fragment);
 
     if (typeof window.initSlideshows === "function") {
-      window.initSlideshows();
+      window.initSlideshows(container);
     }
+    window.requestAnimationFrame(markReady);
   };
 
-  fetch("projects.json", { cache: "no-cache" })
+  fetch("projects.json")
     .then((res) => {
       if (!res.ok) throw new Error("Projects request failed");
       return res.json();
@@ -120,8 +135,10 @@
         return;
       }
       container.textContent = "Projects not found.";
+      markReady();
     })
     .catch(() => {
       container.textContent = "Projects failed to load.";
+      markReady();
     });
 })();

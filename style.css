@@ -26,7 +26,7 @@
 	  --mockup-shadow-offset: 20px;
 	  --project-text-lines: 3;
 	  --project-text-gap: clamp(26px, 3.5vh, 34px);
-	  --project-gap: calc(var(--project-text-gap) + 26px);
+	  --project-gap: 50px;
 	  --intro-lines: 2;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(
@@ -379,10 +379,26 @@ body.grid-overlay{
   column-gap: var(--gutter);
   row-gap: var(--project-gap);
   min-height: 100vh;
+  opacity: 1;
+  transition: opacity 220ms ease;
 }
 
 .projects:not(:empty){
   min-height: 0;
+}
+
+.projects.is-loading{
+  opacity: 0;
+}
+
+.projects.is-ready{
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .projects{
+    transition: none;
+  }
 }
 
 .project-block{
