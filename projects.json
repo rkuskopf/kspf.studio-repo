@@ -1,17 +1,6 @@
 {
   "projects": [
     {
-      "title": "Albus Lumen",
-      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
-      "viewUrl": "https://www.albuslumen.com",
-      "slides": [
-        "/assets/uploads/albus-01.png",
-        "/assets/uploads/albus-03.png",
-        "/assets/uploads/albus-04.png"
-      ],
-      "alt": "Project preview"
-    },
-    {
       "title": "Jak Architecture",
       "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. The site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
       "viewUrl": "https://www.jakarchitecture.com",
@@ -21,6 +10,17 @@
         "/assets/uploads/jakarchitecture.com_-14_-3-1.png"
       ],
       "alt": "Jak Architecture website preview"
+    },
+    {
+      "title": "Albus Lumen",
+      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
+      "viewUrl": "https://www.albuslumen.com",
+      "slides": [
+        "/assets/uploads/albus-01.png",
+        "/assets/uploads/albus-03.png",
+        "/assets/uploads/albus-04.png"
+      ],
+      "alt": "Project preview"
     },
     {
       "title": "AP-REPS",
