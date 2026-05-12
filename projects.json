@@ -41,7 +41,8 @@
         "/assets/uploads/ath-03.png",
         "/assets/uploads/ath-04.png"
       ],
-      "showOnHome": true
+      "showOnHome": true,
+      "viewUrl": "aesop.com"
     },
     {
       "title": "Christopher Myles Henderson",
