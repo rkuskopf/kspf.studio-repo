@@ -34,6 +34,17 @@
       "alt": "Web design and build preview"
     },
     {
+      "title": "The Athenaeum",
+      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library.",
+      "viewUrl": "case-study-athenaeum.html",
+      "slides": [
+        "../assets/uploads/ath-03.png",
+        "../assets/uploads/ath-04.png",
+        "../assets/uploads/ath-05.png"
+      ],
+      "alt": "The Athenaeum case study preview"
+    },
+    {
       "title": "Alt Cosmetics",
       "description": "Identity, packaging, rendered product surfaces, and end-to-end studio thinking across digital and physical brand expression.",
       "viewUrl": "https://kspf.au/",

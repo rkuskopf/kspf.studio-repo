@@ -133,6 +133,12 @@
   text-align: center;
 }
 
+/* ---- Solution ---- */
+.ath-solution__copy {
+  grid-column: 4 / span 6;          /* cols 4-9 */
+  text-align: center;
+}
+
 /* ---- Taxonomy ---- */
 .ath-taxonomy__media {
   grid-column: 2 / span 4;          /* cols 2-5 */
@@ -181,6 +187,12 @@
   grid-column: 8 / span 4;          /* cols 8-11 */
 }
 
+/* ---- Delivery ---- */
+.ath-delivery__copy {
+  grid-column: 4 / span 6;          /* cols 4-9 */
+  text-align: center;
+}
+
 /* ---- Footer ---- */
 .ath-footer {
   padding: 40px var(--ath-margin) 60px;
@@ -196,6 +208,8 @@
   .ath-title__main { font-size: 22px; }
   .ath-brief__text,
   .ath-approach__copy,
+  .ath-solution__copy,
+  .ath-delivery__copy,
   .ath-question__text,
   .ath-problem__media,
   .ath-problem__copy,
