@@ -89,14 +89,14 @@
   text-align: center;
 }
 .ath-title__main {
-  grid-column: 1 / -1;
+  grid-column: 3 / span 8;
   font-size: 28px;
   font-weight: 500;
   margin: 0 0 32px;
   letter-spacing: -0.01em;
 }
 .ath-title__client {
-  grid-column: 1 / -1;
+  grid-column: 3 / span 8;
   font-size: 20px;
   font-weight: 400;
   margin: 0;
@@ -110,48 +110,76 @@
 
 /* ---- Brief ---- */
 .ath-brief__text {
-  grid-column: 4 / span 6;          /* cols 4-9 */
+  grid-column: 3 / span 8;          /* cols 3-10 */
   text-align: center;
   font-size: 14px;
   line-height: 1.6;
   margin: 0;
 }
 
-/* ---- Problem ---- */
+/* ---- Problem (Split 6/6) ---- */
 .ath-problem__media {
-  grid-column: 2 / span 4;          /* cols 2-5 */
+  grid-column: 1 / span 6;
   aspect-ratio: 1 / 1;
 }
 .ath-problem__copy {
-  grid-column: 8 / span 4;          /* cols 8-11 */
+  grid-column: 7 / span 6;
   align-self: center;
 }
 
-/* ---- Approach (centered text block) ---- */
-.ath-approach__copy {
-  grid-column: 4 / span 6;          /* cols 4-9 */
+/* ---- Detour (8 cols centered) ---- */
+.ath-detour__copy {
+  grid-column: 3 / span 8;
   text-align: center;
+}
+
+/* ---- Solution ---- */
+.ath-solution__copy {
+  grid-column: 3 / span 8;
+  text-align: center;
+  margin-bottom: 60px;
+}
+.ath-solution__pillars {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--ath-cols), 1fr);
+  column-gap: var(--ath-gutter);
+}
+.ath-pillar {
+  grid-column: span 3;              /* 4 pillars * 3 cols = 12 cols */
+}
+.ath-pillar__line {
+  height: 1px;
+  background: #000;
+  margin-bottom: 20px;
+  opacity: 0.2;
+}
+.ath-pillar__title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
 }
 
 /* ---- Taxonomy ---- */
 .ath-taxonomy__media {
-  grid-column: 2 / span 4;          /* cols 2-5 */
+  grid-column: 1 / span 6;
   aspect-ratio: 4 / 3;
 }
 .ath-taxonomy__copy {
-  grid-column: 8 / span 4;          /* cols 8-11 */
+  grid-column: 8 / span 4;
   align-self: center;
 }
 
-/* ---- Question into hi-fi ---- */
+/* ---- Question (8 cols centered) ---- */
 .ath-question {
   margin-bottom: 80px;
 }
 .ath-question__text {
-  grid-column: 4 / span 6;          /* cols 4-9 */
+  grid-column: 3 / span 8;
   font-size: 14px;
   line-height: 1.55;
   margin: 0;
+  text-align: center;
 }
 
 /* ---- Hi-fi exploration band (dark grey) ---- */
@@ -170,15 +198,21 @@
   background: #efe9d9;              /* off-white card surface */
   aspect-ratio: 3 / 4;
 }
-.ath-hifi__media--a { grid-column: 2 / span 4; }   /* cols 2-5 */
-.ath-hifi__media--b { grid-column: 7 / span 4; }   /* cols 7-10 */
+.ath-hifi__media--a { grid-column: 1 / span 6; }
+.ath-hifi__media--b { grid-column: 7 / span 6; }
 
-/* ---- What Shipped ---- */
+/* ---- Delivery 01 ---- */
 .ath-shipped__spacer {
-  grid-column: 2 / span 5;          /* reserved / future image slot */
+  grid-column: 1 / span 6;
 }
 .ath-shipped__copy {
-  grid-column: 8 / span 4;          /* cols 8-11 */
+  grid-column: 7 / span 6;
+}
+
+/* ---- Delivery 02 ---- */
+.ath-delivery-02__copy {
+  grid-column: 4 / span 6;
+  text-align: center;
 }
 
 /* ---- Footer ---- */
@@ -195,7 +229,9 @@
   .ath-section { margin-bottom: 64px; }
   .ath-title__main { font-size: 22px; }
   .ath-brief__text,
-  .ath-approach__copy,
+  .ath-detour__copy,
+  .ath-solution__copy,
+  .ath-delivery-02__copy,
   .ath-question__text,
   .ath-problem__media,
   .ath-problem__copy,
