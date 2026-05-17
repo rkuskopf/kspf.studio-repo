@@ -61,7 +61,11 @@
     {
       "showOnHome": true,
       "title": "alt. cosmetics",
-      "description": "Brand identity for Alt Cosmetics, a new product line from founder Anh [surname]. The system is built around a tactile, chrome material language — engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces."
+      "description": "Brand identity for Alt Cosmetics, a new product line from founder Anh [surname]. The system is built around a tactile, chrome material language — engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
+      "slides": [
+        "/assets/uploads/1alt.-01.png",
+        "/assets/uploads/1.png"
+      ]
     }
   ]
 }
