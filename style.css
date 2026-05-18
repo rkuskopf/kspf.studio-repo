@@ -167,9 +167,9 @@ body.grid-overlay{
 }
 
 
-.nav__link--home{ grid-column: 1 / span 2; }
+.nav__link--home{ grid-column: 1 / span 1; }
 .nav__link--information{
-  grid-column: 4 / span 2;
+  grid-column: 2 / span 1;
   justify-self: start;
 }
 
@@ -1071,8 +1071,8 @@ body.grid-overlay{
 	    grid-template-columns: repeat(6, minmax(0, 1fr));
 	  }
 
-	  .nav__link--home{ grid-column: 1 / span 2; }
-	  .nav__link--information{ grid-column: 3 / span 2; }
+	  .nav__link--home{ grid-column: 1 / span 1; }
+	  .nav__link--information{ grid-column: 2 / span 1; }
 
 	  .clients-overlay__list{
 	    grid-column: 1 / -1;
