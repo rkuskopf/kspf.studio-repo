@@ -536,6 +536,13 @@ body.grid-overlay{
   white-space: nowrap;
 }
 
+.project__title{
+  grid-column: 1 / span 12;
+  justify-self: start;
+  margin: 0;
+  white-space: nowrap;
+}
+
 /* --- footer --- */
 .footer{
   margin: 100px 0 0;
