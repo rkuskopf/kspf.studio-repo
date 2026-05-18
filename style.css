@@ -152,31 +152,6 @@ body.grid-overlay{
   align-items: center;
 }
 
-.nav__group{
-  grid-row: 1;
-  grid-column: 5 / -2;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--nav-group-gap);
-  justify-self: start;
-}
-
-.nav__pair{
-  grid-row: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  justify-self: start;
-  width: max-content;
-  position: relative;
-}
-
-.nav__pair--information,
-.nav__pair--clients{
-  grid-column: auto;
-  margin-left: 0;
-}
-
 .nav__link{
 		  color: inherit;
 	  text-decoration: underline;
@@ -192,10 +167,10 @@ body.grid-overlay{
 }
 
 
-.nav__link--home{ grid-column: 1 / span 2; }
-.nav__link--services{
-  grid-column: -2 / -1;
-  justify-self: end;
+.nav__link--home{ grid-column: 1 / span 1; }
+.nav__link--information{
+  grid-column: 2 / span 1;
+  justify-self: start;
 }
 
 .nav__link--close{
@@ -1096,8 +1071,8 @@ body.grid-overlay{
 	    grid-template-columns: repeat(6, minmax(0, 1fr));
 	  }
 
-	  .nav__link--home{ grid-column: 1 / span 2; }
-	  .nav__group{ grid-column: 3 / -2; }
+	  .nav__link--home{ grid-column: 1 / span 1; }
+	  .nav__link--information{ grid-column: 2 / span 1; }
 
 	  .clients-overlay__list{
 	    grid-column: 1 / -1;
@@ -1219,35 +1194,6 @@ body.grid-overlay{
 }
 
 @media (min-width: 1156px){
-	  .nav__group{
-      margin-left: 0;
-      display: contents;
-    }
-
-    .nav__pair{
-      display: contents;
-    }
-
-    .nav__link--information{
-      grid-column: 6 / span 1;
-      justify-self: end;
-      transform: translateX(-220px);
-    }
-
-    .nav__link--case{
-      grid-column: 6 / span 1;
-      justify-self: end;
-    }
-
-    .nav__link--close{
-      position: static;
-      left: auto;
-      top: auto;
-      grid-column: 6 / span 1;
-      justify-self: end;
-      transform: translateX(220px);
-    }
-
 	  .information-overlay__contact{
       position: absolute;
       top: 0;
@@ -1276,15 +1222,6 @@ body.grid-overlay{
   }
 }
 
-@media (min-width: 1499px){
-  .nav__link--information{
-    transform: translateX(-14.6862vw);
-  }
-
-  .nav__link--close{
-    transform: translateX(14.6862vw);
-  }
-}
   .overlay{
     padding-top: 80px;
   }

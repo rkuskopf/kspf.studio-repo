@@ -4,9 +4,7 @@
     "homeHref": "/",
     "informationLabel": "information",
     "informationHref": "#services",
-    "closeLabel": "x",
-    "servicesLabel": "services",
-    "servicesHref": "#services"
+    "closeLabel": "x"
   },
   "informationOverlay": {
     "contactTitle": "Contact",
