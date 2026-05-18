@@ -5,12 +5,13 @@
   const isVideoSrc = (src) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(src || "");
   const normalizeViewUrl = (url) => {
     if (!url) return "";
-    if (/^(https?:)?\/\//i.test(url)) return url;
+    if (/^(https?:)?\/\//i.test(url) || url.startsWith("/") || url.startsWith(".") || url.includes(".html")) return url;
     return `https://${url}`;
   };
 
   const formatViewLabel = (url) => {
     if (!url) return "visit site";
+    if (url.includes("case-study") || url.endsWith(".html")) return "view case study";
     try {
       const normalized = normalizeViewUrl(url);
       const { hostname } = new URL(normalized);

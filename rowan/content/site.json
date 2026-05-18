@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "homeLabel": "rowan",
+    "homeHref": "/rowan/",
+    "informationLabel": "information",
+    "informationHref": "#services",
+    "closeLabel": "x",
+    "servicesLabel": "work",
+    "servicesHref": "#projects"
+  },
+  "informationOverlay": {
+    "contactTitle": "Contact",
+    "contactBody": "Product design, UX research, and digital craft.\nEmail Rowan for roles, collaborations, or portfolio context.",
+    "contactEmail": "studio@kspf.au",
+    "servicesTitle": "Focus",
+    "services": [
+      "Product Design",
+      "UX Research",
+      "Information Architecture",
+      "Usability and Accessibility Review",
+      "Web Design and Build",
+      "Brand-Sensitive Front-End Craft"
+    ]
+  },
+  "profile": "Product designer with UX research depth and a brand-sensitive digital craft background. Rowan works across digital products, ecommerce, web, and internal systems through kspf.studio.",
+  "footer": {
+    "brand": "rowan",
+    "profileLabel": "Profile",
+    "contactLabel": "Contact",
+    "title": "Focus",
+    "contact": [
+      {
+        "label": "studio@kspf.au",
+        "href": "mailto:studio@kspf.au"
+      },
+      {
+        "label": "kspf.au",
+        "href": "https://kspf.au/"
+      }
+    ],
+    "columns": [
+      {
+        "groups": [
+          {
+            "heading": "Product",
+            "items": [
+              "Product Design",
+              "Interaction Design",
+              "Information Architecture",
+              "Prototype Direction"
+            ]
+          },
+          {
+            "heading": "Research",
+            "items": [
+              "Qualitative Research",
+              "Usability Evaluation",
+              "Accessibility Review",
+              "Mixed-Methods Synthesis"
+            ]
+          }
+        ]
+      },
+      {
+        "groups": [
+          {
+            "heading": "Digital Craft",
+            "items": [
+              "Custom HTML/CSS/JS",
+              "Brand-Sensitive Front-End",
+              "Ecommerce Experience",
+              "Editorial and Web Systems"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

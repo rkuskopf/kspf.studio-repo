@@ -1,0 +1,266 @@
+/* ---------------------------------------------------------------
+   Case Study — The Athenaeum + Taxonomy of Design (wireframe)
+   12-column grid · 50px gutters · 80px margins
+   --------------------------------------------------------------- */
+
+:root {
+  --ath-margin: 80px;
+  --ath-gutter: 50px;
+  --ath-cols: 12;
+  --ath-grey: #d9d9d9;
+  --ath-grey-dark: #595959;
+  --ath-text: #111;
+}
+
+.ath-page {
+  margin: 0;
+  background: #fff;
+  color: var(--ath-text);
+  font-family: "Inter", sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- Header ---- */
+.ath-header {
+  padding: 24px var(--ath-margin);
+}
+.ath-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 14px;
+}
+.ath-nav a {
+  color: var(--ath-text);
+  text-decoration: none;
+}
+.ath-nav a:hover { text-decoration: underline; }
+
+/* ---- Main / 12-col grid ---- */
+.ath {
+  padding: 0;
+}
+.ath-section {
+  display: grid;
+  grid-template-columns: repeat(var(--ath-cols), 1fr);
+  column-gap: var(--ath-gutter);
+  padding: 0 var(--ath-margin);
+  margin: 0 0 120px;
+}
+
+/* Grey media placeholders — accept <img>, <video>, slideshow children */
+.ath-media {
+  background: var(--ath-grey);
+  width: 100%;
+  display: block;
+  overflow: hidden;
+  position: relative;
+}
+.ath-media > img,
+.ath-media > video,
+.ath-media > picture > img,
+.ath-media > .slideshow,
+.ath-media > .slideshow > * {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ---- Typography ---- */
+.ath-h2 {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 0 0 16px;
+  letter-spacing: -0.01em;
+}
+.ath p {
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0 0 16px;
+}
+.ath p:last-child { margin-bottom: 0; }
+
+/* ---- Title ---- */
+.ath-title {
+  padding-top: 80px;
+  margin-bottom: 64px;
+  text-align: center;
+}
+.ath-title__main {
+  grid-column: 3 / span 8;
+  font-size: 28px;
+  font-weight: 500;
+  margin: 0 0 32px;
+  letter-spacing: -0.01em;
+}
+.ath-title__client {
+  grid-column: 3 / span 8;
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0;
+}
+
+/* ---- Hero ---- */
+.ath-hero__media {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 7;
+}
+
+/* ---- Brief ---- */
+.ath-brief__text {
+  grid-column: 3 / span 8;          /* cols 3-10 */
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ---- Problem (Split 6/6) ---- */
+.ath-problem__media {
+  grid-column: 1 / span 6;
+  aspect-ratio: 1 / 1;
+}
+.ath-problem__copy {
+  grid-column: 7 / span 6;
+  align-self: center;
+}
+
+/* ---- Detour (8 cols centered) ---- */
+.ath-detour__copy {
+  grid-column: 3 / span 8;
+  text-align: center;
+}
+
+/* ---- Solution ---- */
+.ath-solution__copy {
+  grid-column: 3 / span 8;
+  text-align: center;
+  margin-bottom: 60px;
+}
+.ath-solution__pillars {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--ath-cols), 1fr);
+  column-gap: var(--ath-gutter);
+}
+.ath-pillar {
+  grid-column: span 3;              /* 4 pillars * 3 cols = 12 cols */
+}
+.ath-pillar__line {
+  height: 1px;
+  background: #000;
+  margin-bottom: 20px;
+  opacity: 0.2;
+}
+.ath-pillar__title {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ---- Taxonomy ---- */
+.ath-taxonomy__media {
+  grid-column: 1 / span 6;
+  aspect-ratio: 4 / 3;
+}
+.ath-taxonomy__copy {
+  grid-column: 8 / span 4;
+  align-self: center;
+}
+
+/* ---- Question (8 cols centered) ---- */
+.ath-question {
+  margin-bottom: 80px;
+}
+.ath-question__text {
+  grid-column: 3 / span 8;
+  font-size: 14px;
+  line-height: 1.55;
+  margin: 0;
+  text-align: center;
+}
+
+/* ---- Hi-fi exploration band (dark grey) ---- */
+.ath-hifi {
+  background: var(--ath-grey-dark);
+  padding: 80px var(--ath-margin);
+  margin: 0 0 120px;
+  display: block;
+}
+.ath-hifi__inner {
+  display: grid;
+  grid-template-columns: repeat(var(--ath-cols), 1fr);
+  column-gap: var(--ath-gutter);
+}
+.ath-hifi__media {
+  background: #efe9d9;              /* off-white card surface */
+  aspect-ratio: 3 / 4;
+}
+.ath-hifi__media--a { grid-column: 1 / span 6; }
+.ath-hifi__media--b { grid-column: 7 / span 6; }
+
+/* ---- Delivery 01 ---- */
+.ath-shipped__spacer {
+  grid-column: 1 / span 6;
+}
+.ath-shipped__copy {
+  grid-column: 7 / span 6;
+}
+
+/* ---- Delivery 02 ---- */
+.ath-delivery-02__copy {
+  grid-column: 4 / span 6;
+  text-align: center;
+}
+
+/* ---- Footer ---- */
+.ath-footer {
+  padding: 40px var(--ath-margin) 60px;
+  font-size: 12px;
+  color: #555;
+}
+.ath-footer a { color: inherit; }
+
+/* ---- Responsive (collapse to single column under 800px) ---- */
+@media (max-width: 900px) {
+  :root { --ath-margin: 24px; --ath-gutter: 16px; }
+  .ath-section { margin-bottom: 64px; }
+  .ath-title__main { font-size: 22px; }
+  .ath-brief__text,
+  .ath-detour__copy,
+  .ath-solution__copy,
+  .ath-delivery-02__copy,
+  .ath-question__text,
+  .ath-problem__media,
+  .ath-problem__copy,
+  .ath-taxonomy__media,
+  .ath-taxonomy__copy,
+  .ath-shipped__spacer,
+  .ath-shipped__copy {
+    grid-column: 1 / -1;
+  }
+  .ath-shipped__spacer { display: none; }
+  .ath-hifi { padding: 40px var(--ath-margin); }
+  .ath-hifi__media--a,
+  .ath-hifi__media--b { grid-column: 1 / -1; margin-bottom: 16px; }
+}
+
+/* ---- Dev helper: visual 12-col grid overlay (toggle via ?grid in URL) ---- */
+.ath-page.has-grid::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  padding: 0 var(--ath-margin);
+  pointer-events: none;
+  z-index: 9999;
+  background:
+    linear-gradient(to right,
+      transparent 0,
+      transparent var(--ath-margin),
+      rgba(255,0,0,0.06) var(--ath-margin),
+      rgba(255,0,0,0.06) calc(100% - var(--ath-margin)),
+      transparent calc(100% - var(--ath-margin)),
+      transparent 100%);
+}
