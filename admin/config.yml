@@ -23,9 +23,8 @@ collections:
               - { label: "Home Label", name: "homeLabel", widget: "string" }
               - { label: "Home Link", name: "homeHref", widget: "string", required: false }
               - { label: "Information Label", name: "informationLabel", widget: "string" }
+              - { label: "Information Link", name: "informationHref", widget: "string", required: false }
               - { label: "Close Label", name: "closeLabel", widget: "string" }
-              - { label: "Services Label", name: "servicesLabel", widget: "string" }
-              - { label: "Services Link", name: "servicesHref", widget: "string", required: false }
           - label: "Information Overlay"
             name: "informationOverlay"
             widget: "object"

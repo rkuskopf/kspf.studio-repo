@@ -128,13 +128,7 @@
     const infoLinks = document.querySelectorAll(".js-information-link");
     infoLinks.forEach((link) => {
       setText(link, nav.informationLabel);
-      setHref(link, nav.informationHref || nav.servicesHref);
-    });
-
-    const servicesLinks = document.querySelectorAll(".nav__link--case");
-    servicesLinks.forEach((link) => {
-      setText(link, nav.servicesLabel);
-      setHref(link, nav.servicesHref);
+      setHref(link, nav.informationHref);
     });
 
     const profile = data.profile;
