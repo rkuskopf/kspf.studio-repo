@@ -75,6 +75,11 @@
       view.rel = "noopener";
       view.textContent = formatViewLabel(project.viewUrl);
       section.appendChild(view);
+    } else if (project.title) {
+      const title = document.createElement("p");
+      title.className = "project__title";
+      title.textContent = project.title;
+      section.appendChild(title);
     }
     const p = document.createElement("p");
     p.className = "project__text";
