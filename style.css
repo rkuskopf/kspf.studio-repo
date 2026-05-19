@@ -26,7 +26,7 @@
 	  --mockup-shadow-offset: 20px;
 	  --project-text-lines: 3;
 	  --project-text-gap: clamp(26px, 3.5vh, 34px);
-	  --project-gap: calc(var(--project-text-gap) + 26px);
+	  --project-gap: calc(var(--project-text-gap) + 46px);
 	  --intro-lines: 2;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(
