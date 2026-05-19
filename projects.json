@@ -13,16 +13,16 @@
     },
     {
       "showOnHome": true,
-      "title": "alt. cosmetics",
+      "title": "",
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "slides": [
+        "assets/uploads/alt.6.png",
         "/assets/uploads/alt.-3-packaging.png",
         "/assets/uploads/1.png",
-        "/assets/uploads/alt.video.01.mp4",
-        "/assets/uploads/render-switch-up.png"
+        "/assets/uploads/alt.video.01.mp4"
       ],
       "viewUrl": "",
-      "alt": "alt. cosmetics"
+      "alt": ""
     },
     {
       "title": "The Athenaeum",
@@ -53,12 +53,13 @@
       "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
+        "/assets/uploads/albus-video-01-720.mp4",
         "/assets/uploads/albus-01.png",
         "/assets/uploads/albus-03.png",
         "/assets/uploads/albus-04.png"
       ],
       "alt": "Project preview",
-      "showOnHome": true
+      "showOnHome": false
     },
     {
       "title": "AP-REPS",
