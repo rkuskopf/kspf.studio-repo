@@ -12,7 +12,7 @@
       "alt": "Jak Architecture website preview"
     },
     {
-      "showOnHome": true,
+      "showOnHome":false,
       "title": "",
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "slides": [
@@ -59,7 +59,7 @@
         "/assets/uploads/albus-04.png"
       ],
       "alt": "Project preview",
-      "showOnHome": false
+      "showOnHome": true
     },
     {
       "title": "AP-REPS",
