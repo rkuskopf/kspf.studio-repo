@@ -45,6 +45,9 @@ jobs:
 
           touch .gh-pages/.nojekyll
 
+      - name: Pre-render CMS content into HTML
+        run: node scripts/prerender.mjs .gh-pages
+
       - name: Commit and push deployment
         run: |
           cd .gh-pages
