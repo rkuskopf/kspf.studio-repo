@@ -11,6 +11,18 @@
       ],
       "alt": "Jak Architecture website preview"
     },
+        {
+      "title": "Albus Lumen",
+      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
+      "viewUrl": "https://www.albuslumen.com",
+      "slides": [
+        "/assets/uploads/Albus-video-02.mp4",
+        "/assets/uploads/albus-03.png",
+        "/assets/uploads/albus-04.png"
+      ],
+      "alt": "Project preview",
+      "showOnHome": true
+    },
     {
       "showOnHome":false,
       "title": "",
@@ -28,8 +40,9 @@
       "title": "The Athenaeum",
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "slides": [
-        "/assets/uploads/ath-03.png",
-        "/assets/uploads/ath-04.png"
+        "/assets/uploads/ath-border-01.png",
+        "/assets/uploads/ath-border-02.png",
+        "/assets/uploads/ath-border-03.png"
       ],
       "showOnHome": true,
       "viewUrl": "aesop.com"
@@ -47,19 +60,6 @@
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.46.04am.png"
       ],
       "alt": "Project preview"
-    },
-    {
-      "title": "Albus Lumen",
-      "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
-      "viewUrl": "https://www.albuslumen.com",
-      "slides": [
-        "/assets/uploads/albus-video-01-720.mp4",
-        "/assets/uploads/albus-01.png",
-        "/assets/uploads/albus-03.png",
-        "/assets/uploads/albus-04.png"
-      ],
-      "alt": "Project preview",
-      "showOnHome": true
     },
     {
       "title": "AP-REPS",
