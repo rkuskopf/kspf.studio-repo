@@ -1,0 +1,170 @@
+backend:
+  name: github
+  repo: rkuskopf/kspf.studio-repo
+  branch: cms-staging
+  base_url: https://dms-cms-proxy.studio-3cc.workers.dev
+  auth_endpoint: /auth
+
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+
+collections:
+  - name: "site"
+    label: "Site Settings"
+    files:
+      - file: "content/site.json"
+        label: "Global Content"
+        name: "global"
+        fields:
+          - label: "Navigation"
+            name: "nav"
+            widget: "object"
+            fields:
+              - { label: "Home Label", name: "homeLabel", widget: "string" }
+              - { label: "Home Link", name: "homeHref", widget: "string", required: false }
+              - { label: "Information Label", name: "informationLabel", widget: "string" }
+              - { label: "Information Link", name: "informationHref", widget: "string", required: false }
+              - { label: "Close Label", name: "closeLabel", widget: "string" }
+          - label: "Information Overlay"
+            name: "informationOverlay"
+            widget: "object"
+            fields:
+              - { label: "Contact Title", name: "contactTitle", widget: "string" }
+              - { label: "Contact Body", name: "contactBody", widget: "text" }
+              - { label: "Contact Email", name: "contactEmail", widget: "string" }
+              - { label: "Services Title", name: "servicesTitle", widget: "string", required: false }
+              - label: "Services"
+                name: "services"
+                widget: "list"
+                required: false
+                field: { label: "Service", name: "service", widget: "string" }
+          - label: "Footer"
+            name: "footer"
+            widget: "object"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - label: "Columns"
+                name: "columns"
+                widget: "list"
+                fields:
+                  - label: "Groups"
+                    name: "groups"
+                    widget: "list"
+                    fields:
+                      - { label: "Heading", name: "heading", widget: "string" }
+                      - { label: "Heading Link", name: "href", widget: "string", required: false }
+                      - label: "Items"
+                        name: "items"
+                        widget: "list"
+                        field: { label: "Item", name: "item", widget: "string" }
+
+  - name: "home"
+    label: "Home Page"
+    files:
+      - file: "content/home.json"
+        label: "Home Content"
+        name: "home"
+        fields:
+          - { label: "Page Title", name: "title", widget: "string", required: false }
+          - { label: "Meta Description", name: "metaDescription", widget: "text", required: false }
+          - { label: "Intro Text", name: "intro", widget: "text" }
+
+  - name: "experience"
+    label: "Experience Page"
+    files:
+      - file: "content/experience.json"
+        label: "Page Content"
+        name: "experience"
+        fields:
+          - { label: "Nav Intro Text", name: "navIntro", widget: "text" }
+          - { label: "Hero Text", name: "heroText", widget: "text" }
+          - { label: "CTA Label", name: "ctaLabel", widget: "string" }
+          - { label: "CTA Link", name: "ctaHref", widget: "string" }
+          - { label: "Cases Title", name: "casesTitle", widget: "string", required: false }
+          - label: "Cases"
+            name: "cases"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Company", name: "company", widget: "string" }
+              - { label: "Service", name: "service", widget: "string" }
+              - { label: "Link", name: "href", widget: "string", required: false }
+              - { label: "Media Image", name: "mediaImage", widget: "image", required: false }
+              - { label: "Media Class", name: "mediaClass", widget: "string", required: false }
+
+  - name: "projects"
+    label: "Projects"
+    files:
+      - file: "projects.json"
+        label: "Projects"
+        name: "projects"
+        fields:
+          - label: "Projects"
+            name: "projects"
+            widget: "list"
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+              - { label: "View URL", name: "viewUrl", widget: "string", required: false }
+              - { label: "Alt Text", name: "alt", widget: "string", required: false }
+              - { label: "Show on Home", name: "showOnHome", widget: "boolean", default: true, required: false, hint: "Turn this off to keep the project in CMS without rendering it on the homepage." }
+              - label: "Slides"
+                name: "slides"
+                widget: "list"
+                hint: "Upload images or video files for the project slideshow."
+                field: { label: "Slide", name: "slide", widget: "file" }
+
+  - name: "caseStudies"
+    label: "Case Studies"
+    folder: "content/case-studies"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Summary", name: "summary", widget: "text" }
+      - { label: "Role Label", name: "roleLabel", widget: "string" }
+      - { label: "Role Value", name: "roleValue", widget: "string" }
+      - label: "Slides"
+        name: "slides"
+        widget: "list"
+        hint: "Upload images or video files for the case-study hero slideshow."
+        field: { label: "Slide", name: "slide", widget: "file" }
+      - label: "Tabs"
+        name: "tabs"
+        widget: "list"
+        summary: "{{fields.label}}"
+        min: 1
+        fields:
+          - label: "Key"
+            name: "key"
+            widget: "select"
+            options:
+              - { label: "Challenge", value: "problem" }
+              - { label: "Approach", value: "uncovered" }
+              - { label: "Design principles", value: "principles" }
+              - { label: "The solution", value: "solution" }
+          - { label: "Label", name: "label", widget: "string" }
+          - { label: "Subtitle", name: "subtitle", widget: "string" }
+          - { label: "Body", name: "body", widget: "text", required: false }
+          - label: "Layout"
+            name: "layout"
+            widget: "select"
+            options:
+              - { label: "Media + text", value: "media" }
+              - { label: "Text + list", value: "list" }
+            default: "media"
+          - label: "List Items"
+            name: "items"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "Title", name: "title", widget: "string" }
+              - { label: "Description", name: "description", widget: "text" }
+          - label: "Slides"
+            name: "slides"
+            widget: "list"
+            hint: "Upload images or video files for this tab."
+            field: { label: "Slide", name: "slide", widget: "file" }
