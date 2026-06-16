@@ -11,6 +11,16 @@
       ],
       "alt": "Jak Architecture website preview"
     },
+        {
+      "title": "AP-REPS",
+      "description": "Refined and customised a Squarespace build for AP—REPS through bespoke front-end fixes, responsive behaviour and bespoke mobile animations. Collaborated with Lulu Chia to refresh the website for AP-REPS, a leading Australian talent agency.",
+      "viewUrl": "https://apreps.com.au",
+      "slides": [
+        "/assets/uploads/ap-desk-movie-02.mov",
+        "/assets/uploads/ap-reps-mobile-01.mov"
+      ],
+      "alt": "Project preview"
+    },
     {
       "title": "Albus Lumen",
       "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
@@ -22,16 +32,6 @@
       ],
       "alt": "Project preview",
       "showOnHome": true
-    },
-    {
-      "title": "AP-REPS",
-      "description": "Refined and customised a Squarespace build for AP—REPS through bespoke front-end fixes, responsive behaviour and bespoke mobile animations. Collaborated with Lulu Chia to refresh the website for AP-REPS, a leading Australian talent agency.",
-      "viewUrl": "https://apreps.com.au",
-      "slides": [
-        "/assets/uploads/ap-desk-movie-02.mov",
-        "/assets/uploads/ap-reps-mobile-01.mov"
-      ],
-      "alt": "Project preview"
     },
     {
       "showOnHome": false,
