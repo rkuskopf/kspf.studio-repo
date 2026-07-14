@@ -58,6 +58,40 @@ html {
   }
 }
 
+/* --- home project snap scroll --- */
+html:has(body[data-page="home"]) {
+  scroll-snap-type: y mandatory;
+}
+
+body[data-page="home"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+body[data-page="home"] .top {
+  position: fixed;
+  top: var(--page-pad-y);
+  left: var(--page-pad);
+  right: var(--page-pad);
+  width: auto;
+}
+
+body[data-page="home"] .projects {
+  margin-top: 0;
+  row-gap: 0;
+}
+
+body[data-page="home"] .project-block {
+  min-height: 100dvh;
+  scroll-snap-align: start;
+}
+
+body[data-page="home"] .footer {
+  min-height: 100dvh;
+  margin-top: 0;
+  scroll-snap-align: start;
+}
+
 body {
   margin: 0;
   padding: var(--page-pad-y) var(--page-pad);
@@ -1136,6 +1170,7 @@ body.grid-overlay {
       "hero"
       "name";
     row-gap: 10px;
+    align-content: center;
     min-height: auto;
     padding: 0;
   }
