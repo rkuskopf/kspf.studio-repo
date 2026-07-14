@@ -2,7 +2,7 @@
   "nav": {
     "homeLabel": "kspf",
     "homeHref": "/",
-    "informationLabel": "information",
+    "informationLabel": "Info",
     "informationHref": "#services",
     "closeLabel": "x"
   },

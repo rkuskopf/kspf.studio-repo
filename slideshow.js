@@ -98,6 +98,8 @@
       if (!Number.isFinite(maxAspect) || maxAspect <= 0) return;
       const value = maxAspect.toFixed(4);
       root.style.setProperty("--hero-aspect", value);
+      const projectBlock = root.closest(".project-block");
+      if (projectBlock) projectBlock.style.setProperty("--hero-aspect", value);
       const doc = document.documentElement;
       if (!doc.dataset.navHeroAspect) {
         doc.style.setProperty("--nav-hero-aspect", value);

@@ -4,7 +4,8 @@
 }
 
 :root {
-  --page-pad: 10px;
+  --page-pad: 15px;
+  --page-pad-y: 21px;
   --max: 1160px;
   --nav-max: 560px;
   --nav-group-gap: 100px;
@@ -26,7 +27,7 @@
   --mockup-shadow-offset: 20px;
   --project-text-lines: 3;
   --project-text-gap: clamp(26px, 3.5vh, 34px);
-  --project-gap: calc(var(--project-text-gap) + 60px);
+  --project-gap: 100px;
   --intro-lines: 2;
   --nav-hero-aspect: 1.6;
   --nav-hero-frame: min(calc(var(--hero-height) * var(--nav-hero-aspect)),
@@ -59,7 +60,7 @@ html {
 
 body {
   margin: 0;
-  padding: var(--page-pad);
+  padding: var(--page-pad-y) var(--page-pad);
   font-family: "Times New Roman", Times, serif;
   font-size: var(--type-base);
   line-height: 1.2;
@@ -138,30 +139,23 @@ body.grid-overlay {
   width: 100%;
   max-width: none;
   margin: 0;
-  display: grid;
-  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
-  column-gap: var(--gutter);
-  row-gap: 10px;
+  display: block;
   position: relative;
   z-index: 3001;
 }
 
 .nav {
-  display: grid;
-  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
-  column-gap: var(--gutter);
+  display: flex;
+  justify-content: center;
+  gap: 107px;
   width: 100%;
-  grid-column: 1 / -1;
   align-items: center;
+  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
 }
 
 .nav__link {
   color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 0.5px;
-  grid-row: 1;
-  justify-self: start;
+  text-decoration: none;
   background: none;
   border: 0;
   padding: 0;
@@ -171,12 +165,15 @@ body.grid-overlay {
 
 
 .nav__link--home {
-  grid-column: 1 / span 1;
+  font-weight: 400;
 }
 
 .nav__link--information {
-  grid-column: 2 / span 1;
-  justify-self: start;
+  font-weight: 400;
+}
+
+.nav__link--index {
+  font-weight: 400;
 }
 
 .nav__link--close {
@@ -361,10 +358,8 @@ body.grid-overlay {
 
 .projects {
   grid-column: 1 / -1;
-  margin-top: 60px;
+  margin-top: 100px;
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
-  column-gap: var(--gutter);
   row-gap: var(--project-gap);
   min-height: 100vh;
 }
@@ -374,11 +369,11 @@ body.grid-overlay {
 }
 
 .project-block {
-  grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
-  column-gap: var(--gutter);
-  row-gap: 0;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--hero-width)) minmax(0, 1fr);
+  grid-template-areas: "name hero category";
+  column-gap: 10px;
+  align-items: center;
 }
 
 .intro {
@@ -396,14 +391,13 @@ body.grid-overlay {
 
 /* --- hero image --- */
 .hero {
-  grid-column: 1 / -1;
+  grid-area: hero;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
-  column-gap: var(--gutter);
-  align-items: center;
-  align-content: center;
+  grid-template-columns: minmax(0, 1fr);
+  place-items: center;
   position: relative;
+  width: var(--hero-width);
   min-height: var(--hero-height);
   overflow-anchor: none;
   touch-action: pan-y;
@@ -412,12 +406,12 @@ body.grid-overlay {
 }
 
 .hero__media {
-  grid-column: 1 / -1;
+  grid-column: 1;
   grid-row: 1;
-  max-height: var(--hero-height);
   width: auto;
   height: auto;
   max-width: var(--hero-frame);
+  max-height: var(--hero-height);
   display: block;
   position: relative;
   z-index: 2;
@@ -473,7 +467,8 @@ body.grid-overlay {
   position: absolute;
   top: 0;
   bottom: 0;
-  width: 50vw;
+  height: auto;
+  width: 50%;
   background: transparent;
   border: 0;
   padding: 0;
@@ -503,6 +498,28 @@ body.grid-overlay {
 .hero__hit:focus-visible {
   outline: 1px solid #000;
   outline-offset: -1px;
+}
+
+.project__name,
+.project__category {
+  margin: 0;
+  color: #737373;
+  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
+  font-weight: 400;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.project__name {
+  grid-area: name;
+  justify-self: start;
+  text-align: left;
+}
+
+.project__category {
+  grid-area: category;
+  justify-self: end;
+  text-align: right;
 }
 
 .project__text {
@@ -1071,22 +1088,29 @@ body.grid-overlay {
 }
 
 /* --- responsive --- */
-@media (max-width: 1155px) {
+@media (max-width: 1280px) {
   :root {
     --page-pad: 15px;
+    --page-pad-y: 15px;
     --gutter: 16px;
+    --hero-height: clamp(320px, 60vh, 420px);
   }
 
   .nav {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    justify-content: center;
+    gap: 107px;
   }
 
   .nav__link--home {
-    grid-column: 1 / span 1;
+    order: 2;
   }
 
   .nav__link--information {
-    grid-column: 2 / span 1;
+    order: 1;
+  }
+
+  .nav__link--index {
+    order: 3;
   }
 
   .clients-overlay__list {
@@ -1100,17 +1124,24 @@ body.grid-overlay {
   }
 
   .projects {
-    display: block;
+    display: grid;
+    margin-top: 80px;
+    row-gap: 70px;
   }
 
   .project-block {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "hero"
+      "name";
+    row-gap: 10px;
     min-height: auto;
     padding: 0;
   }
 
   .project-block+.project-block {
-    margin-top: var(--project-gap);
+    margin-top: 0;
   }
 
   .intro {
@@ -1123,12 +1154,11 @@ body.grid-overlay {
   }
 
   .hero {
-    display: flex !important;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr);
     min-height: var(--hero-height);
     height: var(--hero-height);
+    width: 100%;
     margin: 0 auto;
     position: relative;
   }
@@ -1144,6 +1174,15 @@ body.grid-overlay {
     object-fit: contain;
     position: absolute;
     inset: 0;
+  }
+
+  .project__name {
+    width: min(calc(var(--hero-height) * var(--hero-aspect, 1.6)), 100%);
+    justify-self: center;
+  }
+
+  .project__category {
+    display: none;
   }
 
   .hero__meta {
@@ -1225,7 +1264,7 @@ body.grid-overlay {
   }
 }
 
-@media (min-width: 1156px) {
+@media (min-width: 1281px) {
   .information-overlay__contact {
     position: absolute;
     top: 0;
@@ -1270,7 +1309,7 @@ body.grid-overlay {
   text-align: left;
 }
 
-@media (max-width: 1155px) {
+@media (max-width: 1280px) {
   .information-overlay__services {
     margin-top: 80px;
   }

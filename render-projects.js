@@ -3,23 +3,6 @@
   if (!container) return;
 
   const isVideoSrc = (src) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(src || "");
-  const normalizeViewUrl = (url) => {
-    if (!url) return "";
-    if (/^(https?:)?\/\//i.test(url)) return url;
-    return `https://${url}`;
-  };
-
-  const formatViewLabel = (url) => {
-    if (!url) return "visit site";
-    try {
-      const normalized = normalizeViewUrl(url);
-      const { hostname } = new URL(normalized);
-      return hostname.replace(/^www\./i, "");
-    } catch {
-      return url;
-    }
-  };
-
   const isVisibleOnHome = (project) => project && project.showOnHome !== false;
 
   const createHero = (project, index) => {
@@ -64,29 +47,11 @@
     return figure;
   };
 
-  const createProjectText = (project) => {
-    const section = document.createElement("section");
-    section.className = "project";
-    if (project.viewUrl) {
-      const view = document.createElement("a");
-      view.className = "project__view";
-      view.href = normalizeViewUrl(project.viewUrl);
-      view.target = "_blank";
-      view.rel = "noopener";
-      view.textContent = formatViewLabel(project.viewUrl);
-      section.appendChild(view);
-    } else if (project.title) {
-      const title = document.createElement("p");
-      title.className = "project__title";
-      title.textContent = project.title;
-      section.appendChild(title);
-    }
-    const p = document.createElement("p");
-    p.className = "project__text";
-    p.textContent = project.description || "";
-    if (project.description) p.title = project.description;
-    section.appendChild(p);
-    return section;
+  const createProjectMeta = (className, text) => {
+    const meta = document.createElement("p");
+    meta.className = className;
+    meta.textContent = text || "";
+    return meta;
   };
 
   const renderProjects = (projects) => {
@@ -100,7 +65,11 @@
     visibleProjects.forEach((project, index) => {
       const block = document.createElement("section");
       block.className = "project-block";
-      block.append(createHero(project, index), createProjectText(project));
+      block.append(
+        createProjectMeta("project__name", project.displayName || project.title),
+        createHero(project, index),
+        createProjectMeta("project__category", project.category)
+      );
       container.appendChild(block);
     });
 
