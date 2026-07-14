@@ -35,6 +35,28 @@
 
   const playbackUpdaters = new Map();
 
+  const updateProjectMetadataWidth = (block) => {
+    if (!block) return;
+    const name = block.querySelector(".project__name");
+    const category = block.querySelector(".project__category");
+    const width = Math.max(
+      name ? name.getBoundingClientRect().width : 0,
+      category ? category.getBoundingClientRect().width : 0
+    );
+    if (width > 0) {
+      block.style.setProperty("--project-meta-width", `${Math.ceil(width)}px`);
+    }
+  };
+
+  const metadataObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver((entries) => {
+      const blocks = new Set(
+        entries.map((entry) => entry.target.closest(".project-block")).filter(Boolean)
+      );
+      blocks.forEach(updateProjectMetadataWidth);
+    })
+    : null;
+
   const setActiveRoot = (root) => {
     if (activeRoot === root) return;
     const previous = activeRoot;
@@ -165,6 +187,15 @@
     const prev = root.querySelector(".hero__hit--prev");
     const next = root.querySelector(".hero__hit--next");
     if (!img || !video || !prev || !next) return;
+
+    const projectBlock = root.closest(".project-block");
+    if (projectBlock) {
+      updateProjectMetadataWidth(projectBlock);
+      if (metadataObserver) {
+        projectBlock.querySelectorAll(".project__name, .project__category")
+          .forEach((meta) => metadataObserver.observe(meta));
+      }
+    }
 
     const transitionDuration = 400;
 

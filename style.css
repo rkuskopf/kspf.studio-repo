@@ -403,10 +403,14 @@ body.grid-overlay {
 }
 
 .project-block {
+  --project-meta-gap: 20px;
+  --project-meta-width: 140px;
+  --hero-intended-width: calc(var(--hero-height) * var(--hero-aspect, 1.6));
+  --hero-frame: min(var(--hero-intended-width),
+      max(0px, calc(100% - var(--project-meta-width) - var(--project-meta-gap) - var(--project-meta-width) - var(--project-meta-gap))));
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, var(--hero-width)) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) var(--hero-frame) minmax(0, 1fr);
   grid-template-areas: "name hero category";
-  column-gap: 10px;
   align-items: center;
 }
 
@@ -431,12 +435,12 @@ body.grid-overlay {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   position: relative;
-  width: var(--hero-width);
-  min-height: var(--hero-height);
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--hero-aspect, 1.6);
+  min-height: 0;
   overflow-anchor: none;
   touch-action: pan-y;
-  --hero-frame: min(calc(var(--hero-height) * var(--hero-aspect, 1.6)),
-      calc(100vw - (var(--page-pad) * 2)));
 }
 
 .hero__media {
@@ -444,8 +448,8 @@ body.grid-overlay {
   grid-row: 1;
   width: auto;
   height: auto;
-  max-width: var(--hero-frame);
-  max-height: var(--hero-height);
+  max-width: 100%;
+  max-height: 100%;
   display: block;
   position: relative;
   z-index: 2;
@@ -1127,7 +1131,6 @@ body.grid-overlay {
     --page-pad: 15px;
     --page-pad-y: 15px;
     --gutter: 16px;
-    --hero-height: clamp(320px, 60vh, 420px);
   }
 
   .nav {
@@ -1163,18 +1166,6 @@ body.grid-overlay {
     row-gap: 70px;
   }
 
-  .project-block {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-areas:
-      "hero"
-      "name";
-    row-gap: 10px;
-    align-content: center;
-    min-height: auto;
-    padding: 0;
-  }
-
   .project-block+.project-block {
     margin-top: 0;
   }
@@ -1186,38 +1177,6 @@ body.grid-overlay {
     overflow: visible;
     display: block;
     -webkit-line-clamp: unset;
-  }
-
-  .hero {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr);
-    min-height: var(--hero-height);
-    height: var(--hero-height);
-    width: 100%;
-    margin: 0 auto;
-    position: relative;
-  }
-
-  .hero__media {
-    grid-column: 1 / -1;
-    justify-self: center;
-    margin-inline: auto;
-    width: 100%;
-    height: 100%;
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    position: absolute;
-    inset: 0;
-  }
-
-  .project__name {
-    width: min(calc(var(--hero-height) * var(--hero-aspect, 1.6)), 100%);
-    justify-self: center;
-  }
-
-  .project__category {
-    display: none;
   }
 
   .hero__meta {
@@ -1296,6 +1255,32 @@ body.grid-overlay {
       "text"
       "list";
     row-gap: 28px;
+  }
+}
+
+@media (max-width: 700px) {
+  .project-block {
+    --hero-frame: min(var(--hero-intended-width), 100%);
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "hero"
+      "name";
+    row-gap: 10px;
+    align-content: center;
+    padding: 0;
+  }
+
+  .hero {
+    justify-self: center;
+  }
+
+  .project__name {
+    width: var(--hero-frame);
+    justify-self: center;
+  }
+
+  .project__category {
+    display: none;
   }
 }
 
