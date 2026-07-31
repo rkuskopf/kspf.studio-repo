@@ -533,6 +533,24 @@ body.grid-overlay {
   cursor: var(--cursor-next);
 }
 
+body[data-page="home"] .hero__hit {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  width: 50vw;
+  height: auto;
+}
+
+body[data-page="home"] .hero__hit--prev {
+  left: 0;
+  right: auto;
+}
+
+body[data-page="home"] .hero__hit--next {
+  left: auto;
+  right: 0;
+}
+
 .hero__hit:focus-visible {
   outline: 1px solid #000;
   outline-offset: -1px;

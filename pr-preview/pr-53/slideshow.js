@@ -165,7 +165,7 @@
       }
     });
 
-    if (best) setActiveRoot(best);
+    setActiveRoot(bestArea > 0 ? best : null);
   };
 
   let rafId = 0;
