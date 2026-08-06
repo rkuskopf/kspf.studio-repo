@@ -87,6 +87,7 @@ body[data-page="home"] .project-block {
 }
 
 body[data-page="home"] .footer {
+  display: none;
   min-height: 100dvh;
   margin-top: 0;
   scroll-snap-align: start;
