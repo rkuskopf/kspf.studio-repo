@@ -436,7 +436,8 @@ body.grid-overlay {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   position: relative;
-  width: 100%;
+  width: min(100%, 800px);
+  justify-self: center;
   height: auto;
   aspect-ratio: var(--hero-aspect, 1.6);
   min-height: 0;
