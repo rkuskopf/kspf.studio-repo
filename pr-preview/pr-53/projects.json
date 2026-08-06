@@ -2,8 +2,8 @@
   "projects": [
     {
       "title": "Jak Architecture",
-      "displayName": "jakarchitecture",
-      "category": "web",
+      "displayName": "Jak Architecture",
+      "category": "Web Development",
       "description": "New website for Jak Architecture, created in collaboration with designer Chloe Larkin. Jak is a local architecture firm whose work strengthens the connection between people, place, and context. \nThe site extends JAK’s timeless and culturally responsive ethos, and is built with purpose to endure.",
       "viewUrl": "https://www.jakarchitecture.com",
       "slides": [
@@ -15,8 +15,8 @@
     },
         {
       "title": "AP-REPS",
-      "displayName": "ap—reps",
-      "category": "web",
+      "displayName": "AP—REPS",
+      "category": "Web Development",
       "description": "Refined and customised a Squarespace build for AP—REPS through bespoke front-end fixes, responsive behaviour and bespoke mobile animations. Collaborated with Lulu Chia to refresh the website for AP-REPS, a leading Australian talent agency.",
       "viewUrl": "https://apreps.com.au",
       "slides": [
@@ -27,8 +27,8 @@
     },
     {
       "title": "Albus Lumen",
-      "displayName": "albus lumen",
-      "category": "web",
+      "displayName": "Albus Lumen",
+      "category": "Web Development",
       "description": "Custom Shopify Theme updates for Albus Lumen. New Navigation, Category Structure and Blog implementation to improve user experience and site performance.",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
@@ -43,7 +43,7 @@
       "showOnHome": false,
       "title": "",
       "displayName": "alt. cosmetics",
-      "category": "identity",
+      "category": "Identity",
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "slides": [
         "assets/uploads/alt.6.png",
@@ -56,8 +56,8 @@
     },
     {
       "title": "The Athenaeum",
-      "displayName": "aesop athenaeum",
-      "category": "ux/ui",
+      "displayName": "Aesop",
+      "category": "Product Design",
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "slides": [
         "/assets/uploads/ath-border-01.png",
@@ -69,7 +69,7 @@
     },
     {
       "title": "Christopher Myles Henderson",
-      "displayName": "christopher myles",
+      "displayName": "Christopher Myles Henderson",
       "category": "web",
       "description": "Portfolio website for Chris Henderson – multidisciplinary artist. Utilising overlays and an asymmetrical grid to accompany the depth and eccentricity of his work",
       "showOnHome": true,
