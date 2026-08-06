@@ -97,7 +97,7 @@ body[data-page="home"] .footer {
 body {
   margin: 0;
   padding: var(--page-pad-y) var(--page-pad);
-  font-family: "Times New Roman", Times, serif;
+  font-family: "courier new", Courier, monospace;
   font-size: var(--type-base);
   line-height: 1.2;
   font-weight: 400;
@@ -186,7 +186,8 @@ body.grid-overlay {
   gap: 107px;
   width: 100%;
   align-items: center;
-  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
+  font-family: "courier new", Courier, monospace;
+  font-size: 12px;
 }
 
 .nav__link {
@@ -562,8 +563,9 @@ body[data-page="home"] .hero__hit--next {
 .project__name,
 .project__category {
   margin: 0;
-  color: #737373;
+  color: #C1C1C1;
   font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
+  font-size: 12px;
   font-weight: 400;
   line-height: 1.2;
   white-space: nowrap;
@@ -579,6 +581,14 @@ body[data-page="home"] .hero__hit--next {
   grid-area: category;
   justify-self: end;
   text-align: right;
+}
+
+body[data-page="home"] .project__name {
+  font-weight: 700;
+}
+
+body[data-page="home"] .project__category {
+  display: none;
 }
 
 .project__text {
@@ -1310,7 +1320,7 @@ body[data-page="home"] .hero__hit--next {
     grid-area: auto;
     position: absolute;
     left: 50%;
-    bottom: 8vh;
+    bottom: var(--page-pad-y);
     transform: translateX(-50%);
     text-align: center;
   }
