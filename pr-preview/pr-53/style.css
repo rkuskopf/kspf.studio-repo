@@ -83,6 +83,7 @@ body[data-page="home"] .projects {
 
 body[data-page="home"] .project-block {
   min-height: 100dvh;
+  position: relative;
   scroll-snap-align: start;
 }
 
@@ -436,7 +437,7 @@ body.grid-overlay {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   position: relative;
-  width: min(100%, 800px);
+  width: min(100%, 700px);
   justify-self: center;
   height: auto;
   aspect-ratio: var(--hero-aspect, 1.6);
@@ -1300,6 +1301,17 @@ body[data-page="home"] .hero__hit--next {
 
   .project__category {
     display: none;
+  }
+}
+
+@media (min-width: 701px) {
+  body[data-page="home"] .project__name {
+    grid-area: auto;
+    position: absolute;
+    left: 50%;
+    bottom: 8vh;
+    transform: translateX(-50%);
+    text-align: center;
   }
 }
 
