@@ -186,7 +186,8 @@ body.grid-overlay {
   gap: 107px;
   width: 100%;
   align-items: center;
-  font-family: "courier new", Courier, monospace;
+  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
+  font-weight: bold;
   font-size: 12px;
 }
 
@@ -202,15 +203,15 @@ body.grid-overlay {
 
 
 .nav__link--home {
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .nav__link--information {
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .nav__link--index {
-  font-weight: 400;
+  font-weight: 700;
 }
 
 .nav__link--close {
