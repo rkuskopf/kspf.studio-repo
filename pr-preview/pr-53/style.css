@@ -87,6 +87,7 @@ body[data-page="home"] .project-block {
 }
 
 body[data-page="home"] .footer {
+  display: none;
   min-height: 100dvh;
   margin-top: 0;
   scroll-snap-align: start;
@@ -610,7 +611,6 @@ body[data-page="home"] .hero__hit--next {
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
   row-gap: 60px;
-  border-top: 1px solid rgba(0, 0, 0, 0.6);
   align-items: start;
 }
 
