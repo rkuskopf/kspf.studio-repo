@@ -253,9 +253,9 @@ html.has-panel-navigation body[data-page="home"] {
 
 .has-panel-navigation .home-panel-rail {
   display: flex;
-  width: calc(var(--panel-viewport-w) * 3);
+  width: calc(var(--panel-viewport-w) + var(--panel-viewport-w) + var(--panel-viewport-w));
   height: 100%;
-  transform: translate3d(calc(var(--panel-viewport-w) * -1), 0, 0);
+  transform: translate3d(calc(0px - var(--panel-viewport-w)), 0, 0);
   transition: transform 1000ms cubic-bezier(0.65, 0, 0.35, 1);
   will-change: transform;
 }
@@ -265,7 +265,7 @@ html.has-panel-navigation body[data-page="home"] {
 }
 
 .has-panel-navigation [data-view="case-studies"] .home-panel-rail {
-  transform: translate3d(calc(var(--panel-viewport-w) * -2), 0, 0);
+  transform: translate3d(calc(0px - var(--panel-viewport-w) - var(--panel-viewport-w)), 0, 0);
 }
 
 .has-panel-navigation .home-panel {
@@ -291,7 +291,7 @@ Keep `.project-block` at `min-height: 100dvh` with `scroll-snap-align: start`. A
 - [ ] **Step 3: Add active and reduced-motion styles**
 
 ```css
-.nav__link.is-active {
+body[data-page="home"] .nav__link.is-active {
   text-decoration: underline;
   text-decoration-thickness: 0.5px;
   text-underline-offset: 3px;
