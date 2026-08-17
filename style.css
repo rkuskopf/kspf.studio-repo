@@ -552,8 +552,7 @@ body[data-page="home"] .hero__hit--next {
 .project__name,
 .project__category {
   margin: 0;
-  color: #C1C1C1;
-  font-family: 'Courier New', Courier, monospace
+  font-family: 'Courier New', Courier, monospace;
   font-size: 12px;
   font-weight: 400;
   line-height: 1.2;
@@ -573,7 +572,6 @@ body[data-page="home"] .hero__hit--next {
 }
 
 body[data-page="home"] .project__name {
-  font-weight: 700;
 }
 
 body[data-page="home"] .project__category {
