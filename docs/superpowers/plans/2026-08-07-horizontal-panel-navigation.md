@@ -149,8 +149,7 @@ Create `panel-navigation.js` as this focused IIFE:
     window.addEventListener("hashchange", restoreFromLocation);
 
     const initialHash = window.location.hash;
-    const shouldNormalizeHash = !isKnownHash(initialHash) || initialHash === "#home";
-    setView(viewFromHash(initialHash), shouldNormalizeHash ? "replace" : null);
+    setView(viewFromHash(initialHash), isKnownHash(initialHash) ? null : "replace");
   };
 
   if (document.readyState === "loading") {
