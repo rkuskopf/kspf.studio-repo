@@ -80,21 +80,11 @@ body[data-page="home"] {
   padding: 130px var(--page-pad) var(--page-pad);
 }
 
-.home-panel--info,
-.home-panel--case-studies {
-  scroll-snap-align: start;
-}
-
 html.has-panel-navigation,
 html.has-panel-navigation body[data-page="home"] {
   width: 100%;
   height: 100%;
   overflow: hidden;
-}
-
-html.has-panel-navigation body[data-page="home"] {
-  padding-left: 0;
-  padding-right: 0;
 }
 
 .has-panel-navigation .home-panel-stage {

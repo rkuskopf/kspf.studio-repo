@@ -42,7 +42,6 @@ const assert = require("node:assert/strict");
 const {
   hashForView,
   normalizeView,
-  shouldNormalizeHash,
   viewFromHash,
 } = require("../panel-navigation.js");
 
@@ -62,14 +61,6 @@ test("uses no hash for home", () => {
   assert.equal(hashForView("home"), "");
   assert.equal(hashForView("info"), "#info");
   assert.equal(hashForView("case-studies"), "#case-studies");
-});
-
-test("normalizes home and unknown hashes", () => {
-  assert.equal(shouldNormalizeHash("#home"), true);
-  assert.equal(shouldNormalizeHash("#other"), true);
-  assert.equal(shouldNormalizeHash("#info"), false);
-  assert.equal(shouldNormalizeHash("#case-studies"), false);
-  assert.equal(shouldNormalizeHash(""), false);
 });
 ```
 
@@ -96,18 +87,8 @@ Create `panel-navigation.js` as this focused IIFE:
     return normalized === "home" ? "" : `#${normalized}`;
   };
 
-  const isKnownHash = (hash) =>
-    hash === "" || hash === "#" || hash === "#home" ||
-    hash === "#info" || hash === "#case-studies";
-  const shouldNormalizeHash = (hash) => !isKnownHash(hash) || hash === "#home";
-
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-      hashForView,
-      normalizeView,
-      shouldNormalizeHash,
-      viewFromHash,
-    };
+    module.exports = { hashForView, normalizeView, viewFromHash };
   }
 
   if (typeof document === "undefined" || typeof window === "undefined") return;
@@ -119,6 +100,10 @@ Create `panel-navigation.js` as this focused IIFE:
     const links = Array.from(document.querySelectorAll("[data-panel-target]"));
     const panels = Array.from(document.querySelectorAll("[data-panel]"));
     if (!root || links.length === 0 || panels.length !== 3) return;
+
+    const isKnownHash = (hash) =>
+      hash === "" || hash === "#" || hash === "#home" ||
+      hash === "#info" || hash === "#case-studies";
 
     const syncUrl = (view, mode) => {
       if (!mode) return;
@@ -159,14 +144,13 @@ Create `panel-navigation.js` as this focused IIFE:
       });
     });
 
-    const restoreFromLocation = () => {
-      const hash = window.location.hash;
-      setView(viewFromHash(hash), shouldNormalizeHash(hash) ? "replace" : null);
-    };
+    const restoreFromLocation = () => setView(viewFromHash(window.location.hash));
     window.addEventListener("popstate", restoreFromLocation);
     window.addEventListener("hashchange", restoreFromLocation);
 
-    restoreFromLocation();
+    const initialHash = window.location.hash;
+    const shouldNormalizeHash = !isKnownHash(initialHash) || initialHash === "#home";
+    setView(viewFromHash(initialHash), shouldNormalizeHash ? "replace" : null);
   };
 
   if (document.readyState === "loading") {
@@ -183,7 +167,7 @@ The early class addition prevents an initial flash of Info. Modified-clicks keep
 
 Run: `node --test tests/panel-navigation.test.cjs`
 
-Expected: 4 tests PASS.
+Expected: 3 tests PASS.
 
 - [ ] **Step 5: Commit the controller**
 
@@ -261,11 +245,6 @@ html.has-panel-navigation body[data-page="home"] {
   overflow: hidden;
 }
 
-html.has-panel-navigation body[data-page="home"] {
-  padding-left: 0;
-  padding-right: 0;
-}
-
 .has-panel-navigation .home-panel-stage {
   width: var(--panel-viewport-w);
   height: var(--panel-viewport-h);
@@ -307,7 +286,7 @@ html.has-panel-navigation body[data-page="home"] {
 .has-panel-navigation .home-panel--case-studies { order: 3; }
 ```
 
-Keep `.project-block` at `min-height: 100dvh` with `scroll-snap-align: start`. Add panel-appropriate padding to Info while leaving the Case Studies surface empty. Give the Info and Case Studies panels `scroll-snap-align: start` so their fallback anchors remain reachable when the controller is unavailable and document-level snapping is active.
+Keep `.project-block` at `min-height: 100dvh` with `scroll-snap-align: start`. Add panel-appropriate padding to Info while leaving the Case Studies surface empty.
 
 - [ ] **Step 3: Add active and reduced-motion styles**
 

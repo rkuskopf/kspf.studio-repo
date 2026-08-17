@@ -13,22 +13,8 @@
     return normalized === "home" ? "" : `#${normalized}`;
   };
 
-  const isKnownHash = (hash) =>
-    hash === "" ||
-    hash === "#" ||
-    hash === "#home" ||
-    hash === "#info" ||
-    hash === "#case-studies";
-
-  const shouldNormalizeHash = (hash) => !isKnownHash(hash) || hash === "#home";
-
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = {
-      hashForView,
-      normalizeView,
-      shouldNormalizeHash,
-      viewFromHash,
-    };
+    module.exports = { hashForView, normalizeView, viewFromHash };
   }
 
   if (typeof document === "undefined" || typeof window === "undefined") return;
@@ -40,6 +26,13 @@
     const links = Array.from(document.querySelectorAll("[data-panel-target]"));
     const panels = Array.from(document.querySelectorAll("[data-panel]"));
     if (!root || links.length === 0 || panels.length !== 3) return;
+
+    const isKnownHash = (hash) =>
+      hash === "" ||
+      hash === "#" ||
+      hash === "#home" ||
+      hash === "#info" ||
+      hash === "#case-studies";
 
     const syncUrl = (view, mode) => {
       if (!mode) return;
@@ -86,14 +79,13 @@
       });
     });
 
-    const restoreFromLocation = () => {
-      const hash = window.location.hash;
-      setView(viewFromHash(hash), shouldNormalizeHash(hash) ? "replace" : null);
-    };
+    const restoreFromLocation = () => setView(viewFromHash(window.location.hash));
     window.addEventListener("popstate", restoreFromLocation);
     window.addEventListener("hashchange", restoreFromLocation);
 
-    restoreFromLocation();
+    const initialHash = window.location.hash;
+    const shouldNormalizeHash = !isKnownHash(initialHash) || initialHash === "#home";
+    setView(viewFromHash(initialHash), shouldNormalizeHash ? "replace" : null);
   };
 
   if (document.readyState === "loading") {
