@@ -186,8 +186,8 @@ body.grid-overlay {
   gap: 107px;
   width: 100%;
   align-items: center;
-  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
-  font-weight: bold;
+  font-family: 'Courier New', Courier, monospace;
+  font-weight: 400;
   font-size: 12px;
 }
 
@@ -201,18 +201,6 @@ body.grid-overlay {
   cursor: pointer;
 }
 
-
-.nav__link--home {
-  font-weight: 700;
-}
-
-.nav__link--information {
-  font-weight: 700;
-}
-
-.nav__link--index {
-  font-weight: 700;
-}
 
 .nav__link--close {
   display: inline-block;
@@ -565,7 +553,7 @@ body[data-page="home"] .hero__hit--next {
 .project__category {
   margin: 0;
   color: #C1C1C1;
-  font-family: "akzidenz-grotesk-next-pro", Arial, sans-serif;
+  font-family: 'Courier New', Courier, monospace
   font-size: 12px;
   font-weight: 400;
   line-height: 1.2;
@@ -902,7 +890,7 @@ body[data-page="home"] .project__category {
 .case-study-page h4,
 .case-study-page h5,
 .case-study-page h6 {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
 }
 
 .case-accordion {
@@ -941,8 +929,7 @@ body[data-page="home"] .project__category {
 .case-accordion__subtitle {
   margin-top: 10px;
   font-size: 40px;
-  font-weight: 700;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: 'Courier New', Courier, monospace;
   line-height: 1.1;
 }
 
