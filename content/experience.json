@@ -1,4 +1,5 @@
 {
+  "navIntro": "",
   "heroText": "To win and keep customers, today's business leaders must create a seamless, unique, and memorable digital experience. Making customer experience a strategic priority is no longer a differentiator, but a requirement for success.",
   "ctaLabel": "Develop your next winning user experience",
   "ctaHref": "mailto:hello@kspf.au",
@@ -9,17 +10,24 @@
       "company": "Aesop",
       "service": "Experience Design",
       "href": "/case-study-aesop.html",
+      "mediaImage": "",
       "mediaClass": "exp-case__media--aesop"
     },
     {
       "title": "Balancing regional nuance with global cohesion",
       "company": "Aesop",
-      "service": "Experience Design"
+      "service": "Experience Design",
+      "href": "",
+      "mediaImage": "",
+      "mediaClass": ""
     },
     {
       "title": "Balancing regional nuance with global cohesion",
       "company": "Aesop",
-      "service": "Experience Design"
+      "service": "Experience Design",
+      "href": "",
+      "mediaImage": "",
+      "mediaClass": ""
     }
   ]
 }
