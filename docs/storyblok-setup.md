@@ -83,6 +83,36 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 The local preview is `http://localhost:8000/`.
 
+## 4. Preview drafts inside Storyblok
+
+The Visual Editor preview is local-only. It reads saved draft content into memory, keeps the preview token on the Node server, and does not change `projects.json` or any tracked `content/*.json` file.
+
+Start the secure preview server:
+
+```sh
+node --env-file=.env scripts/preview-storyblok.mjs
+```
+
+The first run creates an ignored self-signed certificate in `.storyblok-preview/`. Open [https://localhost:8001/](https://localhost:8001/) in Chrome and accept the certificate warning once.
+
+Then configure Storyblok:
+
+1. Open the KSPF space.
+2. Go to **Settings -> Visual Editor**.
+3. Set the default Preview URL to `https://localhost:8001/`.
+4. Open a story and switch from **Form** to **Visual** if the preview is hidden.
+
+Story routes are handled automatically: `home`, `site`, and `projects/*` preview on the homepage; `experience` previews on the experience page; and the Aesop case-study story previews on its case-study page.
+
+To review a change without publishing it:
+
+1. Edit the story and select **Save**.
+2. The preview refreshes with the saved draft.
+3. Check Storyblok's Desktop, Mobile, or Full-width preview.
+4. Select **Publish** only when the change is ready for the public website.
+
+Keep the terminal command running while using the Visual Editor. Stop it with `Control-C` when finished. This integration refreshes after Save or Publish; it does not render unsaved keystrokes in real time.
+
 ## Content model
 
 The source-controlled schema lives in `scripts/storyblok-schema.mjs` and maps to the current site as follows:
@@ -99,4 +129,4 @@ The production sync uses Storyblok's read-only [Content Delivery API](https://ww
 
 ## Visual Editor boundary
 
-This first integration provides Storyblok's structured editing and asset library while retaining a fully static GitHub Pages deployment. Storyblok's live Visual Editor requires a separate HTTPS preview runtime that fetches draft content and loads the Storyblok Bridge. Do not put the preview token into the public production site. Add that preview environment only if live in-context editing is required.
+The local preview provides secure save-to-refresh draft review while retaining a fully static GitHub Pages deployment. The Storyblok Bridge is injected only by the local HTTPS server. The preview token is never added to the public production site.
