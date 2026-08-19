@@ -215,6 +215,9 @@
 
     const videoAlt = cloneMedia(video, "hero__video--alt");
     videoAlt.removeAttribute("src");
+    // cloneNode does not preserve the video element's runtime muted state.
+    videoAlt.defaultMuted = video.defaultMuted || video.muted;
+    videoAlt.muted = video.muted;
     video.insertAdjacentElement("afterend", videoAlt);
 
     const imageSlots = [img, imgAlt];
