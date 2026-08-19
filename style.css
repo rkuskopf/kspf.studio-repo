@@ -1311,10 +1311,20 @@ body[data-page="home"] .project__category {
   body[data-page="home"] .project__name {
     grid-area: auto;
     position: absolute;
-    left: 50%;
-    bottom: var(--page-pad-y);
-    transform: translateX(-50%);
-    text-align: center;
+    top: 50%;
+    left: var(--page-pad);
+    transform: translateY(-50%);
+    text-align: left;
+  }
+
+  body[data-page="home"] .project__category {
+    grid-area: auto;
+    position: absolute;
+    top: 50%;
+    right: var(--page-pad);
+    display: block;
+    transform: translateY(-50%);
+    text-align: right;
   }
 }
 
