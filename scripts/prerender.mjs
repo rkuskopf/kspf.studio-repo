@@ -56,9 +56,9 @@ if (home) {
   if (typeof home.intro === "string" && home.intro) {
     // Replace the inner text of the intro paragraph and keep its title in sync.
     html = html.replace(
-      /(<p class="intro js-home-intro"[^>]*?)(\stitle="[\s\S]*?")?(\s*>)[\s\S]*?(<\/p>)/i,
-      (_m, open, _oldTitle, close, end) =>
-        `${open} title="${escapeAttr(home.intro)}"${close}\n     ${escapeHtml(
+      /(<p\b(?=[^>]*\bclass="[^"]*\bjs-home-intro\b[^"]*")[^>]*)(>)[\s\S]*?(<\/p>)/i,
+      (_m, open, close, end) =>
+        `${open.replace(/\s+title="[^"]*"/i, "")} title="${escapeAttr(home.intro)}"${close}\n     ${escapeHtml(
           home.intro
         )}\n    ${end}`
     );

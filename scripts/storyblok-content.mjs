@@ -58,6 +58,7 @@ export const mapSiteStory = (story) => {
       homeHref: storyblokLink(nav.home_href),
       informationLabel: nav.information_label || "",
       informationHref: storyblokLink(nav.information_href),
+      showAbout: nav.show_about === true,
       closeLabel: nav.close_label || "",
     },
     informationOverlay: {

@@ -23,7 +23,8 @@ export const STORYBLOK_COMPONENTS = [
       home_href: field("multilink", "Home link", 1),
       information_label: field("text", "Information label", 2, { required: true }),
       information_href: field("multilink", "Information link", 3),
-      close_label: field("text", "Close label", 4),
+      show_about: field("boolean", "Show ABOUT", 4, { default_value: "false" }),
+      close_label: field("text", "Close label", 5),
     },
   },
   {

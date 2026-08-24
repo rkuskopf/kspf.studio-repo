@@ -49,6 +49,7 @@ const siteStory = (site) => ({
         home_href: toLink(site.nav?.homeHref),
         information_label: site.nav?.informationLabel || "",
         information_href: toLink(site.nav?.informationHref),
+        show_about: site.nav?.showAbout === true,
         close_label: site.nav?.closeLabel || "",
       }),
     ],

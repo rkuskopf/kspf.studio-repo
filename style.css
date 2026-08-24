@@ -70,7 +70,7 @@ body[data-page="home"] {
 
 body[data-page="home"] .top {
   position: absolute;
-  top: var(--page-pad-y);
+  top: 30px;
   left: var(--page-pad);
   right: var(--page-pad);
   width: auto;
@@ -182,13 +182,17 @@ body.grid-overlay {
 
 .nav {
   display: flex;
-  justify-content: center;
-  gap: 107px;
-  width: 100%;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0;
+  width: min(181px, 100%);
+  margin: 0 auto;
   align-items: center;
+  text-align: center;
   font-family: 'Courier New', Courier, monospace;
   font-weight: 400;
   font-size: 12px;
+  line-height: 1;
 }
 
 .nav__link {
@@ -201,8 +205,29 @@ body.grid-overlay {
   cursor: pointer;
 }
 
-.nav__link--information,
-.nav__link--index {
+.nav__link--home,
+.nav__link--information {
+  font-family: "akzidenz-grotesk-next-pro", Helvetica, Arial, sans-serif;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+.nav .nav__intro {
+  display: block;
+  min-height: 0;
+  max-height: none;
+  margin: 17px 0 0;
+  overflow: visible;
+  line-height: 1;
+  white-space: nowrap;
+  -webkit-line-clamp: unset;
+}
+
+.nav__link--information {
+  margin-top: 25px;
+}
+
+.nav__link[hidden] {
   display: none;
 }
 
@@ -1154,23 +1179,6 @@ body[data-page="home"] .project__category {
     --page-pad: 15px;
     --page-pad-y: 15px;
     --gutter: 16px;
-  }
-
-  .nav {
-    justify-content: center;
-    gap: 107px;
-  }
-
-  .nav__link--home {
-    order: 2;
-  }
-
-  .nav__link--information {
-    order: 1;
-  }
-
-  .nav__link--index {
-    order: 3;
   }
 
   .clients-overlay__list {
