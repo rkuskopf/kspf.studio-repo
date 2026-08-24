@@ -2,23 +2,27 @@
 
 ## Objective
 
-Turn GitHub issues #56–#66 into a roadmap that can be worked without re-interpreting the migration each time. Keep #67 as the overall rebuild, preserve the current static site until cutover, and make every executable ticket demoable or verifiable on its own.
+Turn GitHub issues #56–#66 into a roadmap that can be worked without re-interpreting the migration each time. Keep #67 as the overall rebuild, make the current static deployment reliable until cutover, establish the Storyblok–Cloudinary–Next.js media boundary, and make every executable ticket demoable or verifiable on its own.
 
 ## Current state
 
 - The repository is a static HTML/CSS/JavaScript site with a Storyblok-to-JSON compatibility pipeline and GitHub Pages deployment.
 - There is no Next.js application or `package.json` yet.
+- The production workflow pushes a generated commit to `gh-pages`, but it does not trigger and verify the corresponding Pages deployment or prove that the live site serves that revision.
+- The repository has no Cloudinary configuration or documented media-provider boundary; portfolio video can therefore remain ambiguous between Storyblok, GitHub, and a delivery provider.
 - The existing Storyblok schema, delivery, preview, tests, and documentation still depend on the Experience story.
 - The current homepage uses vertical scroll snapping, JavaScript-rendered project slideshows, and fixed previous/next hit areas.
 - #56–#66 are native sub-issues of #67 and have native blocker relationships, but #57, #62, #63, #65, and #66 still combine several independently deliverable outcomes.
 
 ## Constraints
 
-- The live static site and its deployment remain intact until the replacement is validated.
+- The live static site remains intact and reliably deployable until the replacement is validated.
 - The framework migration is not a redesign. The current homepage is the parity baseline.
 - The reverted horizontal rail is not revived. Scroll work must preserve a normal vertical document and must test slideshow controls.
 - Experience is removed, not migrated.
 - Media performance is a release requirement and blocks production cutover.
+- Storyblok owns content, editorial media metadata, and stable Cloudinary references; Cloudinary owns and delivers the primarily video/media asset library; Next.js is the frontend.
+- Cloudinary configuration and one real video tracer must be complete before the downstream portfolio image and video slices implement the provider boundary.
 - `/crm` remains outside the public portfolio migration.
 - Follow-on layout, project-page, and multi-site capabilities do not block the first production cutover unless their work is explicitly pulled into it.
 
@@ -46,6 +50,7 @@ This could create uniform issue sizes, but it would duplicate or invalidate the 
 - #60: implement the vertical Information → Navigation → Portfolio document flow.
 - #61: add the one-column/three-column feed variant without duplicating content.
 - #64: remove the Experience surface across the live site, Storyblok pipeline, preview, tests, and docs.
+- #81: make the current GitHub Pages deployment and cache invalidation reliable while the replacement is built.
 
 Each of these receives the standard `Parent`, `What to build`, `Acceptance criteria`, and `Blocked by` structure.
 
@@ -91,17 +96,22 @@ Each of these receives the standard `Parent`, `What to build`, `Acceptance crite
    - Blocked by the live cutover.
    - Removes GitHub Pages/static generation, Decap, generated JSON plumbing, obsolete root assets, and updates documentation only after reference checks.
 
+The eventual cleanup in #65 does not replace #81: the legacy production path must work reliably for the duration of the migration.
+
 ### #66 — media performance workstream
 
-1. **Serve responsive, lazy-loaded portfolio images from Storyblok metadata**
-   - Blocked by #57 and #58.
-   - Delivers correct dimensions, responsive sources, first-viewport priority, and off-screen lazy loading.
-2. **Gate portfolio video loading and serve web-ready encodes**
-   - Blocked by #57 and #58.
-   - Delivers poster images, viewport-gated sources, approved web formats, and accessible playback.
-3. **Enforce desktop and mobile media performance budgets before cutover**
+1. **Configure Cloudinary and deliver one portfolio video end-to-end**
+   - Blocked by #56 and #58.
+   - Establishes credentials/configuration, asset conventions, Storyblok reference fields, Next.js delivery resolution, and one real published-and-draft video tracer.
+2. **Serve responsive portfolio images through the Storyblok–Cloudinary boundary**
+   - Blocked by #57 and the Cloudinary foundation slice.
+   - Delivers correct dimensions, Cloudinary responsive variants, first-viewport priority, and off-screen lazy loading from Storyblok metadata and stable asset references.
+3. **Gate Cloudinary portfolio video loading by viewport and intent**
+   - Blocked by #57 and the Cloudinary foundation slice.
+   - Delivers Cloudinary posters and web variants, viewport-gated sources, no GitHub or Storyblok production-video origin, and accessible playback.
+4. **Enforce desktop and mobile media performance budgets before cutover**
    - Blocked by the image slice, video slice, and #59.
-   - Adds repeatable checks that fail visibly when the initial page requests all media or exceeds the agreed budgets.
+   - Adds repeatable checks that fail visibly when the initial page requests all media, bypasses the agreed Cloudinary transformations, or exceeds the agreed budgets.
 
 ## Tracker conventions
 
@@ -114,7 +124,8 @@ Each of these receives the standard `Parent`, `What to build`, `Acceptance crite
 ## Verification
 
 - Query GitHub after publishing and confirm every executable ticket has the intended parent and blocker set.
-- Confirm #67 still has #56–#66 as its eleven direct sub-issues.
+- Confirm #67 has #56–#66 plus #81 as its twelve direct sub-issues.
+- Confirm #66 has #82 first, followed by #78, #79, and #77, with downstream blockers pointing through the Cloudinary foundation.
 - Confirm #45 is nested under #63 and no duplicate second-site ticket was created.
 - Confirm labels and the Portfolio milestone match the tracker conventions.
 - Confirm the repository remains unchanged except for this scope document and the implementation plan.
