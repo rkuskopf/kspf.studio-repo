@@ -402,7 +402,7 @@ body.grid-overlay {
 .project-block {
   --project-meta-gap: 20px;
   --project-meta-width: 140px;
-  --hero-intended-width: calc(var(--hero-height) * var(--hero-aspect, 1.6));
+  --hero-intended-width: var(--hero-width);
   --hero-frame: min(var(--hero-intended-width),
       max(0px, calc(100% - var(--project-meta-width) - var(--project-meta-gap) - var(--project-meta-width) - var(--project-meta-gap))));
   display: grid;
@@ -432,7 +432,7 @@ body.grid-overlay {
   grid-template-columns: minmax(0, 1fr);
   place-items: center;
   position: relative;
-  width: min(100%, 800px);
+  width: min(100%, var(--hero-width));
   justify-self: center;
   height: auto;
   aspect-ratio: var(--hero-aspect, 1.6);
