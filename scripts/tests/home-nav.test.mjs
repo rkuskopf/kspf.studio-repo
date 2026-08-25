@@ -31,9 +31,10 @@ test("maps Storyblok ABOUT visibility with a disabled default", () => {
   assert.equal(mapSiteStory(siteStory(undefined)).nav.showAbout, false);
 });
 
-const renderAboutVisibility = async (showAbout) => {
+const renderAboutVisibility = async (showAbout, deploymentRevision = "") => {
   const source = await readFile(new URL("../../site-content.js", import.meta.url), "utf8");
   const attributes = new Map();
+  let requestedUrl = "";
   const aboutLink = {
     hidden: false,
     textContent: "About",
@@ -53,25 +54,32 @@ const renderAboutVisibility = async (showAbout) => {
     },
     querySelector(selector) {
       if (selector === ".nav__link--home") return homeLink;
+      if (selector === 'meta[name="kspf-deployment-revision"]' && deploymentRevision) {
+        return { content: deploymentRevision };
+      }
       return null;
     },
   };
-  const fetch = async () => ({
-    ok: true,
-    json: async () => ({
-      nav: {
-        homeLabel: "KSPF",
-        informationLabel: "ABOUT",
-        informationHref: "#services",
-        showAbout,
-      },
-    }),
-  });
+  const fetch = async (url) => {
+    requestedUrl = url;
+    return {
+      ok: true,
+      json: async () => ({
+        nav: {
+          homeLabel: "KSPF",
+          informationLabel: "ABOUT",
+          informationHref: "#services",
+          showAbout,
+        },
+      }),
+    };
+  };
 
-  vm.runInNewContext(source, { document, fetch, console });
+  const window = {};
+  vm.runInNewContext(source, { document, fetch, console, window });
   await new Promise((resolve) => setImmediate(resolve));
 
-  return { aboutLink, attributes };
+  return { aboutLink, attributes, requestedUrl };
 };
 
 test("hides ABOUT when Storyblok disables it", async () => {
@@ -82,6 +90,12 @@ test("hides ABOUT when Storyblok disables it", async () => {
 test("shows ABOUT when Storyblok enables it", async () => {
   const { aboutLink } = await renderAboutVisibility(true);
   assert.equal(aboutLink.hidden, false);
+});
+
+test("requests the same versioned Storyblok snapshot that was pre-rendered", async () => {
+  const deploymentRevision = "1234567890ab-abcdef123456";
+  const { requestedUrl } = await renderAboutVisibility(false, deploymentRevision);
+  assert.equal(requestedUrl, `content/site.json?v=${deploymentRevision}`);
 });
 
 test("pre-renders the CMS intro into the three-row navigation", async (t) => {
@@ -108,5 +122,81 @@ test("pre-renders the CMS intro into the three-row navigation", async (t) => {
   assert.match(
     html,
     /<p class="intro nav__intro js-home-intro" title="CMS Intro">\s*CMS Intro\s*<\/p>/
+  );
+});
+
+test("pre-renders the Storyblok navigation so hydration cannot swap its initial labels", async (t) => {
+  const targetDir = await mkdtemp(join(tmpdir(), "kspf-site-nav-"));
+  t.after(() => rm(targetDir, { recursive: true, force: true }));
+  await mkdir(join(targetDir, "content"));
+  await writeFile(
+    join(targetDir, "index.html"),
+    '<html><head><title>Home</title></head><body><a class="nav__link nav__link--home" href="/old">Code KSPF</a><a class="nav__link nav__link--information js-information-link" href="#old">Code ABOUT</a></body></html>',
+    "utf8"
+  );
+  await writeFile(join(targetDir, "content/home.json"), JSON.stringify({ title: "Home" }), "utf8");
+  await writeFile(
+    join(targetDir, "content/site.json"),
+    JSON.stringify({
+      nav: {
+        homeLabel: "Storyblok KSPF",
+        homeHref: "/",
+        informationLabel: "Storyblok ABOUT",
+        informationHref: "#services",
+        showAbout: false,
+      },
+    }),
+    "utf8"
+  );
+
+  await execFileAsync(process.execPath, [
+    new URL("../prerender.mjs", import.meta.url).pathname,
+    targetDir,
+  ]);
+
+  const html = await readFile(join(targetDir, "index.html"), "utf8");
+  assert.match(
+    html,
+    /<a class="nav__link nav__link--home" href="\/">Storyblok KSPF<\/a>/
+  );
+  assert.match(
+    html,
+    /<a class="nav__link nav__link--information js-information-link" href="#services" hidden>Storyblok ABOUT<\/a>/
+  );
+});
+
+test("pre-render removes the fallback hidden state when Storyblok enables ABOUT", async (t) => {
+  const targetDir = await mkdtemp(join(tmpdir(), "kspf-visible-about-"));
+  t.after(() => rm(targetDir, { recursive: true, force: true }));
+  await mkdir(join(targetDir, "content"));
+  await writeFile(
+    join(targetDir, "index.html"),
+    '<html><head><title>Home</title></head><body><a class="nav__link nav__link--home" href="/">KSPF</a><a class="nav__link nav__link--information js-information-link" href="#services" hidden>ABOUT</a></body></html>',
+    "utf8"
+  );
+  await writeFile(join(targetDir, "content/home.json"), '{}\n', "utf8");
+  await writeFile(
+    join(targetDir, "content/site.json"),
+    JSON.stringify({
+      nav: {
+        homeLabel: "KSPF",
+        homeHref: "/",
+        informationLabel: "ABOUT",
+        informationHref: "#services",
+        showAbout: true,
+      },
+    }),
+    "utf8"
+  );
+
+  await execFileAsync(process.execPath, [
+    new URL("../prerender.mjs", import.meta.url).pathname,
+    targetDir,
+  ]);
+
+  const html = await readFile(join(targetDir, "index.html"), "utf8");
+  assert.match(
+    html,
+    /<a class="nav__link nav__link--information js-information-link" href="#services">ABOUT<\/a>/
   );
 });

@@ -1,10 +1,12 @@
 (() => {
+  const contentUrl =
+    typeof window.kspfContentUrl === "function" ? window.kspfContentUrl : (path) => path;
   const metaDescription = document.querySelector('meta[name="description"]');
   const introEl = document.querySelector(".js-home-intro");
 
   if (!metaDescription && !introEl) return;
 
-  fetch("content/home.json", { cache: "no-cache" })
+  fetch(contentUrl("content/home.json"), { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
       if (!data) return;

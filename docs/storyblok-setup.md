@@ -2,7 +2,7 @@
 
 This repo keeps its existing static HTML, CSS, JavaScript, and GitHub Pages hosting. Storyblok supplies structured content during deployment, and `scripts/sync-storyblok.mjs` converts that content into the JSON files the site already renders.
 
-The checked-in JSON remains a working fallback until Storyblok is connected. The existing Decap `/admin` surface is intentionally retained during the cutover and can be removed after Storyblok content has been verified in production.
+Published Storyblok stories are the production content source of truth. The checked-in JSON is only a local/offline fallback and can be older than Storyblok. The existing Decap `/admin` surface is intentionally retained during the cutover and can be removed after Storyblok content has been verified in production.
 
 ## 1. Create the Storyblok space
 
@@ -55,9 +55,25 @@ In the GitHub repository settings, add:
 - Actions secret `STORYBLOK_PUBLIC_TOKEN`
 - Actions variable `STORYBLOK_REGION` with `ap`, `eu`, `us`, `ca`, or `cn`
 
-Run the **Deploy Production Site** workflow once. It will validate the Storyblok response, generate the site's existing JSON files, pre-render the home metadata and intro, and deploy to the existing `gh-pages` branch.
+Run the **Deploy Production Site** workflow once. It will:
 
-The workflow also runs every 15 minutes, so published Storyblok changes reach the site without a code commit. GitHub Pages does not provide an anonymous build-hook URL; if instant publish is needed later, add a small authenticated webhook receiver that dispatches this same workflow.
+1. fetch one published Storyblok snapshot;
+2. generate the site's JSON files and pre-render both Home and Site navigation content into the initial HTML;
+3. stamp HTML, CSS, JavaScript, and CMS requests with one deterministic deployment revision;
+4. push the generated artifact to `gh-pages`;
+5. explicitly request the legacy GitHub Pages build when the branch changed;
+6. wait for Pages to build that exact `gh-pages` commit; and
+7. verify that `https://kspf.au/deployment.json` reports the exact generated deployment revision, including both the expected `main` source revision and the Storyblok content hash.
+
+The workflow also runs every 15 minutes, so published Storyblok changes reach the site without a code commit. Scheduled GitHub Actions can start late; when a Storyblok publish must go live immediately, dispatch the same production workflow from GitHub or run:
+
+```sh
+gh workflow run deploy.yml --ref main
+```
+
+The workflow fails if Pages builds the wrong revision, the custom domain changes, HTTPS cannot serve the manifest, or the live manifest remains stale. A safe recovery is to rerun the failed workflow; the generated revision is deterministic, so retrying the same source and Storyblok snapshot does not create a different artifact. Do not edit `gh-pages` by hand.
+
+Each successful Pages build replaces and invalidates the HTML document, which contains the deployment revision in a `kspf-deployment-revision` meta tag. Local CSS and JavaScript asset URLs, plus browser requests for generated Storyblok JSON, carry that same revision as a query parameter. The live smoke check fetches `deployment.json` without using the browser cache and compares both the source and content parts of the revision, so a Storyblok-only update cannot be mistaken for the previous release.
 
 ## 3. Work locally
 
@@ -68,6 +84,8 @@ Pull published content:
 ```sh
 node --env-file=.env scripts/sync-storyblok.mjs --version published
 ```
+
+This command writes the published Storyblok snapshot into the local JSON files. Use it before reviewing the plain static server, and do not treat an older checked-in fallback value as newer than Storyblok.
 
 Pull draft content for local review:
 
