@@ -122,6 +122,7 @@
       root.style.setProperty("--hero-aspect", value);
       const projectBlock = root.closest(".project-block");
       if (projectBlock) projectBlock.style.setProperty("--hero-aspect", value);
+      scheduleHomeProjectGap();
       const doc = document.documentElement;
       if (!doc.dataset.navHeroAspect) {
         doc.style.setProperty("--nav-hero-aspect", value);
@@ -131,6 +132,71 @@
   };
 
   const roots = [];
+
+  const getProjectContentBounds = (block) => {
+    if (!block) return null;
+    const rects = Array.from(
+      block.querySelectorAll(
+        ".hero, .hero__media.is-active, .project__name, .project__category"
+      )
+    )
+      .filter((element) => window.getComputedStyle(element).display !== "none")
+      .map((element) => element.getBoundingClientRect())
+      .filter((rect) => rect.width > 0 && rect.height > 0);
+
+    if (!rects.length) return null;
+    return {
+      top: Math.min(...rects.map((rect) => rect.top)),
+      bottom: Math.max(...rects.map((rect) => rect.bottom)),
+    };
+  };
+
+  const updateHomeProjectGap = () => {
+    if (document.body.dataset.page !== "home") return;
+    const projects = document.querySelector("body[data-page=\"home\"] .projects");
+    const blocks = projects
+      ? Array.from(projects.querySelectorAll(":scope > .project-block"))
+      : [];
+    if (!projects || blocks.length < 2) return;
+
+    const desiredGap = Number.parseFloat(window.getComputedStyle(projects).rowGap) || 70;
+    let changed = false;
+
+    blocks.slice(0, -1).forEach((block, index) => {
+      const nextBlock = blocks[index + 1];
+      const blockBounds = getProjectContentBounds(block);
+      const nextBounds = getProjectContentBounds(nextBlock);
+      if (!blockBounds || !nextBounds) return;
+
+      const currentGap = nextBounds.top - blockBounds.bottom;
+      const currentOffset = Number.parseFloat(
+        window.getComputedStyle(block).marginBottom
+      ) || 0;
+      const nextOffset = currentOffset + desiredGap - currentGap;
+
+      if (Math.abs(nextOffset - currentOffset) > 0.5) {
+        block.style.setProperty("--project-gap-offset", `${nextOffset}px`);
+        changed = true;
+      }
+    });
+
+    if (changed) {
+      scheduleHomeProjectGap();
+    }
+  };
+
+  let projectGapRafId = 0;
+  const scheduleHomeProjectGap = () => {
+    if (projectGapRafId) return;
+    projectGapRafId = window.requestAnimationFrame(() => {
+      projectGapRafId = 0;
+      updateHomeProjectGap();
+    });
+  };
+
+  const projectLayoutObserver = typeof ResizeObserver === "function"
+    ? new ResizeObserver(scheduleHomeProjectGap)
+    : null;
 
   const pickMostVisible = () => {
     if (!roots.length) return;
@@ -195,6 +261,12 @@
         projectBlock.querySelectorAll(".project__name, .project__category")
           .forEach((meta) => metadataObserver.observe(meta));
       }
+      if (projectLayoutObserver) {
+        projectLayoutObserver.observe(root);
+        projectBlock.querySelectorAll(".project__name, .project__category")
+          .forEach((meta) => projectLayoutObserver.observe(meta));
+      }
+      scheduleHomeProjectGap();
     }
 
     const transitionDuration = 400;
@@ -223,6 +295,14 @@
     const imageSlots = [img, imgAlt];
     const videoSlots = [video, videoAlt];
     const allMedia = [...imageSlots, ...videoSlots];
+
+    if (projectLayoutObserver) {
+      allMedia.forEach((media) => projectLayoutObserver.observe(media));
+    }
+    imageSlots.forEach((image) => image.addEventListener("load", scheduleHomeProjectGap));
+    videoSlots.forEach((video) => {
+      video.addEventListener("loadedmetadata", scheduleHomeProjectGap);
+    });
 
     allMedia.forEach((media) => {
       media.classList.add("is-hidden");
@@ -361,6 +441,7 @@
       hideAllExcept(el);
       showMedia(el, immediate);
       activeMediaEl = el;
+      scheduleHomeProjectGap();
     };
 
     const scheduleVideoCleanup = () => {
@@ -563,6 +644,10 @@
   }
 
   window.addEventListener("scroll", schedulePickMostVisible, { passive: true });
-  window.addEventListener("resize", schedulePickMostVisible);
+  window.addEventListener("resize", () => {
+    schedulePickMostVisible();
+    scheduleHomeProjectGap();
+  });
   schedulePickMostVisible();
+  scheduleHomeProjectGap();
 })();

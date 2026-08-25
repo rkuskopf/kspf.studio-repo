@@ -78,12 +78,18 @@ body[data-page="home"] .top {
 
 body[data-page="home"] .projects {
   margin-top: 0;
-  row-gap: 0;
+  row-gap: 70px;
 }
 
 body[data-page="home"] .project-block {
-  min-height: 100dvh;
+  min-height: 0;
+  margin-bottom: var(--project-gap-offset, 0px);
   position: relative;
+  scroll-snap-align: center;
+}
+
+body[data-page="home"] .project-block:first-child {
+  min-height: 100dvh;
   scroll-snap-align: start;
 }
 
