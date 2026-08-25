@@ -1,6 +1,10 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { promisify } from "node:util";
+
+const execFileAsync = promisify(execFile);
 
 const workflowPaths = [
   ".github/workflows/deploy.yml",
@@ -38,6 +42,33 @@ test("production deployment prepares a revisioned artifact and verifies the live
   assert.match(workflow, /--source-revision "\$GITHUB_SHA"/);
   assert.match(workflow, /--deployment-revision "\$EXPECTED_DEPLOYMENT_REVISION"/);
   assert.match(workflow, /--request-build/);
+});
+
+test("production deployment fails when published Storyblok content cannot be fetched", async () => {
+  const workflow = await readFile(
+    new URL("../../.github/workflows/deploy.yml", import.meta.url),
+    "utf8"
+  );
+  const command = workflow.match(
+    /- name: Pull published content from Storyblok[\s\S]*?^        run: (.+)$/m
+  )?.[1];
+
+  assert.ok(command, "production Storyblok sync command is missing");
+  await assert.rejects(
+    execFileAsync("bash", ["-eo", "pipefail", "-c", command], {
+      cwd: new URL("../../", import.meta.url),
+      env: {
+        ...process.env,
+        STORYBLOK_ACCESS_TOKEN: "",
+        STORYBLOK_PUBLIC_TOKEN: "",
+      },
+    }),
+    (error) => {
+      assert.equal(error.code, 1);
+      assert.match(error.stderr, /Missing Storyblok public token/);
+      return true;
+    }
+  );
 });
 
 test("PR previews use the same revisioned Storyblok artifact preparation", async () => {

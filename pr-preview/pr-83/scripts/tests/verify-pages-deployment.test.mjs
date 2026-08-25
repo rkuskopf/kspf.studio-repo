@@ -31,7 +31,7 @@ test("requests and verifies the exact legacy Pages build and live source revisio
       );
     }
     if (parsed.pathname.endsWith("/pages")) {
-      return response(200, { cname: "kspf.au" });
+      return response(200, { cname: "kspf.au", https_enforced: true });
     }
     if (parsed.hostname === "kspf.au" && parsed.pathname === "/deployment.json") {
       return response(200, {
@@ -76,7 +76,9 @@ test("continues when GitHub reports that an automatic Pages build is already que
     if (parsed.pathname.endsWith("/pages/builds/latest")) {
       return response(200, { status: "built", commit: expectedCommit });
     }
-    if (parsed.pathname.endsWith("/pages")) return response(200, { cname: "kspf.au" });
+    if (parsed.pathname.endsWith("/pages")) {
+      return response(200, { cname: "kspf.au", https_enforced: true });
+    }
     if (parsed.hostname === "kspf.au") {
       return response(200, {
         sourceRevision: expectedSourceRevision,
@@ -140,7 +142,9 @@ test("rejects stale Storyblok content even when the main source revision is unch
     if (parsed.pathname.endsWith("/pages/builds/latest")) {
       return response(200, { status: "built", commit: expectedCommit });
     }
-    if (parsed.pathname.endsWith("/pages")) return response(200, { cname: "kspf.au" });
+    if (parsed.pathname.endsWith("/pages")) {
+      return response(200, { cname: "kspf.au", https_enforced: true });
+    }
     if (parsed.hostname === "kspf.au") {
       return response(200, {
         sourceRevision: expectedSourceRevision,
@@ -166,5 +170,45 @@ test("rejects stale Storyblok content even when the main source revision is unch
       wait: async () => {},
     }),
     /did not serve deployment revision/i
+  );
+});
+
+test("rejects a Pages configuration that does not enforce HTTPS", async () => {
+  const expectedCommit = "7777777777777777777777777777777777777777";
+  const expectedSourceRevision = "8888888888888888888888888888888888888888";
+  const expectedDeploymentRevision = "888888888888-999999999999";
+  const fetchImpl = async (url) => {
+    const parsed = new URL(url);
+    if (parsed.pathname.endsWith("/pages/builds/latest")) {
+      return response(200, { status: "built", commit: expectedCommit });
+    }
+    if (parsed.pathname.endsWith("/pages")) {
+      return response(200, { cname: "kspf.au", https_enforced: false });
+    }
+    if (parsed.hostname === "kspf.au") {
+      return response(200, {
+        sourceRevision: expectedSourceRevision,
+        contentRevision: "9".repeat(64),
+        deploymentRevision: expectedDeploymentRevision,
+      });
+    }
+    throw new Error(`Unexpected request: ${url}`);
+  };
+
+  await assert.rejects(
+    verifyPagesDeployment({
+      repo: "rkuskopf/kspf.studio-repo",
+      token: "test-token",
+      expectedCommit,
+      expectedSourceRevision,
+      expectedDeploymentRevision,
+      siteUrl: "https://kspf.au",
+      expectedCname: "kspf.au",
+      timeoutMs: 2,
+      intervalMs: 1,
+      fetchImpl,
+      wait: async () => {},
+    }),
+    /HTTPS enforcement is disabled/i
   );
 });

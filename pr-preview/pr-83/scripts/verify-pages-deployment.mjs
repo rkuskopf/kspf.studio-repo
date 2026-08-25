@@ -103,6 +103,9 @@ export const verifyPagesDeployment = async ({
   if (expectedCname && pages.cname !== expectedCname) {
     throw new Error(`GitHub Pages CNAME is "${pages.cname || "unset"}", expected "${expectedCname}".`);
   }
+  if (pages.https_enforced !== true) {
+    throw new Error(`GitHub Pages HTTPS enforcement is disabled for ${liveUrl.hostname}.`);
+  }
 
   let manifest = null;
   for (let attempt = 0; attempt < maxAttempts; attempt += 1) {
