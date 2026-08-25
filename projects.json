@@ -15,20 +15,6 @@
       "showOnHome": true
     },
     {
-      "title": "Albus Lumen",
-      "displayName": "Albus Lumen",
-      "category": "Web",
-      "description": "",
-      "viewUrl": "https://www.albuslumen.com",
-      "slides": [
-        "https://a.storyblok.com/f/294596336853918/x/f37cebccaf/untitled-19-august-2026-at-14-54-31-2-albus-3.mp4",
-        "/assets/uploads/albus-04.png",
-        "/assets/uploads/Albus-video-02.mp4"
-      ],
-      "alt": "Project preview",
-      "showOnHome": true
-    },
-    {
       "title": "",
       "displayName": "alt. cosmetics",
       "category": "Identity",
@@ -42,6 +28,20 @@
       ],
       "alt": "",
       "showOnHome": false
+    },
+    {
+      "title": "ALBUS LUMEN",
+      "displayName": "Albus Lumen",
+      "category": "Web",
+      "description": "",
+      "viewUrl": "https://www.albuslumen.com",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787648225/Sequence_01_1.mp4",
+        "/assets/uploads/albus-04.png",
+        "/assets/uploads/Albus-video-02.mp4"
+      ],
+      "alt": "Project preview",
+      "showOnHome": true
     },
     {
       "title": "The Athenaeum",
