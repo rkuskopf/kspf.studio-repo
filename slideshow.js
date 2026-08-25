@@ -1,6 +1,22 @@
 (() => {
   let activeRoot = null;
 
+  const setMediaPortraitClass = (media, aspect) => {
+    const isPortrait = Number.isFinite(aspect) && aspect < 1;
+    media.classList.toggle("is-portrait", isPortrait);
+    return isPortrait;
+  };
+
+  const createMediaPortraitUpdater = (loadMediaAspect) => (media, src) =>
+    loadMediaAspect(src).then((aspect) => {
+      setMediaPortraitClass(media, aspect);
+      return aspect;
+    });
+
+  if (typeof module !== "undefined" && module.exports) {
+    module.exports = { createMediaPortraitUpdater, setMediaPortraitClass };
+  }
+
   const parseSlides = (raw) => {
     if (!raw) return [];
     const trimmed = raw.trim();
@@ -324,10 +340,14 @@
     };
     playbackUpdaters.set(root, updatePlayback);
 
-    const updatePortraitFlag = (src) => {
-      loadAspect(src).then((aspect) => {
-        root.classList.toggle("is-portrait", Number.isFinite(aspect) && aspect < 1);
-      });
+    const updateMediaPortrait = createMediaPortraitUpdater(loadAspect);
+    const updatePortraitFlag = (media, src) => {
+      const cachedAspect = aspectCache.get(src);
+      if (Number.isFinite(cachedAspect)) {
+        setMediaPortraitClass(media, cachedAspect);
+        return Promise.resolve(cachedAspect);
+      }
+      return updateMediaPortrait(media, src);
     };
 
     const hideMedia = (el) => {
@@ -387,11 +407,11 @@
       const nextImageEl = activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
       activeImageEl = nextImageEl;
       nextImageEl.src = src;
+      updatePortraitFlag(nextImageEl, src);
 
       videoSlots.forEach(pauseVideo);
       setActiveMedia(nextImageEl, immediate);
       scheduleVideoCleanup();
-      updatePortraitFlag(src);
     };
 
     const showVideo = (src, immediate = false) => {
@@ -406,6 +426,7 @@
       const nextVideoEl = activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
       activeVideoEl = nextVideoEl;
       ensureVideoSrc(nextVideoEl, src);
+      updatePortraitFlag(nextVideoEl, src);
 
       if (shouldPlay()) {
         restoreVideoTime(nextVideoEl, src);
@@ -422,7 +443,6 @@
 
       setActiveMedia(nextVideoEl, immediate);
       scheduleVideoCleanup();
-      updatePortraitFlag(src);
     };
 
     const applySlide = (nextIndex, immediate = false) => {
