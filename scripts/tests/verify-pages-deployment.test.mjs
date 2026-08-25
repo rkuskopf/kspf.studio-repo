@@ -9,6 +9,12 @@ const response = (status, body) =>
     headers: { "content-type": "application/json" },
   });
 
+const httpsRedirect = () =>
+  new Response(null, {
+    status: 301,
+    headers: { location: "https://kspf.au/" },
+  });
+
 test("requests and verifies the exact legacy Pages build and live source revision", async () => {
   const expectedCommit = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
   const expectedSourceRevision = "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
@@ -31,7 +37,10 @@ test("requests and verifies the exact legacy Pages build and live source revisio
       );
     }
     if (parsed.pathname.endsWith("/pages")) {
-      return response(200, { cname: "kspf.au", https_enforced: true });
+      return response(200, { cname: "kspf.au", https_enforced: false });
+    }
+    if (parsed.protocol === "http:" && parsed.hostname === "kspf.au") {
+      return httpsRedirect();
     }
     if (parsed.hostname === "kspf.au" && parsed.pathname === "/deployment.json") {
       return response(200, {
@@ -77,7 +86,10 @@ test("continues when GitHub reports that an automatic Pages build is already que
       return response(200, { status: "built", commit: expectedCommit });
     }
     if (parsed.pathname.endsWith("/pages")) {
-      return response(200, { cname: "kspf.au", https_enforced: true });
+      return response(200, { cname: "kspf.au", https_enforced: false });
+    }
+    if (parsed.protocol === "http:" && parsed.hostname === "kspf.au") {
+      return httpsRedirect();
     }
     if (parsed.hostname === "kspf.au") {
       return response(200, {
@@ -143,7 +155,10 @@ test("rejects stale Storyblok content even when the main source revision is unch
       return response(200, { status: "built", commit: expectedCommit });
     }
     if (parsed.pathname.endsWith("/pages")) {
-      return response(200, { cname: "kspf.au", https_enforced: true });
+      return response(200, { cname: "kspf.au", https_enforced: false });
+    }
+    if (parsed.protocol === "http:" && parsed.hostname === "kspf.au") {
+      return httpsRedirect();
     }
     if (parsed.hostname === "kspf.au") {
       return response(200, {
@@ -173,7 +188,7 @@ test("rejects stale Storyblok content even when the main source revision is unch
   );
 });
 
-test("rejects a Pages configuration that does not enforce HTTPS", async () => {
+test("rejects production when HTTP does not redirect to HTTPS", async () => {
   const expectedCommit = "7777777777777777777777777777777777777777";
   const expectedSourceRevision = "8888888888888888888888888888888888888888";
   const expectedDeploymentRevision = "888888888888-999999999999";
@@ -184,6 +199,9 @@ test("rejects a Pages configuration that does not enforce HTTPS", async () => {
     }
     if (parsed.pathname.endsWith("/pages")) {
       return response(200, { cname: "kspf.au", https_enforced: false });
+    }
+    if (parsed.protocol === "http:" && parsed.hostname === "kspf.au") {
+      return new Response("insecure response", { status: 200 });
     }
     if (parsed.hostname === "kspf.au") {
       return response(200, {
@@ -209,6 +227,6 @@ test("rejects a Pages configuration that does not enforce HTTPS", async () => {
       fetchImpl,
       wait: async () => {},
     }),
-    /HTTPS enforcement is disabled/i
+    /does not redirect to HTTPS/i
   );
 });

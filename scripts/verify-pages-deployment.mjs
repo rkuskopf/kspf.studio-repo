@@ -103,8 +103,20 @@ export const verifyPagesDeployment = async ({
   if (expectedCname && pages.cname !== expectedCname) {
     throw new Error(`GitHub Pages CNAME is "${pages.cname || "unset"}", expected "${expectedCname}".`);
   }
-  if (pages.https_enforced !== true) {
-    throw new Error(`GitHub Pages HTTPS enforcement is disabled for ${liveUrl.hostname}.`);
+
+  const insecureUrl = new URL(liveUrl);
+  insecureUrl.protocol = "http:";
+  const redirectResponse = await fetchImpl(insecureUrl, {
+    cache: "no-store",
+    redirect: "manual",
+  });
+  const redirectLocation = redirectResponse.headers.get("location");
+  const redirectTarget = redirectLocation ? new URL(redirectLocation, insecureUrl) : null;
+  if (
+    !new Set([301, 302, 307, 308]).has(redirectResponse.status) ||
+    redirectTarget?.origin !== liveUrl.origin
+  ) {
+    throw new Error(`${insecureUrl.origin} does not redirect to HTTPS at ${liveUrl.origin}.`);
   }
 
   let manifest = null;
