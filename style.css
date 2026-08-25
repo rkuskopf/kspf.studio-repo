@@ -486,6 +486,14 @@ body.grid-overlay {
   will-change: opacity, filter;
 }
 
+.hero.is-portrait .hero__media {
+  width: auto;
+  height: auto;
+  max-height: min(75vh, 590px);
+  max-height: min(75dvh, 590px);
+  object-fit: contain;
+}
+
 .hero__media.is-hidden {
   opacity: 0;
   filter: blur(4px);
