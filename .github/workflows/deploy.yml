@@ -35,7 +35,7 @@ jobs:
         env:
           STORYBLOK_PUBLIC_TOKEN: ${{ secrets.STORYBLOK_PUBLIC_TOKEN }}
           STORYBLOK_REGION: ${{ vars.STORYBLOK_REGION }}
-        run: node scripts/sync-storyblok.mjs --target . --version published --optional
+        run: node scripts/sync-storyblok.mjs --target . --version published
 
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
