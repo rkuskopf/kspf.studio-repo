@@ -1,8 +1,8 @@
 {
   "nav": {
-    "homeLabel": "kspf",
+    "homeLabel": "KSPF",
     "homeHref": "/",
-    "informationLabel": "Info",
+    "informationLabel": "ABOUT",
     "informationHref": "#services",
     "showAbout": false,
     "closeLabel": "x"
