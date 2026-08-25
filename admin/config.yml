@@ -24,6 +24,7 @@ collections:
               - { label: "Home Link", name: "homeHref", widget: "string", required: false }
               - { label: "Information Label", name: "informationLabel", widget: "string" }
               - { label: "Information Link", name: "informationHref", widget: "string", required: false }
+              - { label: "Show ABOUT", name: "showAbout", widget: "boolean", default: false, required: false }
               - { label: "Close Label", name: "closeLabel", widget: "string" }
           - label: "Information Overlay"
             name: "informationOverlay"

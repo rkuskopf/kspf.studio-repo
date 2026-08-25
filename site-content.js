@@ -129,6 +129,7 @@
     infoLinks.forEach((link) => {
       setText(link, nav.informationLabel);
       setHref(link, nav.informationHref);
+      link.hidden = nav.showAbout !== true;
     });
 
     const profile = data.profile;
