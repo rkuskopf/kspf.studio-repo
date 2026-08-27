@@ -17,6 +17,7 @@ import { join } from "node:path";
 const dir = process.argv[2] || ".";
 const htmlPath = join(dir, "index.html");
 const homePath = join(dir, "content", "home.json");
+const sitePath = join(dir, "content", "site.json");
 
 const escapeHtml = (s) =>
   String(s)
@@ -35,8 +36,32 @@ const readJson = (path) => {
   }
 };
 
+const setAttribute = (openingTag, name, value) => {
+  const pattern = new RegExp(`\\s${name}(?:="[^"]*")?`, "i");
+  const withoutExisting = openingTag.replace(pattern, "");
+  if (value === null || value === undefined || value === false) return withoutExisting;
+  const serialized = value === true ? name : `${name}="${escapeAttr(value)}"`;
+  return withoutExisting.replace(/>$/, ` ${serialized}>`);
+};
+
+const replaceLink = (source, className, { label, href, hidden }) => {
+  const escapedClass = className.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const pattern = new RegExp(
+    `<a\\b(?=[^>]*\\bclass="[^"]*\\b${escapedClass}\\b[^"]*")[^>]*>[\\s\\S]*?<\\/a>`,
+    "gi"
+  );
+  return source.replace(pattern, (link) => {
+    const openingEnd = link.indexOf(">");
+    let opening = link.slice(0, openingEnd + 1);
+    opening = setAttribute(opening, "href", href);
+    opening = setAttribute(opening, "hidden", hidden === true ? true : null);
+    return `${opening}${escapeHtml(label || "")}</a>`;
+  });
+};
+
 let html = readFileSync(htmlPath, "utf8");
 const home = readJson(homePath);
+const site = readJson(sitePath);
 
 if (home) {
   if (home.title) {
@@ -63,6 +88,19 @@ if (home) {
         )}\n    ${end}`
     );
   }
+}
+
+if (site?.nav) {
+  html = replaceLink(html, "nav__link--home", {
+    label: site.nav.homeLabel,
+    href: site.nav.homeHref,
+    hidden: false,
+  });
+  html = replaceLink(html, "js-information-link", {
+    label: site.nav.informationLabel,
+    href: site.nav.informationHref,
+    hidden: site.nav.showAbout !== true,
+  });
 }
 
 writeFileSync(htmlPath, html);

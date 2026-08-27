@@ -37,6 +37,10 @@ jobs:
         if: github.event.action != 'closed'
         run: node scripts/prerender.mjs .
 
+      - name: Stamp preview and cache revisions
+        if: github.event.action != 'closed'
+        run: node scripts/prepare-deployment.mjs . "$GITHUB_SHA"
+
       - name: Deploy Preview
         uses: rossjrw/pr-preview-action@v1
         with:

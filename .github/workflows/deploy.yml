@@ -15,6 +15,7 @@ concurrency:
 
 permissions:
   contents: write
+  pages: write
 
 jobs:
   deploy:
@@ -34,7 +35,7 @@ jobs:
         env:
           STORYBLOK_PUBLIC_TOKEN: ${{ secrets.STORYBLOK_PUBLIC_TOKEN }}
           STORYBLOK_REGION: ${{ vars.STORYBLOK_REGION }}
-        run: node scripts/sync-storyblok.mjs --target . --version published --optional
+        run: node scripts/sync-storyblok.mjs --target . --version published
 
       - name: Checkout gh-pages branch
         uses: actions/checkout@v4
@@ -62,18 +63,50 @@ jobs:
       - name: Pre-render CMS content into HTML
         run: node scripts/prerender.mjs .gh-pages
 
+      - name: Stamp deployment and cache revisions
+        id: prepare
+        run: |
+          node scripts/prepare-deployment.mjs .gh-pages "$GITHUB_SHA"
+          node -e 'const fs = require("fs"); const manifest = require("./.gh-pages/deployment.json"); fs.appendFileSync(process.env.GITHUB_OUTPUT, `revision=${manifest.deploymentRevision}\n`);'
+
       - name: Commit and push deployment
+        id: publish
         run: |
           cd .gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          changed=false
           if [[ -z "$(git status --short)" ]]; then
             echo "No changes to deploy."
-            exit 0
+          else
+            git add --all
+            git commit -m "Deploy site from main"
+            git pull --rebase origin gh-pages
+            git push origin HEAD:gh-pages
+            changed=true
           fi
 
-          git add --all
-          git commit -m "Deploy site from main"
-          git pull --rebase origin gh-pages
-          git push origin HEAD:gh-pages
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+
+      - name: Verify the GitHub Pages deployment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXPECTED_PAGES_COMMIT: ${{ steps.publish.outputs.commit }}
+          EXPECTED_DEPLOYMENT_REVISION: ${{ steps.prepare.outputs.revision }}
+          REQUEST_PAGES_BUILD: ${{ steps.publish.outputs.changed }}
+        run: |
+          request_flag=()
+          if [[ "$REQUEST_PAGES_BUILD" == "true" ]]; then
+            request_flag+=(--request-build)
+          fi
+
+          node scripts/verify-pages-deployment.mjs \
+            --repo "$GITHUB_REPOSITORY" \
+            --commit "$EXPECTED_PAGES_COMMIT" \
+            --source-revision "$GITHUB_SHA" \
+            --deployment-revision "$EXPECTED_DEPLOYMENT_REVISION" \
+            --site-url "https://kspf.au" \
+            --cname "kspf.au" \
+            "${request_flag[@]}"

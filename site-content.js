@@ -1,4 +1,14 @@
 (() => {
+  const deploymentRevision = document.querySelector(
+    'meta[name="kspf-deployment-revision"]'
+  )?.content;
+  const contentUrl = (path) => {
+    if (!deploymentRevision) return path;
+    const separator = path.includes("?") ? "&" : "?";
+    return `${path}${separator}v=${encodeURIComponent(deploymentRevision)}`;
+  };
+  window.kspfContentUrl = contentUrl;
+
   const normalizeEmail = (value) => {
     if (!value) return "";
     return value.replace(/^mailto:/i, "");
@@ -160,7 +170,7 @@
 
   if (!targetsExist) return;
 
-  fetch("content/site.json", { cache: "no-cache" })
+  fetch(contentUrl("content/site.json"), { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => applySiteContent(data))
     .catch(() => {});
