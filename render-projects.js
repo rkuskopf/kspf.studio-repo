@@ -1,4 +1,6 @@
 (() => {
+  const contentUrl =
+    typeof window.kspfContentUrl === "function" ? window.kspfContentUrl : (path) => path;
   const container = document.getElementById("projects");
   if (!container) return;
 
@@ -78,7 +80,7 @@
     }
   };
 
-  fetch("projects.json", { cache: "no-cache" })
+  fetch(contentUrl("projects.json"), { cache: "no-cache" })
     .then((res) => {
       if (!res.ok) throw new Error("Projects request failed");
       return res.json();

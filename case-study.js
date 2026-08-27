@@ -1,4 +1,6 @@
 (() => {
+  const contentUrl =
+    typeof window.kspfContentUrl === "function" ? window.kspfContentUrl : (path) => path;
   const banner = document.querySelector(".case-banner[data-case]");
   if (!banner) return;
 
@@ -232,7 +234,7 @@
 
   if (!src) return;
 
-  fetch(src, { cache: "no-cache" })
+  fetch(contentUrl(src), { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
       if (!data) return;
