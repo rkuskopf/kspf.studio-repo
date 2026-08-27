@@ -1,0 +1,25 @@
+{
+  "name": "kspf-studio-next-foundation",
+  "private": true,
+  "engines": {
+    "node": "^22.12.0 || >=24.0.0"
+  },
+  "scripts": {
+    "dev": "next dev next-app",
+    "build": "next build next-app",
+    "start": "next start next-app",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "next": "16.3.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "typescript": "7.0.2",
+    "vitest": "4.1.11"
+  }
+}
