@@ -5,7 +5,7 @@
     "node": "^22.12.0 || >=24.0.0"
   },
   "scripts": {
-    "dev": "next dev next-app",
+    "dev": "next dev next-app --experimental-https",
     "build": "next build next-app",
     "start": "next start next-app",
     "test": "vitest run"
