@@ -405,7 +405,7 @@ Expected: PASS for identical typed rendering, preview-only Bridge loading, Save/
 - Consumes: Storyblok's requirement for HTTPS and its `https://app.storyblok.com` editor iframe.
 - Produces: `npm run dev` HTTPS startup, a scoped `frame-ancestors` response header, and exact local setup/verification instructions.
 
-- [ ] **Step 1: Write failing configuration tests**
+- [x] **Step 1: Write failing configuration tests**
 
 Import the Next config and invoke its `headers()` function. Assert:
 
@@ -416,7 +416,7 @@ expect(frameAncestorsHeader).toEqual({
 });
 ```
 
-- [ ] **Step 2: Run the configuration test and confirm RED**
+- [x] **Step 2: Run the configuration test and confirm RED**
 
 Run:
 
@@ -426,7 +426,7 @@ npm test -- next-app/next.config.test.ts
 
 Expected: FAIL because no frame-ancestor header exists.
 
-- [ ] **Step 3: Enable HTTPS and Visual Editor framing**
+- [x] **Step 3: Enable HTTPS and Visual Editor framing**
 
 Change the development script to:
 
@@ -436,7 +436,7 @@ Change the development script to:
 
 Add an async `headers()` function to `next.config.ts` that returns the `Content-Security-Policy: frame-ancestors https://app.storyblok.com` header for `/:path*`. Do not modify the root static site or its headers.
 
-- [ ] **Step 4: Document the minimum setup**
+- [x] **Step 4: Document the minimum setup**
 
 Keep `next-app/.env.example` credential-free and document these variables:
 
@@ -457,7 +457,7 @@ Update `next-app/README.md` to state:
 - no Draft Mode endpoint exists in this slice; and
 - run `npm test`, `node --test scripts/tests/*.test.mjs`, and `npm run build` for verification.
 
-- [ ] **Step 5: Run the configuration test and confirm GREEN**
+- [x] **Step 5: Run the configuration test and confirm GREEN**
 
 Run:
 
@@ -478,7 +478,7 @@ Expected: PASS for Storyblok frame permission. Task 5 verifies the HTTPS command
 - Consumes: every #58 implementation boundary and the unchanged root static pipeline.
 - Produces: fresh evidence for all issue acceptance criteria and a reviewable uncommitted diff.
 
-- [ ] **Step 1: Run every Next.js/Vitest test**
+- [x] **Step 1: Run every Next.js/Vitest test**
 
 Run:
 
@@ -488,7 +488,7 @@ npm test
 
 Expected: all preview, delivery, server, rendering, Bridge, configuration, and foundation tests pass with zero failures.
 
-- [ ] **Step 2: Run the unchanged legacy suite**
+- [x] **Step 2: Run the unchanged legacy suite**
 
 Run:
 
@@ -498,7 +498,7 @@ node --test scripts/tests/*.test.mjs
 
 Expected: the current static Storyblok, preview, deployment, slideshow, navigation, and cache tests remain green.
 
-- [ ] **Step 3: Build the Next.js application without exposing tokens**
+- [x] **Step 3: Build the Next.js application without exposing tokens**
 
 Run with unique temporary environment sentinels:
 
@@ -511,7 +511,7 @@ npm run build
 
 Expected: the production build succeeds without fetching draft content. Then search `next-app/.next/static` and generated HTML for both sentinels; expect zero matches.
 
-- [ ] **Step 4: Verify the real published and draft story when credentials exist**
+- [x] **Step 4: Verify the real published and draft story when credentials exist**
 
 Without printing credentials, confirm the needed root `.env` or `next-app/.env.local` variable names are populated. Start HTTPS Next development with those variables, fetch `https://localhost:3000/`, and confirm the rendered heading/intro match a direct `version=published` Storyblok response.
 
@@ -519,7 +519,7 @@ Generate the documented `_storyblok` and signed `_storyblok_tk[...]` URL locally
 
 If credentials are unavailable, report live verification as the only unverified acceptance item rather than claiming it passed.
 
-- [ ] **Step 5: Inspect final scope and diff quality**
+- [x] **Step 5: Inspect final scope and diff quality**
 
 Run:
 
