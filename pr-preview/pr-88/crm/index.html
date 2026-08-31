@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta name="kspf-deployment-revision" content="03325701cf37-9569833eb83a">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KSPF Lead Table</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 13px; background: #f5f5f3; color: #1a1a1a; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+  /* ── PIN gate ── */
+  #pin-gate {
+    position: fixed; inset: 0; z-index: 9999;
+    background: #f5f5f3;
+    display: flex; align-items: center; justify-content: center;
+  }
+  #pin-gate.hidden { display: none; }
+  .pin-box {
+    background: #fff; border: 1px solid #ddd; border-radius: 8px;
+    padding: 36px 40px; text-align: center; width: 280px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .pin-logo { font-weight: 700; font-size: 15px; letter-spacing: 0.08em; margin-bottom: 20px; color: #1a1a1a; }
+  .pin-label { font-size: 12px; color: #888; margin-bottom: 10px; }
+  #pin-form { display: contents; }
+  #pin-input {
+    width: 100%; border: 1px solid #ddd; border-radius: 4px;
+    padding: 9px 12px; font-size: 16px; text-align: center;
+    letter-spacing: 0.2em; outline: none; color: #1a1a1a;
+  }
+  #pin-input:focus { border-color: #999; }
+  #pin-submit {
+    margin-top: 14px; width: 100%;
+    background: #1a1a1a; color: #fff; border: none;
+    border-radius: 4px; padding: 9px 0; font-size: 13px;
+    cursor: pointer; font-weight: 500;
+  }
+  #pin-submit:hover { background: #333; }
+  #pin-error {
+    margin-top: 10px; font-size: 12px; color: #c0392b;
+    min-height: 16px;
+  }
+
+  /* ── Main UI (hidden until auth) ── */
+  #main { display: none; }
+  #main.visible { display: block; }
+
+  .topbar { background: #fff; border-bottom: 1px solid #ddd; padding: 8px 14px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; position: sticky; top: 0; z-index: 20; }
+  .topbar-title { font-weight: 600; font-size: 14px; white-space: nowrap; }
+  input[type="search"] { border: 1px solid #ddd; border-radius: 4px; padding: 5px 9px; font-size: 12px; width: 180px; outline: none; }
+  input[type="search"]:focus { border-color: #999; }
+  select { border: 1px solid #ddd; border-radius: 4px; padding: 5px 7px; font-size: 12px; background: #fff; cursor: pointer; outline: none; }
+  .count { color: #888; font-size: 12px; margin-left: auto; white-space: nowrap; }
+  button.dl { background: #1a1a1a; color: #fff; border: none; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+  button.dl:hover { background: #333; }
+
+  .wrap { overflow-x: auto; }
+  table { width: max-content; min-width: 100%; border-collapse: collapse; background: #fff; font-size: 12px; }
+  thead { position: sticky; top: 45px; z-index: 10; }
+  th { background: #f0f0ee; border: 1px solid #ddd; padding: 6px 9px; text-align: left; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: #555; white-space: nowrap; cursor: pointer; user-select: none; }
+  th:hover { background: #e8e8e6; }
+  th.sorted { color: #1a1a1a; background: #e2e2e0; }
+  td { border: 1px solid #e8e8e8; padding: 6px 9px; vertical-align: top; }
+  tr:hover td { background: #fafaf8; }
+  tr:hover td.pin { background: #f5f5f3; }
+
+  td.pin, th.pin { position: sticky; left: 0; background: #fff; z-index: 5; min-width: 155px; }
+  th.pin { background: #f0f0ee; z-index: 11; }
+
+  @media (max-width: 600px) {
+    td.pin, th.pin { position: static; min-width: 0; }
+    th.pin { z-index: 10; }
+  }
+
+  td a { color: #1a6ef5; text-decoration: none; }
+  td a:hover { text-decoration: underline; }
+
+  .badge { display: inline-block; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+  .b-draft   { background: #e6f4ea; color: #1e7e34; }
+  .b-contact { background: #fff3cd; color: #856404; }
+  .b-wave2   { background: #f0e6ff; color: #5a189a; }
+  .b-seed    { background: #f0f0ee; color: #888; }
+  .b-warm    { background: #cce5ff; color: #004085; }
+  .b-unver   { background: #fde2e1; color: #a02020; }
+  .verflag   { display: inline-block; margin-left: 6px; font-size: 10px; font-weight: 600; padding: 1px 5px; border-radius: 3px; background: #fde2e1; color: #a02020; text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .sc { text-align: center; white-space: nowrap; }
+  .s-bad { color: #c0392b; font-weight: 700; }
+  .s-mid { color: #e07b00; }
+  .s-ok  { color: #1e7e34; }
+
+  th.gemini-col { min-width: 560px; }
+  .gcell { width: 560px; min-width: 560px; max-width: 680px; font-size: 11px; color: #333; line-height: 1.5; }
+  .gtag { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #5a189a; display: block; margin-bottom: 2px; }
+
+  textarea.note { width: 100%; min-width: 150px; border: 1px solid transparent; border-radius: 3px; padding: 3px 5px; font-family: inherit; font-size: 12px; resize: vertical; background: transparent; min-height: 34px; line-height: 1.4; outline: none; color: #1a1a1a; }
+  textarea.note:hover { border-color: #ddd; background: #fafafa; }
+  textarea.note:focus { border-color: #aaa; background: #fff; }
+
+  .stars { white-space: nowrap; }
+  .star { cursor: pointer; font-size: 14px; color: #ddd; }
+  .star.on { color: #f5a623; }
+
+  select.verdict { font-size: 11px; padding: 3px 5px; width: 100px; }
+  select.review { font-size: 11px; padding: 3px 5px; width: 100%; min-width: 110px; max-width: 160px; }
+  input.follow-up { font-size: 11px; padding: 3px 5px; border: 1px solid transparent; border-radius: 3px; background: transparent; color: #1a1a1a; width: 110px; }
+  input.follow-up:hover { border-color: #ddd; background: #fafafa; }
+  input.follow-up:focus { border-color: #aaa; background: #fff; outline: none; }
+  .no-email { color: #c0392b; }
+
+  /* Rowan-owned vs agent-generated columns */
+  th.rowan { background: #faf5e8; color: #6b4d00; }
+  th.rowan:hover { background: #f3ecd8; }
+  th.rowan.sorted { background: #ebe2c8; }
+  td.rowan { background: #fffdf3; }
+  tr:hover td.rowan { background: #faf5e0; }
+  tr.qa-rework td.rowan { background: #fff7f3; }
+  tr.qa-rework:hover td.rowan { background: #feeee7; }
+
+  /* Save state pill */
+  #save-state {
+    font-size: 11px; padding: 3px 9px; border-radius: 10px;
+    font-weight: 500; white-space: nowrap; border: 1px solid transparent;
+  }
+  #save-state[data-state="unsaved"]     { color: #856404; background: #fff3cd; border-color: #f0e1a0; }
+  #save-state[data-state="saved-local"] { color: #1e7e34; background: #e6f4ea; border-color: #cfe6d4; }
+  #save-state[data-state="saved-repo"]  { color: #004085; background: #cce5ff; border-color: #b3d4f5; }
+  #save-state[data-state="failed"]      { color: #c0392b; background: #fbe5e0; border-color: #f0c4bb; }
+
+  /* Hide-skipped toggle */
+  .toggle { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: #555; cursor: pointer; user-select: none; }
+  .toggle input { margin: 0; cursor: pointer; }
+
+  button.ghost { background: #fff; color: #1a1a1a; border: 1px solid #ddd; border-radius: 4px; padding: 6px 12px; font-size: 12px; cursor: pointer; }
+  button.ghost:hover { background: #f5f5f3; border-color: #bbb; }
+</style>
+</head>
+<body>
+
+<!-- ── PIN gate overlay ── -->
+<div id="pin-gate">
+  <div class="pin-box">
+    <div class="pin-logo">KSPF</div>
+    <div class="pin-label">Enter PIN to continue</div>
+    <form id="pin-form" autocomplete="off" onsubmit="return false">
+      <input id="pin-input" type="password" autocomplete="off" autofocus>
+      <button id="pin-submit" type="submit">Unlock</button>
+    </form>
+    <div id="pin-error"></div>
+  </div>
+</div>
+
+<!-- ── Main content (shown after auth) ── -->
+<div id="main">
+
+<div class="topbar">
+  <span class="topbar-title">KSPF Leads</span>
+  <input type="search" id="search" placeholder="Search…">
+  <select id="fs">
+    <option value="">All statuses</option>
+    <option value="Ready to draft">Ready to draft</option>
+    <option value="Needs contact">Needs contact</option>
+    <option value="Next wave">Next wave</option>
+    <option value="Unverified">Unverified</option>
+    <option value="Seed only">Seed only</option>
+    <option value="Warm">Warm</option>
+  </select>
+  <select id="fc">
+    <option value="">All categories</option>
+    <option value="fashion">Fashion</option>
+    <option value="beauty">Beauty</option>
+    <option value="homewares">Homewares</option>
+    <option value="wellness">Wellness</option>
+    <option value="hospitality">Hospitality</option>
+    <option value="gallery">Gallery</option>
+  </select>
+  <select id="fl">
+    <option value="">All lanes</option>
+    <option value="technical-audit">Technical audit</option>
+    <option value="brand-translation">Brand translation</option>
+    <option value="intent-signals">Intent signals</option>
+    <option value="warm-relationships">Warm relationships</option>
+    <option value="agency-partners">Agency partners</option>
+    <option value="inbound-authority">Inbound authority</option>
+  </select>
+  <select id="fe">
+    <option value="">All evidence</option>
+    <option value="unverified">Unverified</option>
+    <option value="partially_verified">Partially verified</option>
+    <option value="verified">Verified</option>
+    <option value="false">False</option>
+  </select>
+  <label class="toggle"><input type="checkbox" id="show-archived"> Show skipped/archived</label>
+  <span id="save-state" data-state="saved-local">Saved locally</span>
+  <span class="count" id="ct"></span>
+  <button class="ghost" onclick="downloadRowanReview()" title="Download rowan-review.json — then commit it to data/leads/current/ in studio-os">↓ Download review JSON</button>
+  <button class="dl" onclick="xcsv()">↓ Export CSV</button>
+</div>
+
+<div class="wrap"><table>
+<thead><tr>
+  <th class="pin" data-c="name">Name</th>
+  <th data-c="cat">Cat</th>
+  <th data-c="status">Status</th>
+  <th data-c="email">Email</th>
+  <th class="gemini-col" data-c="gemini">Gemini audit (internal)</th>
+  <th class="rowan" data-c="notes">Notes / QA</th>
+  <th class="rowan" data-c="lane">Lane</th>
+  <th class="rowan" data-c="lane_confidence">Lane conf</th>
+  <th class="rowan" data-c="evidence">Evidence</th>
+  <th class="rowan" data-c="draft_safe">Draft safe</th>
+  <th class="rowan" data-c="rating">Rating</th>
+  <th class="rowan" data-c="verdict">Verdict</th>
+  <th class="rowan" data-c="next_action">Next action</th>
+  <th class="rowan" data-c="follow_up_date">Follow-up</th>
+  <th data-c="perf" class="sc">Perf</th>
+  <th data-c="a11y" class="sc">A11y</th>
+  <th data-c="bp" class="sc">BP</th>
+  <th data-c="seo" class="sc">SEO</th>
+  <th data-c="pri" class="sc">Priority</th>
+  <th data-c="issue">Primary issue (auto audit)</th>
+  <th data-c="angle">Outreach angle</th>
+  <th data-c="brand">Brand observation</th>
+  <th data-c="a11yNotes" title="axe-core WCAG 2.1 AA findings — internal use, never paste into outreach">A11y notes (internal)</th>
+</tr></thead>
+<tbody id="tb"></tbody>
+</table></div>
+
+</div><!-- /#main -->
+
+<script id="rowan-review-seed" type="application/json">
+{
+  "bisonhome-com": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Homepage shows Brian Tunks Glass and Bison Ceramics directly in primary navigation, so the \"deeply nested\" claim is overstated. I did not verify the image-weight/CDN or keyboard-navigation assertions; rerun from the current site state.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "blindside-org-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Current site still exposes newsletter/contact elements, but the quoted example text from the audit did not appear in this pass. Treat the accessibility claim as plausible but the current example set as stale.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "cavescollect-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes Australian Made Classics plus Previous/Next controls, so the cited UI anchors are current. Slow-load and tap-target severity still need a device pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "dinosaurdesigns-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current homepage still opens with a currency/country selector before collection content, so the first-impression interruption is live. Mobile tap-target and missing-name details still need a device/accessibility pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "engold-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes the Zephyr collection CTA and dense navigation structure, so the cited mobile/UI friction remains plausible. I did not benchmark load speed or tap targets on device, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "etal-australia-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Duplicate menu structures are visible in current HTML, so the nav-redundancy point has support. I did not reproduce the newsletter error block or search-refresh behaviour from this static pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "eunceramics-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes a large country/region selector and the $300 free-shipping threshold, so some of the merchandising friction is current. I did not quantify the sold-out ratio, so keep the broader inventory claim partial only.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "favrik-com-au": {
+    "verdict": "rework",
+    "evidence_status": "unverified",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 quick pass: Site is live, but this pass did not benchmark the claimed extreme slowness across devices or networks. Keep performance-led outreach unverified until measured manually.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "fmeapparel-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the landing-state hero. The homepage shows product listings and About content; rerun audit from the visible page state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "happymelon-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: The app-only funnel claim was overstated. The site has direct Classes, Pricing, and Start Trial paths, and the intro offer links to booking from the page; rerun audit from the current booking flow.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "idreamahighway-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: HTTPS claim false. The live site is already on HTTPS and exposes contact and shipping pages; rerun audit from the current site state.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "kittendamour-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains Listen Live, Kitten Rewards, and sold-out inventory markers, so the cited UI context is current. I did not benchmark load time or tap-target difficulty on device, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "no-vacancy-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still carries the cited hero line and Home/Current navigation. The performance claim still needs a timed device check, but the current page context matches the audited example.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "outregallery-com": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still exposes Skip to content and Facebook/social links, so part of the accessibility note still maps to the live site. I did not reproduce the exact currency-selector example from this pass.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "seventhgallery-org": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current site still contains the mailing-list/email/event markers referenced in the audit, so the accessibility/mobile concerns remain plausible. I did not reproduce the exact button-state issue, so keep this partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  },
+  "sisterstudios-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: Cart drawer copy was mistaken for the shop landing state. The page shows product cards below the header; rerun audit from the visible shop content.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "suupaa-com-au": {
+    "verdict": "rework",
+    "evidence_status": "false",
+    "draft_safe": false,
+    "next_action": "redo-audit",
+    "notes": "2026-05-01 cross-check: I could not reproduce the claimed Bookings/About nav loop. The About page and SevenRooms booking path were live; rerun audit on the current navigation.",
+    "updated_at": "2026-05-01T00:00:00Z"
+  },
+  "vowstudio-com-au": {
+    "verdict": "maybe",
+    "evidence_status": "partially_verified",
+    "draft_safe": false,
+    "next_action": "manual-check",
+    "notes": "2026-05-01 quick pass: Current HTML still contains the cited \"colourful and happy\", Login/Search, JACKETS & COATS, and Previous/Next anchors, so the navigation/UI note has live support. I did not device-test tap targets, so this stays partial.",
+    "updated_at": "2026-05-01T08:00:00Z"
+  }
+}
+</script>
+
+<script>
+// ── PIN gate ──────────────────────────────────────────────────────────────
+// Client-side PIN check via SHA-256 (obfuscation layer — not server-side auth).
+// To change the PIN: node -e "const c=require('crypto');console.log(c.createHash('sha256').update('YOUR_PIN').digest('hex'));"
+const CORRECT_HASH = "a767c0c2f25b2c77a042722b83161d98516dae4389db303845cbbddac74ae97f";
+const SESSION_KEY  = "kspf_crm_auth";
+
+async function sha256hex(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+function unlock() {
+  document.getElementById("pin-gate").classList.add("hidden");
+  document.getElementById("main").classList.add("visible");
+  setSaveState("saved-local");
+  render();
+  hydrateFromRepo();
+}
+
+// Wire up PIN gate handlers (always — unlock() closes over render which is defined below)
+{
+  const input = document.getElementById("pin-input");
+  const errEl = document.getElementById("pin-error");
+
+  async function attempt() {
+    const val = input.value.trim();
+    if (!val) return;
+    const hash = await sha256hex(val);
+    if (hash === CORRECT_HASH) {
+      sessionStorage.setItem(SESSION_KEY, "1");
+      unlock();
+    } else {
+      errEl.textContent = "Incorrect PIN — try again.";
+      input.value = "";
+      input.focus();
+    }
+  }
+
+  document.getElementById("pin-form").addEventListener("submit", attempt);
+}
+
+// ── Lead data ─────────────────────────────────────────────────────────────
+const L = [
+// ─── BATCH A — pipelineaudited.csv ───
+{b:"A",name:"Franco Jewellers",url:"https://franco.com.au",cat:"jewellery",status:"Ready to draft",email:"franco@franco.com.au",perf:59,a11y:67,bp:75,seo:77,pri:52,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Top Image Jewellery",url:"https://topimagejewellery.com.au",cat:"jewellery",status:"Ready to draft",email:"jenny@topimagejewellery.com.au",perf:59,a11y:84,bp:59,seo:100,pri:52,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Lillypad Florist",url:"https://lillypad.com.au",cat:"florist",status:"Ready to draft",email:"info@lillypad.com.au",perf:42,a11y:81,bp:41,seo:85,pri:51,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Heychic Melbourne Central",url:"https://heychic.com.au",cat:"fashion",status:"Needs contact",email:null,perf:50,a11y:87,bp:71,seo:77,pri:50,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"MONDOPIERO",url:"https://mondopiero.com.au",cat:"homewares",status:"Ready to draft",email:"ciao@mondopiero.com.au",perf:72,a11y:73,bp:59,seo:100,pri:49,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Zeneli Flowers",url:"https://24hrszeneliflowers.com.au",cat:"florist",status:"Ready to draft",email:"zeneli@24hrszeneliflowers.com.au",perf:54,a11y:78,bp:55,seo:92,pri:47,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Chich Boutique",url:"https://chichboutique.com.au",cat:"fashion",status:"Needs contact",email:null,perf:62,a11y:71,bp:59,seo:85,pri:46,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"JANAI Jewellery",url:"https://janaijewellery.com.au",cat:"jewellery",status:"Needs contact",email:null,perf:45,a11y:70,bp:71,seo:77,pri:45,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Wilkins & Kent Furniture",url:"https://wilkinsandkent.com.au",cat:"homewares",status:"Needs contact",email:null,perf:46,a11y:81,bp:62,seo:61,pri:44,issue:"",angle:"",brand:"",gemini:""},
+{b:"A",name:"Jewellery of Melbourne",url:"https://jewelleryofmelbourne.com.au",cat:"jewellery",status:"Ready to draft",email:"jewellery.of.melbourne23@gmail.com",perf:55,a11y:90,bp:79,seo:85,pri:44,issue:"",angle:"",brand:"",gemini:""},
+
+// ─── BATCH B — next-wave (audit-ready.csv + ranked.csv + Gemini) ───
+{b:"B",name:"Bison Home",url:"bisonhome.com",cat:"homewares",status:"Ready to draft",verified:"yes",email:"canberra@bisonhome.com",perf:50,a11y:85,bp:75,seo:77,pri:29,issue:"The 'shop now' link within the cookie banner is visibly cut off at the bottom on the mobile viewport.",angle:"I noticed a small layout issue on your mobile site that could be easily fixed to enhance user experience.",brand:"Bison Home appears to be a homewares brand specializing in glass and ceramic vessels, emphasizing craftsmanship and collaboration with international studios.",gstatus:"Gemini verified",gemini:"The 'shop now' link within the cookie banner is visibly cut off at the bottom on the mobile viewport. Visitors on mobile devices may find the partially obscured text difficult to read or perceive as unprofessional, potentially hindering their interaction with the cookie consent banner. The website presents a clean and elegant aesthetic for a homewares brand. However, the cookie consent banner on mobile has a minor layout issue where the 'shop now' link is partially obscured, which could detract from the user experience. Evidence: Bottom left of the mobile viewport, within the cookie banner. Brand: Bison Home appears to be a homewares brand specializing in glass and ceramic vessels, emphasizing craftsmanship and collaboration with international studios.",a11yNotes:"Elements must only use supported ARIA attributes [critical, 3 nodes] (e.g. div[data-navlink-handle=\"bison-ceramics\"]); Images must have alternative text [critical, 8 nodes] (e.g. .hover-wrap[href$=\"brian-tunks-glass\"] > .aspect-3\\/4); Links must have discernible text [serious, 17 nodes] (e.g. .action-area__link.header__link[href$=\"login\"])"},
+{b:"B",name:"Happy Melon Studios",url:"happymelon.com.au",cat:"wellness",status:"Seed only",verified:"no",email:"hello@happymelon.com.au",perf:66,a11y:88,bp:75,seo:77,pri:23,issue:null,angle:null,brand:null,gstatus:"Gemini skip",gemini:"The screenshots display a clean, functional website with no visible broken layouts, content, branding mismatches, missing essentials, or broken trust signals. Brand: The brand appears to be a wellness studio offering classes and recovery services, targeting individuals seeking peace and ease. Next: send. Internal only. Not outreach-ready until verified.",a11yNotes:"Links must have discernible text [serious, 3 nodes] (e.g. .icon-facebook)"},
+{b:"B",name:"Et Al Australia",url:"etal-australia.com",cat:"fashion",status:"Ready to draft",verified:"yes",email:"info@etal-australia.com",perf:51,a11y:96,bp:75,seo:100,pri:21,issue:"Several text elements, particularly smaller ones, have very low contrast against their background, making them difficult to read for visitors.",angle:"We noticed some text on your homepage is hard to read, which could be impacting how visitors engage with your brand.",brand:"Et Al Australia appears to be a fashion brand specializing in elegant clothing, possibly with a focus on materials like cashmere, serving an audience interested in sophisticated apparel.",gstatus:"Gemini verified",gemini:"Several text elements, particularly smaller ones, have very low contrast against their background, making them difficult to read for visitors. Visitors may struggle to read important information or calls to action, leading to a frustrating experience or missed messages. The website presents a clean and minimalist aesthetic for a fashion brand. However, several text elements, especially smaller ones like 'THANK YOU FOR SUPPORTING SMALL BUSINESS' and 'IN STORE NOW', are rendered with very low contrast against their backgrounds, making them challenging to read for a real visitor. Evidence: The text 'THANK YOU FOR SUPPORTING SMALL BUSINESS' on the mobile viewport, and 'IN STORE NOW' on both mobile and desktop viewports, are examples of low contrast. Brand: Et Al Australia appears to be a fashion brand specializing in elegant clothing, possibly with a focus on materials like cashmere, serving an audience interested in sophisticated apparel.",a11yNotes:"Elements must meet minimum color contrast ratio thresholds [serious, 8 nodes] (e.g. .rich-text__heading--small)"},
+{b:"B",name:"Eun Ceramics",url:"eunceramics.com",cat:"homewares-ceramics",status:"Seed only",verified:"no",email:null,perf:56,a11y:93,bp:75,seo:100,pri:21,issue:null,angle:null,brand:null,gstatus:"Gemini skip",gemini:"The screenshots display a standard website with a sign-up pop-up that is well-formatted and readable on both mobile and desktop, with no visible broken layouts, content, or trust signals. Brand: The brand 'Eun Ceramics' appears to sell handcrafted ceramic homewares, with product listings visible in the background. Next: skip. Internal only. Not outreach-ready until verified.",a11yNotes:"Elements must meet minimum color contrast ratio thresholds [serious, 2 nodes] (e.g. #app-embed-container-621101,#label-first_name)"},
+{b:"B",name:"Suupaa",url:"suupaa.com.au",cat:"hospitality",status:"Ready to draft",verified:"yes",email:"info@suupaa.au",perf:72,a11y:91,bp:100,seo:83,pri:14,issue:"The desktop version of the website displays an application error message instead of content.",angle:"We noticed a critical application error preventing desktop users from accessing your website, which could be impacting your online orders and bookings.",brand:"Suupaa appears to be a hospitality business, possibly a Japanese-inspired convenience store or cafe, offering online ordering and bookings, and publishing a cultural zine called 'The Register'.",gstatus:"Gemini verified",gemini:"The desktop version of the website displays an application error message instead of content. Visitors attempting to access the website on a desktop device will see an error message and cannot interact with the site or access any information. While the mobile site appears functional, the desktop version of the website is completely broken, displaying an application error message. This prevents any desktop visitor from accessing information, ordering online, or making bookings, severely impacting their ability to serve a significant portion of their audience. Evidence: The entire desktop viewport shows a white screen with the text 'Application error: a client-side exception has occurred (see the browser console for more information).' centered on the page. Brand: Suupaa appears to be a hospitality business, possibly a Japanese-inspired convenience store or cafe, offering online ordering and bookings, and publishing a cultural zine called 'The Register'.",a11yNotes:null},
+
+// ─── BATCH C — master-leads-audit-ready.csv (Gemini audit 2026-04-17) ───
+{b:"C",name:"Favrik - Melbourne",url:"favrik.com.au",cat:"clothing store",status:"Needs contact",verified:"yes",email:null,perf:3,a11y:90,bp:41,seo:100,pri:42,issue:"The website displays a persistent loading spinner without rendering any content.",angle:"We noticed your website appears to be stuck on a loading screen, preventing visitors from seeing your content.",brand:"It is not possible to observe anything about the brand as no content is visible.",gstatus:"Gemini verified",gemini:"The website displays a persistent loading spinner without rendering any content. Visitors cannot access any information or functionality on the site, leading to immediate abandonment. A real visitor sees only a loading spinner on a blank white page. No content, navigation, or branding is visible, making the site completely inaccessible and unusable. Evidence: The entire viewport of both mobile and desktop screenshots shows only a loading spinner on a white background. Brand: It is not possible to observe anything about the brand as no content is visible.",a11yNotes:"<html> element must have a valid value for the lang attribute [serious, 1 node] (e.g. html)"},
+{b:"C",name:"Dinosaur Designs",url:"dinosaurdesigns.com.au",cat:"potential_lead",status:"Seed only",verified:"no",email:"customerservice@dinosaurdesigns.com.au",perf:38,a11y:81,bp:54,seo:92,pri:34,issue:null,angle:null,brand:null,gstatus:"Gemini skip",gemini:"The screenshots show a clean, well-designed website with no visible visitor-facing issues on either mobile or desktop. Brand: The brand appears to sell artistic homewares or decorative objects, characterized by unique shapes and colors, with a focus on design. Next: skip. Internal only. Not outreach-ready until verified.",a11yNotes:"Elements must only use permitted ARIA attributes [serious, 2 nodes] (e.g. #header-menu); Images must have alternative text [critical, 1 node] (e.g. img[width=\"2477\"]); Links must have discernible text [serious, 2 nodes] (e.g. .header__desktop__bar__l > .header__logo.header__logo--image.header__logo--has-transparent > .header__logo__link[data-logo-link=\"\"][href=\"/\"]); Interactive controls must not be nested [serious, 3 nodes] (e.g. hover-disclosure:nth-child(1))"},
+{b:"C",name:"En Gold",url:"engold.com.au",cat:"potential_lead",status:"Ready to draft",verified:"yes",email:"hello@engold.com.au",perf:29,a11y:98,bp:57,seo:92,pri:31,issue:"Text in the top announcement banner and the bottom descriptive section is visibly cut off on the mobile viewport.",angle:"We noticed some text truncation issues on your mobile site that could be impacting how visitors perceive your brand and sales.",brand:"En Gold appears to be a luxury home furnishings brand, focusing on handcrafted artistry and timeless design, offering items like coffee tables and beds.",gstatus:"Gemini verified",gemini:"Text in the top announcement banner and the bottom descriptive section is visibly cut off on the mobile viewport. Visitors cannot read the full message of the sale announcement or the brand's descriptive text, leading to a poor user experience and potentially missed information. The website presents a visually appealing design for a luxury home furnishings brand. However, critical text elements at both the top and bottom of the mobile screen are cut off, hindering the user's ability to read important information. Evidence: Top of mobile viewport, announcement banner; bottom of mobile viewport, descriptive text section. Brand: En Gold appears to be a luxury home furnishings brand, focusing on handcrafted artistry and timeless design, offering items like coffee tables and beds.",a11yNotes:null},
+{b:"C",name:"I Dream a Highway",url:"idreamahighway.com.au",cat:"clothing store",status:"Ready to draft",verified:"yes",email:null,perf:53,a11y:75,bp:48,seo:100,pri:31,issue:"The main content area, including the hero image and product listings, is missing on the desktop view, resulting in a large blank space and misplaced elements.",angle:"I noticed your desktop homepage has a significant layout issue where the main content area is blank, which could be impacting your first impression with potential customers.",brand:"The brand appears to be a clothing store, selling items like dresses and new arrivals, targeting customers interested in fashion.",gstatus:"Gemini verified",gemini:"The main content area, including the hero image and product listings, is missing on the desktop view, resulting in a large blank space and misplaced elements. Visitors on desktop will see a mostly blank page, making it impossible to browse products or understand the site's offerings without scrolling or navigating, leading to a poor user experience and potential loss of sales. On desktop, a visitor arriving at the homepage will see a header and then a vast blank white space, with some promotional text and a button floating in the bottom right. This makes the site appear broken and provides no immediate visual information about the products or brand. In contrast, the mobile view presents a complete and functional homepage with clear product displays. Evidence: The entire central area of the desktop viewport is blank white, with the 'FMO NEW ARRIVALS!' text and 'SHOP HERE!' button appearing in the bottom right corner, disconnected from any visual content. Brand: The brand appears to be a clothing store, selling items like dresses and new arrivals, targeting customers interested in fashion.",a11yNotes:"ARIA hidden element must not be focusable or contain focusable elements [serious, 5 nodes] (e.g. .position--footer > .list.fw--blocks > .item[title=\"Facebook\"][aria-hidden=\"true\"]); Elements must meet minimum color contrast ratio thresholds [serious, 4 nodes] (e.g. .announcement--text); <html> element must have a lang attribute [serious, 1 node] (e.g. html); Links must have discernible text [serious, 29 nodes] (e.g. .header--search); <li> elements must be contained in a <ul> or <ol> [serious, 2 nodes] (e.g. .footer--list-item:nth-child(1))"},
+{b:"C",name:"Vow Studio",url:"vowstudio.com.au",cat:"fashion",status:"Ready to draft",verified:"yes",email:null,perf:44,a11y:88,bp:61,seo:92,pri:29,issue:"Key promotional text in the hero banner is unreadable due to extremely low contrast with the vibrant background.",angle:"We noticed a critical visual clarity issue on your homepage that could be preventing visitors from understanding your Mother's Day promotion.",brand:"Vow Studio appears to be a fashion brand offering vibrant and colorful clothing, with a current focus on Mother's Day promotions.",gstatus:"Gemini verified",gemini:"Key promotional text in the hero banner is unreadable due to extremely low contrast with the vibrant background. Visitors cannot easily read or understand the details of the Mother's Day offer, potentially missing out on important information or incentives to purchase. The Vow Studio website features a bright and colorful design, showcasing fashion items and a prominent Mother's Day promotion. However, the text within the main promotional banner, especially the offer details, is so low in contrast that it becomes unreadable, hindering the clarity of the promotion. Evidence: The white text 'Free Gift Wrapping + $80 Bonus Gift Pack' and 'on orders $200+, while stocks last' on the pink background in the hero section of both mobile and desktop screenshots. Brand: Vow Studio appears to be a fashion brand offering vibrant and colorful clothing, with a current focus on Mother's Day promotions.",a11yNotes:"Buttons must have discernible text [critical, 1 node] (e.g. #ShopifyChat,.chat-toggle); Elements must meet minimum color contrast ratio thresholds [serious, 29 nodes] (e.g. .block.h6[href$=\"new-arrivals\"]); Links must have discernible text [serious, 1 node] (e.g. .slideshow__slide)"},
+{b:"C",name:"Seventh Gallery",url:"seventhgallery.org",cat:"gallery",status:"Ready to draft",verified:"yes",email:"info@seventhgallery.org",perf:37,a11y:82,bp:79,seo:91,pri:28,issue:"The 'Donate' button is positioned over the main artwork image, obscuring part of it.",angle:"We noticed a small visual alignment issue on your homepage that could be easily resolved to enhance the presentation of your beautiful artwork.",brand:"Seventh Gallery appears to be an artist-run gallery showcasing contemporary art, with a focus on exhibitions and community engagement (mailing list, donations).",gstatus:"Gemini verified",gemini:"The 'Donate' button is positioned over the main artwork image, obscuring part of it. Visitors may find the button distracting or it may obscure important details of the artwork, detracting from the visual experience of the gallery's content. The website presents itself as an artist-run gallery with a clean, minimalist design. The homepage immediately features an artwork and details about a current or upcoming exhibition. However, a prominent 'Donate' button is unfortunately positioned over the main artwork, creating a visual distraction. Evidence: The blue 'Donate' button with a heart icon is visible overlapping the left side of the large artwork image in both the mobile and desktop screenshots. Brand: Seventh Gallery appears to be an artist-run gallery showcasing contemporary art, with a focus on exhibitions and community engagement (mailing list, donations).",a11yNotes:"<html> element must have a lang attribute [serious, 1 node] (e.g. html); Images must have alternative text [critical, 4 nodes] (e.g. .dbox-donation-page-button:nth-child(17) > img); Links must have discernible text [serious, 1 node] (e.g. body > .w-inline-block)"},
+{b:"C",name:"Kitten D'Amour Melbourne",url:"kittendamour.com",cat:"clothing store",status:"Ready to draft",verified:"yes",email:null,perf:45,a11y:95,bp:57,seo:100,pri:26,issue:"The main content area on the desktop version of the homepage is blank, showing only a dark background and a small loading indicator.",angle:"We noticed a critical issue on your desktop homepage that is preventing visitors from seeing your products and promotions.",brand:"Kitten D'Amour appears to be a fashion brand, likely specializing in clothing, with an ongoing 'Easter Sale'.",gstatus:"Gemini verified",gemini:"The main content area on the desktop version of the homepage is blank, showing only a dark background and a small loading indicator. Visitors arriving on the desktop site will see an empty page instead of products or promotional content, making the site unusable and likely causing them to leave immediately. On desktop, the website's main content area is completely blank, preventing visitors from seeing any products or promotional material. This makes the site appear broken and unusable for desktop users, despite the mobile version displaying content correctly. Evidence: The entire central region of the desktop viewport, below the main navigation and shipping banner, is black with a small white line in the center. Brand: Kitten D'Amour appears to be a fashion brand, likely specializing in clothing, with an ongoing 'Easter Sale'.",a11yNotes:null},
+{b:"C",name:"FME Apparel",url:"fmeapparel.com.au",cat:"fashion",status:"Ready to draft",verified:"yes",email:null,perf:60,a11y:89,bp:57,seo:100,pri:24,issue:"The homepage's main hero section is largely empty, displaying only minimal text and a vast blank space, failing to immediately showcase the brand's offerings.",angle:"We noticed an opportunity to enhance the immediate visual impact of your homepage, particularly in the hero section, to better engage first-time visitors.",brand:"FME Apparel appears to be a minimalist fashion brand, possibly focusing on specific collections or pop-up events, given the 'MARY OF THE FLOWERS '25' text.",gstatus:"Gemini verified",gemini:"The homepage's main hero section is largely empty, displaying only minimal text and a vast blank space, failing to immediately showcase the brand's offerings. Visitors may find the homepage unengaging or perceive it as incomplete, missing the immediate visual impact expected from a fashion brand and potentially leading to a higher bounce rate. A visitor landing on the FME Apparel homepage is greeted by a very minimalist design, dominated by a large empty space in the hero section. While some text indicates a 'POP UP STORE' and a collection name, there's no immediate visual content like a hero image or video to introduce the brand's aesthetic or products. This could leave a first-time visitor feeling underwhelmed or confused about what to expect. Evidence: The entire central area of both the mobile and desktop screenshots, above the text 'POP UP STORE'. Brand: FME Apparel appears to be a minimalist fashion brand, possibly focusing on specific collections or pop-up events, given the 'MARY OF THE FLOWERS '25' text.",a11yNotes:"Elements must meet minimum color contrast ratio thresholds [serious, 3 nodes] (e.g. .Grid__Cell.\\31 \\/2--phone.\\31 \\/2--tablet:nth-child(1) > .ProductItem > .ProductItem__Wrapper > .ProductItem__Info.ProductItem__Info--center > .ProductItem__PriceList.Heading > .ProductItem__Price.Price.Text--subdued); Links must have discernible text [serious, 1 node] (e.g. .Header__Icon.Icon-Wrapper[href$=\"account\"])"},
+{b:"C",name:"Sister Studios",url:"sisterstudios.com.au",cat:"fashion",status:"Ready to draft",verified:"yes",email:null,perf:56,a11y:93,bp:61,seo:100,pri:23,issue:"On the mobile viewport, the product title text 'SAMIRA PANT | BLACK WITH VELVET TRIM' is visibly cut off at the bottom.",angle:"We noticed a small but impactful display issue on your mobile site that could be affecting how customers perceive your product details.",brand:"Sister Studios appears to be a fashion brand selling clothing, with a focus on stylish, possibly contemporary, women's wear.",gstatus:"Gemini verified",gemini:"On the mobile viewport, the product title text 'SAMIRA PANT | BLACK WITH VELVET TRIM' is visibly cut off at the bottom. Visitors on mobile devices may not be able to read the full product name or description, leading to confusion or a poor user experience. The website presents a clean, minimalist aesthetic with clear product imagery. However, on mobile, a key piece of product information, the full title, is cut off, which could hinder a visitor's understanding of the item. Evidence: Bottom left of the mobile viewport, below the main hero image, where the product title 'SAMIRA PANT | BLACK WITH VELVET TRIM' is displayed. Brand: Sister Studios appears to be a fashion brand selling clothing, with a focus on stylish, possibly contemporary, women's wear.",a11yNotes:"Links must have discernible text [serious, 1 node] (e.g. section > .increase-target)"},
+{b:"C",name:"Caves Collect",url:"cavescollect.com",cat:"fashion",status:"Seed only",verified:"no",email:null,perf:59,a11y:96,bp:61,seo:100,pri:21,issue:null,angle:null,brand:null,gstatus:"Gemini skip",gemini:"The screenshots display a clean, functional website with no visible broken layouts, content, or trust signals. The newsletter popup on mobile is a standard feature and not a visible issue. Brand: The brand appears to be a fashion label, 'Caves Collect', emphasizing 'MADE IN AUSTRALIA' and 'NATURAL FABRICS AND LOCAL CRAFT'. Next: skip. Internal only. Not outreach-ready until verified.",a11yNotes:"Links must have discernible text [serious, 1 node] (e.g. .slideshow__slide)"},
+{b:"C",name:"Blindside",url:"blindside.org.au",cat:"gallery",status:"Ready to draft",verified:"yes",email:"info@blindside.org.au",perf:73,a11y:88,bp:61,seo:100,pri:20,issue:"The brand name 'Blindside' is visibly displayed as 'BLIND3DIS' in the header, creating a mismatch with the actual brand name.",angle:"We noticed a visible mismatch in your brand name display and readability challenges on your website that could be impacting visitor perception and information access.",brand:"The website appears to be for an art gallery, showcasing contemporary exhibitions with artist names and dates.",gstatus:"Gemini verified",gemini:"The brand name 'Blindside' is visibly displayed as 'BLIND3DIS' in the header, creating a mismatch with the actual brand name. Visitors may be confused about the actual brand name, impacting brand recognition and potentially giving an impression of a technical error or lack of attention to detail. The website presents current exhibition information for an art gallery. However, the brand name in the header is visibly distorted, appearing as 'BLIND3DIS' instead of 'Blindside', which is a clear mismatch. Additionally, much of the text, including navigation and event details, uses very low contrast white text on a light background, making it challenging to read. Evidence: Top left corner of both mobile and desktop viewports, where the brand name is displayed as 'BLIND3DIS'. Brand: The website appears to be for an art gallery, showcasing contemporary exhibitions with artist names and dates.",a11yNotes:"ARIA commands must have an accessible name [serious, 1 node] (e.g. .css-v85ipb); Links must have discernible text [serious, 2 nodes] (e.g. .css-5tq9oc:nth-child(2) > a[rel=\"noreferrer\"][target=\"_blank\"])"},
+{b:"C",name:"Outré Gallery",url:"outregallery.com",cat:"gallery",status:"Seed only",verified:"no",email:null,perf:62,a11y:89,bp:79,seo:100,pri:18,issue:null,angle:null,brand:null,gstatus:"Gemini skip",gemini:"The screenshots display a clean, well-organized, and functional website with no visible issues or broken elements. Brand: Outré Gallery appears to be an art gallery that showcases exhibitions and sells prints and artworks. Next: send_skip_response. Internal only. Not outreach-ready until verified.",a11yNotes:"Elements must meet minimum color contrast ratio thresholds [serious, 20 nodes] (e.g. .small-feature-link[href$=\"new\"]); Links must have discernible text [serious, 4 nodes] (e.g. #block-id-text_block_XrzhcL > .text-column__image.lightly-spaced-row > a)"},
+{b:"C",name:"No Vacancy",url:"no-vacancy.com.au",cat:"gallery",status:"Ready to draft",verified:"yes",email:"Info@no-vacancy.com.au",perf:42,a11y:100,bp:100,seo:100,pri:15,issue:"The main introductory text on the mobile homepage is unreadable due to insufficient contrast with the background image.",angle:"We noticed a critical readability issue on your mobile homepage that could be impacting how visitors understand your offerings.",brand:"The brand appears to be an art gallery, cafe, and events space in Melbourne, featuring a modern, industrial aesthetic.",gstatus:"Gemini verified",gemini:"The main introductory text on the mobile homepage is unreadable due to insufficient contrast with the background image. Visitors on mobile devices will struggle to read the core message about what the gallery offers, potentially leading to confusion or them leaving the site prematurely. On the mobile version of the site, the primary introductory text is almost impossible to read because it's white text placed directly over a light-colored background image. This significantly hinders a visitor's ability to quickly understand what No Vacancy offers. The desktop version does not exhibit this issue, presenting the text clearly. Evidence: Mobile viewport, below the hero image, the large italic text 'No Vacancy is your local gallery, cafe and events home in Melbourne.' is overlaid on a light-colored image. Brand: The brand appears to be an art gallery, cafe, and events space in Melbourne, featuring a modern, industrial aesthetic.",a11yNotes:null},
+
+// ─── BATCH D — master-leads-audit-ready.csv (Gemini audit 2026-05-04) ───
+
+// ─── BATCH E — pipeline-audited.csv (Gemini audit 2026-05-05) ───
+{b:"E",name:"JANAI Jewellery",url:"janai.com.au",cat:"jewelry store",status:"Ready to draft",verified:"yes",email:null,perf:45,a11y:70,bp:71,seo:77,pri:38,issue:"Several text elements are low-contrast and hard to read.",angle:"Open with \"Engagement rings, Diamonds, Wedding rings in Melbourne\", then connect it to a smoother customer experience, especially where several text elements are low-contrast and hard to read.",brand:"A clear brand cue on the site is \"Engagement rings, Diamonds, Wedding rings in Melbourne\".",gstatus:"Gemini verified",gemini:"Brand cue: A clear brand cue on the site is \"Engagement rings, Diamonds, Wedding rings in Melbourne\". Customer-visible friction: A clear brand cue on the site is \"Engagement rings, Diamonds, Wedding rings in Melbourne\", but this makes the site harder to use and less accessible for some visitors. In practice, this shows up in form text \"Search\" and text \"Engagement rings Browse by style Solitaire Side stones Halo...\", where the text is harder to read than it should be. Human pain points: Several text elements are low-contrast and hard to read; Some important imagery is not described clearly for screen-reader users; The site is showing accessibility gaps on key pages Where it shows up: form text \"Search\"; text \"Engagement rings Browse by style Solitaire Side stones Halo...\"; text \"Wedding rings Women's classic wedding rings Women's diamond...\" Main issue to verify: Several text elements are low-contrast and hard to read. Why it matters: This makes the site harder to use and less accessible for some visitors. What to check on the live site: This shows up in form text \"Search\" and text \"Engagement rings Browse by style Solitaire Side stones Halo...\", where the text is harder to read than it should be. Outreach angle: Open with \"Engagement rings, Diamonds, Wedding rings in Melbourne\", then connect it to a smoother customer experience, especially where several text elements are low-contrast and hard to read. Manual checks before any email: verify by hand that several text elements are low-contrast and hard to read; check form text \"Search\" and text \"Engagement rings Browse by style Solitaire Side stones Halo...\" on the live page. No direct email found; contact form available. Next: Open the live site, verify the issue once by hand, then draft outreach. A clear brand cue on the site is \"Engagement rings, Diamonds, Wedding rings in Melbourne\", but this makes the site harder to use and less accessible for some visitors. In practice, this shows up in form text \"Search\" and text \"Engagement rings Browse by style Solitaire Side stones Halo...\", where the text is harder to read than it should be. Several text elements are low-contrast and hard to read. This makes the site harder to use and less accessible for some visitors. Evidence: This shows up in form text \"Search\" and text \"Engagement rings Browse by style Solitaire Side stones Halo...\", where the text is harder to read than it should be. Brand: A clear brand cue on the site is \"Engagement rings, Diamonds, Wedding rings in Melbourne\".",a11yNotes:null},
+{b:"E",name:"Wilkins & Kent Furniture & Design",url:"wilkinsandkent.com",cat:"furniture store",status:"Ready to draft",verified:"yes",email:null,perf:46,a11y:81,bp:62,seo:61,pri:37,issue:"Several text elements are low-contrast and hard to read.",angle:"Open with \"furniture custom making and homewares Brunswick St Fitzroy\", then connect it to a smoother customer experience, especially where several text elements are low-contrast and hard to read.",brand:"A clear brand cue on the site is \"furniture custom making and homewares Brunswick St Fitzroy\".",gstatus:"Gemini verified",gemini:"Brand cue: A clear brand cue on the site is \"furniture custom making and homewares Brunswick St Fitzroy\". Customer-visible friction: A clear brand cue on the site is \"furniture custom making and homewares Brunswick St Fitzroy\", but this makes the site harder to use and less accessible for some visitors. In practice, text is blending into the background in places where visitors should be able to read quickly. Human pain points: Several text elements are low-contrast and hard to read; Some links are not described clearly for screen-reader users; The site is showing accessibility gaps on key pages Main issue to verify: Several text elements are low-contrast and hard to read. Why it matters: This makes the site harder to use and less accessible for some visitors. What to check on the live site: Text is blending into the background in places where visitors should be able to read quickly. Outreach angle: Open with \"furniture custom making and homewares Brunswick St Fitzroy\", then connect it to a smoother customer experience, especially where several text elements are low-contrast and hard to read. Manual checks before any email: verify by hand that several text elements are low-contrast and hard to read; confirm the visitor-facing evidence: text is blending into the background in places where visitors should be able to read quickly. No direct email found; contact form available. Next: Open the live site, verify the issue once by hand, then draft outreach. A clear brand cue on the site is \"furniture custom making and homewares Brunswick St Fitzroy\", but this makes the site harder to use and less accessible for some visitors. In practice, text is blending into the background in places where visitors should be able to read quickly. Several text elements are low-contrast and hard to read. This makes the site harder to use and less accessible for some visitors. Evidence: Text is blending into the background in places where visitors should be able to read quickly. Brand: A clear brand cue on the site is \"furniture custom making and homewares Brunswick St Fitzroy\".",a11yNotes:null},
+{b:"E",name:"Tender",url:"tender.place",cat:"wellness",status:"Ready to draft",verified:"yes",email:"hello@tender.place",perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"The homepage opens on a single \"Enter\" gate instead of immediately explaining what Tender is.",angle:"Open with Tender's third-place positioning, then connect it to a smoother first impression by removing the extra entry gate and tightening the About page.",brand:"Tender is a Brunswick third place combining yoga, deep listening, venue hire, and community arts events.",gstatus:"Manual verified",gemini:"Brand cue: Tender frames itself as a third place for movement, deep listening, and community arts. Customer-visible friction: the root site opens on a bare Enter gate before explaining any of that. Evidence: https://www.tender.place/ shows only \"Enter\", while the actual value prop lives on https://www.tender.place/new-page-1. Direct email available: hello@tender.place. A clear brand cue on the site is \"Tender is a third place\", but new visitors land on a bare Enter screen before they see any of that context. The homepage opens on a single \"Enter\" gate instead of immediately explaining what Tender is. First-time visitors have to click through before they see the studio's offer, which weakens first impression and discovery. Evidence: The root domain at https://www.tender.place/ shows only an \"Enter\" prompt; the actual positioning appears on the About page at /new-page-1. Brand: Tender is a Brunswick third place combining yoga, deep listening, venue hire, and community arts events.",a11yNotes:null},
+
+// ─── SEED ONLY ───
+{b:"seed",name:"Kindling",url:"https://kindling.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Handsom",url:"https://handsomstore.com",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Saive Denim",url:"https://saive.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Romeo Waiting",url:"https://romewaiting.com.au",cat:"fashion",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Frank Body",url:"https://frankbody.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Tomorrow Today",url:"https://tomorrow-today.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Roemy",url:"https://roemy.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Strange Luxury",url:"https://strangeluxury.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Conserving Beauty",url:"https://conservingbeauty.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Foile",url:"https://foile.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Junglo",url:"https://junglo.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Dope Skin Co",url:"https://dopeskinco.com.au",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Rationale",url:"https://rationale.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Hannah Home",url:"https://hannahome.com.au",cat:"homewares",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Asobimasu Clay",url:"https://asobimasuclay.com",cat:"homewares-ceramics",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Fazeek",url:"https://fazeek.com.au",cat:"homewares",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Infinite Co",url:"https://infiniteco.com.au",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"UPG Studio",url:"https://upg-studio.com.au",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Little Mandarin",url:"https://littlemandarin.melbourne",cat:"wellness",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Yellowtrace",url:"https://yellowtrace.com.au",cat:"media",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Palace Coffee",url:"https://palacecoffee.com.au",cat:"hospitality",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+{b:"seed",name:"Grown Alchemist",url:"https://grownalchemist.com",cat:"beauty",status:"Seed only",email:null,perf:null,a11y:null,bp:null,seo:null,pri:null,issue:"",angle:"",brand:"",gemini:""},
+];
+
+// ── Rowan review state (issue #720) ───────────────────────────────────────
+// Persists Rowan-owned lead review fields keyed by stable id derived from URL.
+// Source of truth on disk: data/leads/current/rowan-review.json
+// localStorage mirror under SK acts as the offline buffer between commits.
+const SK_LEGACY = "kspf_v3";              // old store, keyed by lead.name with {r,v,n}
+const SK = "kspf_v4";                     // new store, keyed by leadId(url) with full review shape
+const ROWAN_REVIEW_PATH = "../data/leads/current/rowan-review.json";
+
+const LANES = ["technical-audit","brand-translation","intent-signals","warm-relationships","agency-partners","inbound-authority"];
+const LANE_CONFIDENCE = ["low","medium","high"];
+const EVIDENCE = ["unverified","partially_verified","verified","false"];
+const NEXT_ACTIONS = ["manual-check","enrich","draft","redo-audit","send","follow-up","skip","archive"];
+const NEXT_ACTION_LABELS = {
+  "manual-check": "Manual check",
+  enrich: "Enrich",
+  draft: "Draft",
+  "redo-audit": "Redo audit",
+  send: "Send",
+  "follow-up": "Follow-up",
+  skip: "Skip",
+  archive: "Archive",
+};
+const VERDICTS = [["send","✓ Send"],["rework","~ Rework"],["maybe","? Maybe"],["skip","✗ Skip"]];
+
+function leadId(url){
+  return String(url||"")
+    .trim()
+    .replace(/^https?:\/\//i, "")
+    .replace(/^www\./i, "")
+    .replace(/\/+$/g, "")
+    .toLowerCase()
+    .replace(/[\/.]/g, "-")
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+// Tag every lead with its stable id once, up front.
+for (const lead of L) { lead.id = leadId(lead.url); }
+
+// Ensure acceptance criteria: every lead has a lane.
+// Bootstraps a lightweight default classification that Rowan can override.
+// Heuristic: audited leads → technical-audit; seed-only → intent-signals.
+for (const lead of L) {
+  if (!lead.lane) {
+    // Legacy heuristics only (for this embedded dataset):
+    // - Warm leads should land in warm-relationships
+    // - Seed-only leads are intent-signals
+    // - Historic audit batches default to technical-audit
+    // Future imports should provide lane explicitly rather than relying on inference.
+    if (lead.status === "Warm") lead.lane = "warm-relationships";
+    else if (lead.status === "Seed only") lead.lane = "intent-signals";
+    else lead.lane = "technical-audit";
+  }
+}
+
+function blankReview(){
+  return { lane:"", lane_confidence:"", verdict:"", evidence_status:"", draft_safe:false, rating:0, notes:"", next_action:"", follow_up_date:null, updated_at:"" };
+}
+
+function loadSeedReview(){
+  try {
+    const el = document.getElementById("rowan-review-seed");
+    return el ? JSON.parse(el.textContent || "{}") : {};
+  } catch {
+    return {};
+  }
+}
+
+function loadStore(){
+  try { return JSON.parse(localStorage.getItem(SK) || "{}"); } catch { return {}; }
+}
+
+const LEAD_BY_ID = Object.fromEntries(L.map(lead => [lead.id, lead]));
+
+function normalizedReview(review){
+  return { ...blankReview(), ...(review || {}) };
+}
+
+function isDefaultOnlyReview(id, review){
+  const r = normalizedReview(review);
+  const lead = LEAD_BY_ID[id];
+  const defaultLane = lead ? (lead.lane || "") : "";
+  return (!String(r.notes || "").trim())
+    && !r.verdict
+    && !r.follow_up_date
+    && !r.lane_confidence
+    && !(Number(r.rating || 0) > 0)
+    && r.draft_safe !== true
+    && (!r.next_action || r.next_action === "manual-check")
+    && (!r.evidence_status || r.evidence_status === "unverified")
+    && (!r.lane || r.lane === defaultLane);
+}
+
+function mergeReviewState(seed, local){
+  const merged = {};
+  const ids = new Set([...Object.keys(seed || {}), ...Object.keys(local || {})]);
+  for (const id of ids){
+    const fromSeed = seed && seed[id];
+    const fromLocal = local && local[id];
+    if (fromSeed && fromLocal){
+      merged[id] = isDefaultOnlyReview(id, fromLocal)
+        ? { ...blankReview(), ...fromLocal, ...fromSeed }
+        : { ...blankReview(), ...fromSeed, ...fromLocal };
+      continue;
+    }
+    if (fromSeed){
+      merged[id] = { ...blankReview(), ...fromSeed };
+      continue;
+    }
+    merged[id] = { ...blankReview(), ...fromLocal };
+  }
+  return merged;
+}
+
+let S = mergeReviewState(loadSeedReview(), loadStore());
+
+// One-shot migration from kspf_v3 (keyed by lead name, {r,v,n}) → kspf_v4 (keyed by id).
+(function migrateLegacy(){
+  if (localStorage.getItem(SK)) return;
+  let legacy = {};
+  try { legacy = JSON.parse(localStorage.getItem(SK_LEGACY) || "{}"); } catch { return; }
+  if (!legacy || typeof legacy !== "object") return;
+  const byName = {};
+  for (const lead of L) byName[lead.name] = lead;
+  const now = new Date().toISOString();
+  for (const [name, v] of Object.entries(legacy)){
+    const lead = byName[name]; if (!lead || !lead.id) continue;
+    if (!v || (v.r === 0 && !v.v && !v.n)) continue;
+    const r = blankReview();
+    if (typeof v.r === "number") r.rating = v.r;
+    if (typeof v.v === "string") r.verdict = v.v;
+    if (typeof v.n === "string") r.notes = v.n;
+    r.updated_at = now;
+    S[lead.id] = r;
+  }
+  try { localStorage.setItem(SK, JSON.stringify(S)); } catch {}
+})();
+
+const BLANK = Object.freeze(blankReview());
+function peekReview(id){ return S[id] || BLANK; }     // read-only; never mutates S
+function ensureReview(id){                            // write-path; auto-creates
+  if (!S[id]) S[id] = blankReview();
+  return S[id];
+}
+
+// Backfill missing per-lead schema so filters + exports behave consistently.
+// Only fills empty fields; never overwrites Rowan's explicit values.
+(function ensureSchema(){
+  const now = new Date().toISOString();
+  let changedAny = false;
+  for (const lead of L) {
+    const id = lead.id;
+    const r = ensureReview(id);
+    let changed = false;
+
+    if (!r.lane) { r.lane = lead.lane; changed = true; }
+    if (!r.evidence_status) { r.evidence_status = "unverified"; changed = true; }
+    // draft_safe must be explicitly opted-in: only true after verified evidence or Rowan approval.
+    if (r.draft_safe === undefined) { r.draft_safe = false; changed = true; }
+    if (!r.next_action) { r.next_action = "manual-check"; changed = true; }
+
+    // Set updated_at only for the specific record(s) we changed.
+    if (changed) {
+      r.updated_at = now;
+      changedAny = true;
+    }
+  }
+  if (changedAny) saveStore();
+})();
+
+let saveTimer = null;
+function setSaveState(state){
+  const el = document.getElementById("save-state"); if (!el) return;
+  const labels = { unsaved:"Unsaved", "saved-local":"Saved locally", "saved-repo":"Downloaded — commit to repo", failed:"Save failed" };
+  el.dataset.state = state;
+  el.textContent = labels[state] || "";
+}
+function saveStore(){
+  try {
+    localStorage.setItem(SK, JSON.stringify(S));
+    setSaveState("saved-local");
+  } catch { setSaveState("failed"); }
+}
+function patchReview(id, patch){
+  const r = ensureReview(id);
+  Object.assign(r, patch);
+  r.updated_at = new Date().toISOString();
+  setSaveState("unsaved");
+  if (saveTimer) clearTimeout(saveTimer);
+  saveTimer = setTimeout(saveStore, 250);
+}
+
+// Best-effort fetch of rowan-review.json so committed values survive a fresh browser.
+// Local edits (newer updated_at) win to avoid clobbering work in progress.
+async function hydrateFromRepo(){
+  try {
+    const res = await fetch(ROWAN_REVIEW_PATH, { cache: "no-cache" });
+    if (!res.ok) return;
+    const remote = await res.json();
+    if (!remote || typeof remote !== "object") return;
+    let applied = 0;
+    for (const [id, rRemote] of Object.entries(remote)){
+      const rLocal = S[id];
+      const remoteAt = rRemote && rRemote.updated_at ? Date.parse(rRemote.updated_at) : 0;
+      const localAt  = rLocal  && rLocal.updated_at  ? Date.parse(rLocal.updated_at)  : 0;
+      if (!rLocal || remoteAt > localAt || isDefaultOnlyReview(id, rLocal)){
+        S[id] = { ...blankReview(), ...(rLocal || {}), ...rRemote };
+        applied += 1;
+      }
+    }
+    if (applied === 0) return;   // nothing newer remote — don't clobber focus / in-flight edits
+    try { localStorage.setItem(SK, JSON.stringify(S)); } catch {}
+    render();
+  } catch { /* file:// or 404 — fine, localStorage-only */ }
+}
+
+function downloadRowanReview(){
+  // Sort keys for stable diffs.
+  const sorted = Object.keys(S).sort().reduce((acc, k) => { acc[k] = S[k]; return acc; }, {});
+  const blob = new Blob([JSON.stringify(sorted, null, 2) + "\n"], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "rowan-review.json";
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 0);
+  setSaveState("saved-repo");
+}
+
+let sCol="pri",sDir=-1,fQ="",fSt="",fCt="",fLane="",fEv="",fHideArchived=true;
+
+const sc=(v,c)=>{
+  if(v===null||v===undefined)return"<span style='color:#ccc'>—</span>";
+  const cls=c==="pri"?(v>=50?"s-ok":v>=35?"s-mid":"s-bad"):(v>=75?"s-ok":v>=55?"s-mid":"s-bad");
+  return`<span class="${cls}">${v}</span>`;
+};
+const BDGE={"Ready to draft":"b-draft","Needs contact":"b-contact","Next wave":"b-wave2","Seed only":"b-seed","Warm":"b-warm","Unverified":"b-unver"};
+// Per #722, technical findings stay flagged as "unverified" until a human or
+// live-DOM check confirms a real visible issue. We render that flag inline
+// next to the status badge so reviewers can see at a glance which rows still
+// rest on Lighthouse signal alone.
+const isUnverified=l=>l.verified==="no"||l.status==="Unverified";
+const stars=(id,r)=>[1,2,3,4,5].map(i=>`<span class="star${i<=r?" on":""}" data-id="${id}" data-v="${i}">★</span>`).join("");
+
+const esc=s=>String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+const opt=(v,sel,label)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(label||v||"—")}</option>`;
+const selectOptions=(values,sel,labels)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...values.map(v=>opt(v,sel,labels && labels[v] ? labels[v] : v))].join("");
+const selectVerdict=(sel)=>['<option value=""'+(sel?"":" selected")+'>—</option>',...VERDICTS.map(([v,l])=>opt(v,sel,l))].join("");
+const nextActionSearchText=value=>{
+  const raw = String(value || "");
+  if (!raw) return "";
+  return [raw, raw.replace(/-/g, " "), NEXT_ACTION_LABELS[raw] || raw].join(" ");
+};
+
+// Sortable values for Rowan-owned columns key off the review record.
+const NUMERIC_COLS = new Set(["perf","a11y","bp","seo","pri","rating"]);
+function sortKey(l, col){
+  const r = peekReview(l.id);
+  switch(col){
+    case "lane": return r.lane;
+    case "lane_confidence": return r.lane_confidence;
+    case "evidence": return r.evidence_status;
+    case "draft_safe": return r.draft_safe ? 1 : 0;
+    case "rating": return r.rating || 0;
+    case "verdict": return r.verdict;
+    case "next_action": return r.next_action;
+    case "follow_up_date": return r.follow_up_date;
+    case "notes": return r.notes;
+    default: return l[col];
+  }
+}
+
+function filt(){
+  const numericSort = NUMERIC_COLS.has(sCol);
+  // Empty/null sort sentinels: numeric columns use ±Infinity so missing
+  // values consistently sort to one end; string columns use lex extremes.
+  const lo = numericSort ? -Infinity : "";
+  const hi = numericSort ?  Infinity : "￿";
+  return L.filter(l=>{
+    const r=peekReview(l.id);
+    if(fHideArchived && (r.next_action==="skip" || r.next_action==="archive" || r.verdict==="skip")) return false;
+    if(fQ){const q=fQ.toLowerCase();if(![l.name,l.cat,l.status,l.email||"",l.issue,l.gemini,l.brand,r.notes,r.lane,r.lane_confidence,r.evidence_status,r.verdict,r.next_action,nextActionSearchText(r.next_action)].join(" ").toLowerCase().includes(q))return false;}
+    if(fSt&&l.status!==fSt)return false;
+    if(fCt&&!l.cat.includes(fCt))return false;
+    if(fLane&&(r.lane||"")!==fLane)return false;
+    if(fEv&&(r.evidence_status||"")!==fEv)return false;
+    return true;
+  }).sort((a,b)=>{
+    let av=sortKey(a,sCol),bv=sortKey(b,sCol);
+    if(av===null||av===undefined||av==="")av=sDir===1?hi:lo;
+    if(bv===null||bv===undefined||bv==="")bv=sDir===1?hi:lo;
+    if(!numericSort){
+      if(typeof av==="string")av=av.toLowerCase();
+      if(typeof bv==="string")bv=bv.toLowerCase();
+    }
+    return av<bv?-sDir:av>bv?sDir:0;
+  });
+}
+
+// Safe href for the lead's name link. Many entries are bare hosts ("dotcomme.net"),
+// which browsers treat as a relative URL, and we never want javascript:/data: URIs
+// reaching the DOM. Prefix https:// when missing; reject anything that isn't http(s).
+function safeHref(url){
+  const raw = String(url || "").trim();
+  if (!raw) return "#";
+  // Any non-http(s) scheme is rejected outright (covers javascript:, data:, ftp:, etc).
+  if (/^[a-z][a-z0-9+.-]*:/i.test(raw) && !/^https?:\/\//i.test(raw)) return "#";
+  const withScheme = /^https?:\/\//i.test(raw) ? raw : `https://${raw.replace(/^\/+/, "")}`;
+  try {
+    const u = new URL(withScheme);
+    if (u.protocol !== "http:" && u.protocol !== "https:") return "#";
+    return u.toString();
+  } catch { return "#"; }
+}
+
+function render(){
+  const list=filt();
+  document.getElementById("ct").textContent=`${list.length} of ${L.length}`;
+  const tb=document.getElementById("tb");
+  tb.innerHTML=list.map(l=>{
+    const r=peekReview(l.id);
+    const id=esc(l.id);
+    return`<tr class="${r.verdict==="rework"?"qa-rework":""}">
+      <td class="pin"><a href="${esc(safeHref(l.url))}" target="_blank" rel="noopener noreferrer">${esc(l.name)}</a></td>
+      <td>${esc(l.cat)}</td>
+      <td><span class="badge ${BDGE[l.status]||"b-seed"}">${esc(l.status)}</span>${isUnverified(l)?'<span class="verflag" title="Technical findings unverified — Lighthouse signal only">unverified</span>':""}</td>
+      <td style="font-size:11px">${l.email?`<a href="mailto:${esc(l.email)}">${esc(l.email)}</a>`:`<span class="no-email">—</span>`}</td>
+      <td class="gcell">${l.gemini?`<span class="gtag">${esc(l.gstatus || "Gemini")}</span>${esc(l.gemini)}`:""}</td>
+      <td class="rowan"><textarea class="note" data-field="notes" data-id="${id}">${esc(r.notes||"")}</textarea></td>
+      <td class="rowan"><select class="review" data-field="lane" data-id="${id}">${selectOptions(LANES,r.lane)}</select></td>
+      <td class="rowan"><select class="review" data-field="lane_confidence" data-id="${id}">${selectOptions(LANE_CONFIDENCE,r.lane_confidence)}</select></td>
+      <td class="rowan"><select class="review" data-field="evidence_status" data-id="${id}">${selectOptions(EVIDENCE,r.evidence_status)}</select></td>
+      <td class="rowan"><select class="review" data-field="draft_safe" data-id="${id}">${selectOptions(["true","false"], r.draft_safe ? "true" : "false")}</select></td>
+      <td class="rowan stars" data-sf="${id}">${stars(id,r.rating||0)}</td>
+      <td class="rowan"><select class="verdict" data-field="verdict" data-id="${id}">${selectVerdict(r.verdict)}</select></td>
+      <td class="rowan"><select class="review" data-field="next_action" data-id="${id}">${selectOptions(NEXT_ACTIONS,r.next_action,NEXT_ACTION_LABELS)}</select></td>
+      <td class="rowan"><input class="follow-up" type="date" data-field="follow_up_date" data-id="${id}" value="${esc(r.follow_up_date||"")}"></td>
+      <td class="sc">${sc(l.perf,"perf")}</td>
+      <td class="sc">${sc(l.a11y,"a11y")}</td>
+      <td class="sc">${sc(l.bp,"bp")}</td>
+      <td class="sc">${sc(l.seo,"seo")}</td>
+      <td class="sc">${sc(l.pri,"pri")}</td>
+      <td style="font-size:11px;max-width:200px">${esc(l.issue)}</td>
+      <td style="font-size:11px;max-width:180px;color:#555">${esc(l.angle)}</td>
+      <td style="font-size:11px;max-width:160px;color:#666">${esc(l.brand)}</td>
+      <td style="font-size:10px;max-width:220px;color:#888;font-family:ui-monospace,Menlo,Consolas,monospace">${esc(l.a11yNotes||"")}</td>
+    </tr>`;
+  }).join("");
+  bindReviewHandlers(tb);
+}
+
+function bindStarHandlers(scope){
+  scope.querySelectorAll(".star").forEach(el=>el.addEventListener("click",e=>{
+    const id=e.target.dataset.id, v=parseInt(e.target.dataset.v,10);
+    patchReview(id,{rating:v});
+    document.querySelectorAll(`[data-sf="${id}"]`).forEach(c=>{c.innerHTML=stars(id,v);bindStarHandlers(c);});
+  }));
+}
+
+function bindReviewHandlers(scope){
+  bindStarHandlers(scope);
+  scope.querySelectorAll("select.review, select.verdict").forEach(el=>el.addEventListener("change",e=>{
+    const field = e.target.dataset.field;
+    const raw = e.target.value;
+    const value = field === "draft_safe" ? (raw !== "false") : raw;
+    patchReview(e.target.dataset.id,{[field]:value});
+  }));
+  scope.querySelectorAll("input.follow-up").forEach(el=>el.addEventListener("change",e=>{
+    const followUpDate=e.target.value===""?null:e.target.value;
+    patchReview(e.target.dataset.id,{follow_up_date:followUpDate});
+  }));
+  scope.querySelectorAll("textarea.note").forEach(el=>el.addEventListener("input",e=>{
+    patchReview(e.target.dataset.id,{notes:e.target.value});
+  }));
+}
+
+document.querySelectorAll("th[data-c]").forEach(th=>th.addEventListener("click",()=>{
+  const c=th.dataset.c;sDir=sCol===c?-sDir:-1;sCol=c;
+  document.querySelectorAll("th").forEach(t=>t.classList.remove("sorted"));
+  th.classList.add("sorted");render();
+}));
+document.getElementById("search").addEventListener("input",e=>{fQ=e.target.value;render();});
+document.getElementById("fs").addEventListener("change",e=>{fSt=e.target.value;render();});
+document.getElementById("fc").addEventListener("change",e=>{fCt=e.target.value;render();});
+document.getElementById("fl").addEventListener("change",e=>{fLane=e.target.value;render();});
+document.getElementById("fe").addEventListener("change",e=>{fEv=e.target.value;render();});
+document.getElementById("show-archived").addEventListener("change",e=>{fHideArchived=!e.target.checked;render();});
+
+function xcsv(){
+  const cols=["Name","URL","Category","Status","Batch","Email","Gemini Findings","Notes (Rowan)","Lane","Lane Confidence","Evidence Status","Draft Safe","Rating","Verdict","Next Action","Follow-up Date","Updated At","Perf","A11y","BP","SEO","Priority","Issue","Outreach Angle","Brand Observation"];
+  const rows=[cols,...L.map(l=>{
+    const r=peekReview(l.id);
+    return[l.name,l.url,l.cat,l.status,l.b,l.email||"",(l.gemini||'').replace(/\n/g,' '),(r.notes||'').replace(/\n/g,' '),r.lane||'',r.lane_confidence||'',r.evidence_status||'',(r.draft_safe?"true":"false"),r.rating||'',r.verdict||'',r.next_action||'',r.follow_up_date||'',r.updated_at||'',l.perf??'',l.a11y??'',l.bp??'',l.seo??'',l.pri??'',l.issue,l.angle,l.brand];
+  })];
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));a.download="kspf-leads.csv";a.click();
+}
+
+// Session check — must run after render() is defined above
+if (sessionStorage.getItem(SESSION_KEY) === "1") {
+  unlock();
+}
+</script>
+</body>
+</html>
