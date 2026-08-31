@@ -1,6 +1,19 @@
 {
   "projects": [
     {
+      "title": "Arcteryx",
+      "displayName": "Arcteryx",
+      "category": "Print",
+      "description": "",
+      "viewUrl": "",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1787803450/poster_mockup_-_02.psdc.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1787891402/Posters_mockup.jpg"
+      ],
+      "alt": "",
+      "showOnHome": true
+    },
+    {
       "title": "Jak Architecture",
       "displayName": "Jak Architecture",
       "category": "Web",
@@ -12,6 +25,22 @@
         "https://a.storyblok.com/f/294596336853918/3024x1898/4a422773d4/screenshot-2026-08-19-at-11-27-23-am.png"
       ],
       "alt": "Jak Architecture website preview",
+      "showOnHome": true
+    },
+    {
+      "title": "The Athenaeum",
+      "displayName": "Aesop",
+      "category": "Product Design",
+      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
+      "viewUrl": "aesop.com",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787806425/3_6.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787805811/ath-collage.mp4",
+        "https://a.storyblok.com/f/294596336853918/x/b703548eee/ath-1.mp4",
+        "/assets/uploads/ath-border-02.png",
+        "/assets/uploads/ath-border-03.png"
+      ],
+      "alt": "",
       "showOnHome": true
     },
     {
@@ -41,20 +70,6 @@
         "/assets/uploads/Albus-video-02.mp4"
       ],
       "alt": "Project preview",
-      "showOnHome": true
-    },
-    {
-      "title": "The Athenaeum",
-      "displayName": "Aesop",
-      "category": "Product Design",
-      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
-      "viewUrl": "aesop.com",
-      "slides": [
-        "https://a.storyblok.com/f/294596336853918/x/b703548eee/ath-1.mp4",
-        "/assets/uploads/ath-border-02.png",
-        "/assets/uploads/ath-border-03.png"
-      ],
-      "alt": "",
       "showOnHome": true
     },
     {
