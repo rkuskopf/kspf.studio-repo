@@ -16,6 +16,16 @@ const MANAGEMENT_HOSTS = {
 const clone = (value) => structuredClone(value);
 const equal = (left, right) => isDeepStrictEqual(left, right);
 
+const normalizeManagementFieldId = (field) => {
+  if (!field || typeof field !== "object" || Array.isArray(field)) return field;
+  const normalized = { ...field };
+  delete normalized.id;
+  return normalized;
+};
+
+const approvedSchemaFieldsEqual = (existingField, approvedField) =>
+  equal(normalizeManagementFieldId(existingField), normalizeManagementFieldId(approvedField));
+
 const withoutUids = (value) => {
   if (Array.isArray(value)) return value.map(withoutUids);
   if (!value || typeof value !== "object") return value;
@@ -35,7 +45,14 @@ const assertApprovedSubset = (existing, approved, label) => {
 };
 
 const assertExistingComponent = (component, approved) => {
-  assertApprovedSubset(component, approved, `Existing component "${approved.name}"`);
+  const { schema: approvedSchema, ...approvedSettings } = approved;
+  const label = `Existing component "${approved.name}"`;
+  assertApprovedSubset(component, approvedSettings, label);
+  for (const [name, approvedField] of Object.entries(approvedSchema)) {
+    if (!(name in component.schema) || !approvedSchemaFieldsEqual(component.schema[name], approvedField)) {
+      throw new Error(`${label} conflicts with the approved project-page schema.`);
+    }
+  }
 };
 
 const randomUid = () => crypto.randomUUID();
@@ -99,7 +116,7 @@ export const mergeProjectPageFields = (existingComponent) => {
   let changed = false;
   for (const [name, approvedField] of Object.entries(PROJECT_PAGE_FIELDS)) {
     if (name in component.schema) {
-      if (!equal(component.schema[name], approvedField)) {
+      if (!approvedSchemaFieldsEqual(component.schema[name], approvedField)) {
         throw new Error(`Existing project field "${name}" conflicts with the approved project-page schema.`);
       }
     } else {

@@ -47,6 +47,16 @@ const projectsFolder = {
 };
 const completeComponents = () => [legacyProject(), ...clone(PROJECT_PAGE_COMPONENTS)];
 const legacyComponents = () => [legacyProject()];
+const liveComponentsWithManagementFieldIds = () => {
+  const components = [clone(projectTemplate), ...clone(PROJECT_PAGE_COMPONENTS)];
+  const project = components.find(({ name }) => name === "project");
+  for (const name of Object.keys(PROJECT_PAGE_FIELDS)) project.schema[name].id = `project-${name}-id`;
+  for (const approved of PROJECT_PAGE_COMPONENTS) {
+    const component = components.find(({ name }) => name === approved.name);
+    for (const [name, field] of Object.entries(component.schema)) field.id = `${approved.name}-${name}-id`;
+  }
+  return components;
+};
 
 const makeUid = () => {
   let count = 0;
@@ -250,6 +260,48 @@ test("accepts same-named approved components with semantically identical key ord
     "update-project-component",
     "create-tracer-draft",
   ]);
+  assert.equal(api.writes.length, 0);
+});
+
+test("keeps a live schema with management field IDs write-free on plan and apply reruns", async () => {
+  const tracer = buildProductDesignTracer(makeUid());
+  tracer.id = 49;
+  tracer.full_slug = TRACER_FULL_SLUG;
+  const api = fakeApi({
+    components: liveComponentsWithManagementFieldIds(),
+    stories: [projectsFolder, tracer],
+  });
+
+  const planned = await runProjectPageMigration({ api, mode: "plan", uid: makeUid() });
+  const applied = await runProjectPageMigration({ api, mode: "apply", uid: makeUid() });
+
+  assert.deepEqual(planned.actions, []);
+  assert.deepEqual(applied.actions, []);
+  assert.equal(api.writes.length, 0);
+  assert.equal(api.storyUpdates.length, 0);
+});
+
+test("rejects a changed nested field requirement despite a management field ID", async () => {
+  const components = liveComponentsWithManagementFieldIds();
+  components.find(({ name }) => name === "text").schema.content.required = false;
+  const api = fakeApi({ components, stories: [projectsFolder] });
+
+  await assert.rejects(
+    () => runProjectPageMigration({ api, mode: "plan", uid: makeUid() }),
+    /component "text" conflicts/i
+  );
+  assert.equal(api.writes.length, 0);
+});
+
+test("rejects a changed project-body whitelist despite a management field ID", async () => {
+  const components = liveComponentsWithManagementFieldIds();
+  components.find(({ name }) => name === "project").schema.body.component_whitelist = ["media"];
+  const api = fakeApi({ components, stories: [projectsFolder] });
+
+  await assert.rejects(
+    () => runProjectPageMigration({ api, mode: "plan", uid: makeUid() }),
+    /project field "body" conflicts/i
+  );
   assert.equal(api.writes.length, 0);
 });
 
