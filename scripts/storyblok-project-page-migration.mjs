@@ -1,4 +1,5 @@
 import { PROJECT_PAGE_COMPONENTS, PROJECT_PAGE_FIELDS } from "./storyblok-project-page-schema.mjs";
+import { isDeepStrictEqual } from "node:util";
 
 export const TRACER_FULL_SLUG = "projects/product-design-tracer";
 export const TRACER_ASSET_URL =
@@ -13,7 +14,7 @@ const MANAGEMENT_HOSTS = {
 };
 
 const clone = (value) => structuredClone(value);
-const equal = (left, right) => JSON.stringify(left) === JSON.stringify(right);
+const equal = (left, right) => isDeepStrictEqual(left, right);
 
 const withoutUids = (value) => {
   if (Array.isArray(value)) return value.map(withoutUids);
@@ -124,22 +125,27 @@ export const runProjectPageMigration = async ({ api, mode = "plan", uid = random
     throw new Error('Project-page migration mode must be "plan", "apply", or "publish".');
   }
 
-  const [components, stories] = await Promise.all([api.listComponents(), api.listStories()]);
+  const [components, projectFolders, tracerSummaries] = await Promise.all([
+    api.listComponents(),
+    api.findStoriesByFullSlug("projects/"),
+    api.findStoriesByFullSlug(TRACER_FULL_SLUG),
+  ]);
   const project = components.find(({ name }) => name === "project");
-  const projectsFolder = stories.find(
+  const projectsFolder = projectFolders.find(
     (story) => story.full_slug === "projects/" && story.is_folder === true
   );
   if (!project) throw new Error('Storyblok is missing the existing "project" component.');
   if (!projectsFolder) throw new Error('Storyblok is missing the existing "projects/" folder.');
 
-  const tracer = stories.find(({ full_slug }) => full_slug === TRACER_FULL_SLUG);
+  const tracerSummary = tracerSummaries.find(({ full_slug }) => full_slug === TRACER_FULL_SLUG);
+  const tracer = tracerSummary ? await api.getStory(tracerSummary.id) : undefined;
   if (tracer && !verifiedTracer(tracer, uid)) {
     throw new Error("Existing tracer differs from the verified draft; refusing replacement.");
   }
   if (mode === "publish") {
     if (!tracer) throw new Error("Verified tracer was not found; apply and review the draft before publishing.");
     const action = { kind: "publish-tracer", id: tracer.id };
-    if (mode === "publish") await api.publishStory(tracer.id);
+    await api.publishStory(tracer.id);
     return { actions: [action] };
   }
 
@@ -218,10 +224,10 @@ export const createStoryblokManagementApi = ({
     }
   };
 
-  const listAll = async (resource, key) => {
+  const listAll = async (resource, key, query = {}) => {
     const values = [];
     for (let page = 1; ; page += 1) {
-      const data = await request(resource, { query: { page, per_page: 100 } });
+      const data = await request(resource, { query: { ...query, page, per_page: 100 } });
       const batch = Array.isArray(data[key]) ? data[key] : [];
       values.push(...batch);
       if (batch.length < 100) return values;
@@ -230,7 +236,11 @@ export const createStoryblokManagementApi = ({
 
   return {
     listComponents: () => listAll("components/", "components"),
-    listStories: () => listAll("stories", "stories"),
+    findStoriesByFullSlug: (fullSlug) => listAll("stories", "stories", { by_slugs: fullSlug }),
+    async getStory(id) {
+      const data = await request(`stories/${id}`);
+      return data.story;
+    },
     async createComponent(component) {
       const data = await request("components/", { method: "POST", body: { component } });
       return data.component;
@@ -243,6 +253,6 @@ export const createStoryblokManagementApi = ({
       const data = await request("stories", { method: "POST", body: { publish: false, story } });
       return data.story;
     },
-    publishStory: (id) => request(`stories/${id}/publish`, { method: "POST" }),
+    publishStory: (id) => request(`stories/${id}/publish`),
   };
 };
