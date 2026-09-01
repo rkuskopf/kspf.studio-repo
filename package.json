@@ -8,7 +8,8 @@
     "dev": "next dev next-app --experimental-https",
     "build": "next build next-app",
     "start": "next start next-app",
-    "test": "vitest run"
+    "test": "vitest run",
+    "storyblok:project-page": "node scripts/setup-project-page.mjs"
   },
   "dependencies": {
     "@storyblok/react": "^7.3.1",
