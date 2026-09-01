@@ -37,7 +37,14 @@ const legacyProject = () => {
   return component;
 };
 
-const projectsFolder = { id: 20, name: "Projects", slug: "projects", full_slug: "projects/", is_folder: true };
+const projectsFolder = {
+  id: 20,
+  name: "Projects",
+  slug: "projects",
+  full_slug: "projects",
+  is_folder: true,
+  parent_id: 0,
+};
 const completeComponents = () => [legacyProject(), ...clone(PROJECT_PAGE_COMPONENTS)];
 const legacyComponents = () => [legacyProject()];
 
@@ -218,6 +225,19 @@ test("dry run plans changes without writes", async () => {
   ]);
 });
 
+test("plans against the management API Projects folder without a trailing slash", async () => {
+  const api = fakeApi({ components: legacyComponents(), stories: [projectsFolder] });
+
+  const result = await runProjectPageMigration({ api, mode: "plan", uid: makeUid() });
+
+  assert.equal(api.writes.length, 0);
+  assert.deepEqual(api.storyListCalls, ["projects", TRACER_FULL_SLUG]);
+  assert.deepEqual(result.actions.map(({ kind }) => kind), [
+    "create-component", "create-component", "create-component", "create-component",
+    "update-project-component", "create-tracer-draft",
+  ]);
+});
+
 test("accepts same-named approved components with semantically identical key order", async () => {
   const components = completeComponents();
   const index = components.findIndex(({ name }) => name === "project_tag");
@@ -249,7 +269,7 @@ test("apply creates only the tracer story and never updates existing stories", a
   assert.equal(api.storyUpdates.length, 0);
   assert.equal(api.publishes.length, 0);
   assert.equal(api.storyCreates[0].story.parent_id, projectsFolder.id);
-  assert.deepEqual(api.storyListCalls, ["projects/", TRACER_FULL_SLUG]);
+  assert.deepEqual(api.storyListCalls, ["projects", TRACER_FULL_SLUG]);
   assert.deepEqual(api.storyReads, []);
 });
 
@@ -263,7 +283,7 @@ test("a verified rerun is write-free", async () => {
 
   assert.equal(api.writes.length, 0);
   assert.deepEqual(result.actions, []);
-  assert.deepEqual(api.storyListCalls, ["projects/", TRACER_FULL_SLUG, "projects/", TRACER_FULL_SLUG]);
+  assert.deepEqual(api.storyListCalls, ["projects", TRACER_FULL_SLUG, "projects", TRACER_FULL_SLUG]);
   assert.deepEqual(api.storyReads, [200]);
 });
 
@@ -326,7 +346,7 @@ test("publish reads and calls only the exact verified tracer", async () => {
   assert.deepEqual(api.publishes, [{ method: "GET", resource: "stories/47/publish", id: 47 }]);
   assert.deepEqual(result.actions, [{ kind: "publish-tracer", id: 47 }]);
   assert.equal(api.storyUpdates.length, 0);
-  assert.deepEqual(api.storyListCalls, ["projects/", TRACER_FULL_SLUG]);
+  assert.deepEqual(api.storyListCalls, ["projects", TRACER_FULL_SLUG]);
   assert.deepEqual(api.storyReads, [47]);
 });
 
@@ -382,10 +402,10 @@ test("management API paginates filtered reads and redacts failed requests", asyn
     },
   });
 
-  assert.equal((await api.findStoriesByFullSlug("projects/")).length, 101);
+  assert.equal((await api.findStoriesByFullSlug("projects")).length, 101);
   assert.equal(calls.length, 2);
   assert.ok(calls.every((url) => url.startsWith("https://api-ap.storyblok.com/v1/spaces/12345/stories")));
-  assert.ok(calls.every((url) => new URL(url).searchParams.get("by_slugs") === "projects/"));
+  assert.ok(calls.every((url) => new URL(url).searchParams.get("by_slugs") === "projects"));
 
   const failingApi = createStoryblokManagementApi({
     spaceId: "12345",

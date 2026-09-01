@@ -127,15 +127,15 @@ export const runProjectPageMigration = async ({ api, mode = "plan", uid = random
 
   const [components, projectFolders, tracerSummaries] = await Promise.all([
     api.listComponents(),
-    api.findStoriesByFullSlug("projects/"),
+    api.findStoriesByFullSlug("projects"),
     api.findStoriesByFullSlug(TRACER_FULL_SLUG),
   ]);
   const project = components.find(({ name }) => name === "project");
   const projectsFolder = projectFolders.find(
-    (story) => story.full_slug === "projects/" && story.is_folder === true
+    (story) => story.full_slug === "projects" && story.is_folder === true
   );
   if (!project) throw new Error('Storyblok is missing the existing "project" component.');
-  if (!projectsFolder) throw new Error('Storyblok is missing the existing "projects/" folder.');
+  if (!projectsFolder) throw new Error('Storyblok is missing the existing Projects folder.');
 
   const tracerSummary = tracerSummaries.find(({ full_slug }) => full_slug === TRACER_FULL_SLUG);
   const tracer = tracerSummary ? await api.getStory(tracerSummary.id) : undefined;
