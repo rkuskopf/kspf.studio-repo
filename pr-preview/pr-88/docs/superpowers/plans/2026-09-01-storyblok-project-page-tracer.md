@@ -6,6 +6,8 @@
 
 **Architecture:** Keep the #58 signed-preview, server-only delivery, and token-free Bridge boundaries. Add an isolated project delivery/validation module, a typed block renderer that uses `@storyblok/react` only for RSC rich text, and a dedicated additive management migration that merges fields into the live `project` component without writing any existing project story.
 
+**Status:** Tasks 1–6 are complete. The real Storyblok migration, draft review, publication, and PR update remain explicitly scoped to Tasks 7–8.
+
 **Tech Stack:** Next.js 16.3.3 App Router, React 19.2.8, TypeScript 7.0.2, Vitest 4.1.11, Node.js test runner, Storyblok Content Delivery and Management APIs, `@storyblok/react` 7.3.1.
 
 ## Global Constraints
@@ -42,7 +44,7 @@
 - Preserves: the first nine existing `project` schema fields exactly.
 - Provides: `@storyblok/react@7.3.1` for Task 5.
 
-- [ ] **Step 1: Write the failing schema test**
+- [x] **Step 1: Write the failing schema test**
 
 Create `scripts/tests/storyblok-project-page-schema.test.mjs`:
 
@@ -72,12 +74,12 @@ test("defines the initial project-page blocks", () => {
 });
 ```
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 Run `node --test scripts/tests/storyblok-project-page-schema.test.mjs`.
 Expected: FAIL because the new fields and components do not exist.
 
-- [ ] **Step 3: Define the reusable page schema**
+- [x] **Step 3: Define the reusable page schema**
 
 Create `scripts/storyblok-project-page-schema.mjs` with local `field` and `blocks` helpers. Export four nestable components:
 
@@ -104,15 +106,15 @@ export const PROJECT_PAGE_FIELDS = {
 };
 ```
 
-- [ ] **Step 4: Extend the checked-in component list**
+- [x] **Step 4: Extend the checked-in component list**
 
 Import and spread the four components into `STORYBLOK_COMPONENTS`. Spread `PROJECT_PAGE_FIELDS` after `order` in the existing `project.schema`. Do not rewrite a legacy field.
 
-- [ ] **Step 5: Install the explicit SDK version**
+- [x] **Step 5: Install the explicit SDK version**
 
 Run `npm install @storyblok/react@7.3.1 --save`. Confirm existing direct dependency versions are unchanged.
 
-- [ ] **Step 6: Confirm GREEN**
+- [x] **Step 6: Confirm GREEN**
 
 Run:
 
@@ -121,7 +123,7 @@ node --test scripts/tests/storyblok-project-page-schema.test.mjs
 node scripts/verify-storyblok.mjs
 ```
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 git add package.json package-lock.json scripts/storyblok-schema.mjs scripts/storyblok-project-page-schema.mjs scripts/tests/storyblok-project-page-schema.test.mjs
@@ -143,7 +145,7 @@ git commit -m "feat: define Storyblok project page schema"
 - Produces: `mergeProjectPageFields`, `buildProductDesignTracer`, `runProjectPageMigration`, and `createStoryblokManagementApi`.
 - CLI: `npm run storyblok:project-page`, with mutually exclusive `--apply` and `--publish`.
 
-- [ ] **Step 1: Write failing migration tests**
+- [x] **Step 1: Write failing migration tests**
 
 Use an in-memory API recorder and assert:
 
@@ -169,11 +171,11 @@ test("apply creates only the tracer story", async () => {
 
 Also prove reruns are write-free; conflicts in new fields or same-named components fail; existing non-tracer stories never receive a write; an altered existing tracer refuses replacement; publish refuses absent/unverified tracers; publish calls only the exact tracer ID; `--apply --publish` fails; output contains no token or credential URL.
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 Run `node --test scripts/tests/storyblok-project-page-migration.test.mjs`.
 
-- [ ] **Step 3: Build the exact tracer**
+- [x] **Step 3: Build the exact tracer**
 
 Export:
 
@@ -189,13 +191,13 @@ export const TRACER_ASSET_URL =
 
 The media Asset uses `TRACER_ASSET_URL`, `fieldtype: "asset"`, and alt `KSPF brand mark`; it uploads nothing.
 
-- [ ] **Step 4: Implement additive planning**
+- [x] **Step 4: Implement additive planning**
 
 `mergeProjectPageFields(existingComponent)` deep-clones the full component, validates any already-present approved field, appends absent fields, preserves unknown component settings and legacy schema objects, and returns `{ component, changed }`.
 
 `runProjectPageMigration({ api, mode, uid })` reads components/stories, validates the existing `project` component and `projects/` folder, creates missing nestable components first, updates only the `project` component, creates the tracer draft only when absent, and never calls update-story. `publish` requires an exact existing tracer and calls only `stories/:id/publish`.
 
-- [ ] **Step 5: Implement the client and CLI**
+- [x] **Step 5: Implement the client and CLI**
 
 Require numeric `STORYBLOK_SPACE_ID`, `STORYBLOK_MANAGEMENT_TOKEN`, and a supported region. Provide paginated reads plus component create/update, story create, and story publish. Errors name status/method/resource without URL, response body, or token.
 
@@ -210,7 +212,7 @@ const mode = flags.has("--apply") ? "apply" : flags.has("--publish") ? "publish"
 
 Add `"storyblok:project-page": "node scripts/setup-project-page.mjs"` to package scripts.
 
-- [ ] **Step 6: Confirm GREEN**
+- [x] **Step 6: Confirm GREEN**
 
 Run:
 
@@ -221,7 +223,7 @@ npm run storyblok:project-page
 
 The test passes; the unconfigured CLI names the missing variable without a value.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```sh
 git add package.json scripts/storyblok-project-page-migration.mjs scripts/setup-project-page.mjs scripts/tests/storyblok-project-page-migration.test.mjs
@@ -242,23 +244,23 @@ git commit -m "feat: add additive project page migration"
 - Produces types: `ProjectMediaType`, `ProjectAsset`, `ProjectMetadata`, `ProjectBlock`, `ProjectContent`, `ProjectPageData`.
 - Reuses: #58's region URL and configuration error.
 
-- [ ] **Step 1: Write failing media tests**
+- [x] **Step 1: Write failing media tests**
 
 Assert `.PNG?x=1#hero` plus `image/png` is image, `.MOV` plus `video/quicktime` is video, extension-only `.webp` is image, and MIME-only `video/mp4` is video. Reject HTTP/JavaScript/invalid URLs, unsupported types, and disagreements such as `image/png` with `.mp4`.
 
-- [ ] **Step 2: Write failing mapper tests**
+- [x] **Step 2: Write failing mapper tests**
 
 Assert valid enabled content maps; all optional metadata may be absent; tags and body preserve order; image/video blocks form a discriminated union; image alt is required; video alt is optional; empty thumbnail maps absent; a supplied thumbnail must be image; disabled/wrong components map `null`; enabled stories reject empty title, invalid rich text, unknown blocks, and header counts other than one.
 
-- [ ] **Step 3: Write failing fetch tests**
+- [x] **Step 3: Write failing fetch tests**
 
 With injected fetch, verify AP host and `projects/product-design-tracer`; published/public and draft/preview token selection; draft `cv`; invalid slug without network; 404 to `null`; redacted HTTP/network errors; and named missing credentials.
 
-- [ ] **Step 4: Confirm RED**
+- [x] **Step 4: Confirm RED**
 
 Run `npm test -- next-app/lib/storyblok/project-delivery.test.ts`.
 
-- [ ] **Step 5: Add types**
+- [x] **Step 5: Add types**
 
 Define:
 
@@ -278,13 +280,13 @@ export type ProjectBlock = ProjectHeaderBlock | ProjectTextBlock | ProjectMediaB
 
 `ProjectMetadata` has optional client/year/discipline/thumbnail and ordered tags. `ProjectContent` has story IDs, slug, title, existing preview fields, metadata, and ordered body. `ProjectPageData` adds `isPreview`.
 
-- [ ] **Step 6: Implement validation and fetch**
+- [x] **Step 6: Implement validation and fetch**
 
 Use image extensions `.avif`, `.gif`, `.jpeg`, `.jpg`, `.png`, `.svg`, `.webp` and video extensions `.m4v`, `.mov`, `.mp4`, `.webm`. Require HTTPS; derive extensions from `URL.pathname`; classify `image/*`/`video/*`; reject recognised disagreement or no classification.
 
 Validate `_uid`, native rich-text document shape, `project_tag` labels, optional field types, exactly one header, and image-only alt. Fetch with `cache: "no-store"`, version-specific token, and draft `cv`.
 
-- [ ] **Step 7: Confirm GREEN and commit**
+- [x] **Step 7: Confirm GREEN and commit**
 
 ```sh
 npm test -- next-app/lib/storyblok/project-delivery.test.ts
@@ -304,15 +306,15 @@ git commit -m "feat: validate Storyblok project pages"
 - Consumes: `resolveStoryblokVersion`, `fetchProjectContent`, Storyblok environment/search types.
 - Produces: `loadProjectPage(options): Promise<ProjectPageData | null>`.
 
-- [ ] **Step 1: Write failing orchestration tests**
+- [x] **Step 1: Write failing orchestration tests**
 
 Reuse the independent SHA-1 signed-parameter fixture pattern from `server.test.ts`. Prove normal requests use published/public, signed local requests use draft/preview with `cv`, signed production requests remain published, and `null` passes through for invalid/missing/disabled stories. Prove missing configuration keeps #58's focused errors.
 
-- [ ] **Step 2: Confirm RED**
+- [x] **Step 2: Confirm RED**
 
 Run `npm test -- next-app/lib/storyblok/project-server.test.ts`.
 
-- [ ] **Step 3: Implement the server-only loader**
+- [x] **Step 3: Implement the server-only loader**
 
 Start with `import "server-only";` and export:
 
@@ -331,7 +333,7 @@ export async function loadProjectPage({
 
 Use the existing signed-query resolver and select only the matching token. Do not initialise the React SDK or alter the homepage loader.
 
-- [ ] **Step 4: Confirm GREEN and commit**
+- [x] **Step 4: Confirm GREEN and commit**
 
 ```sh
 npm test -- next-app/lib/storyblok/project-server.test.ts
@@ -354,15 +356,15 @@ git commit -m "feat: load previewable project pages"
 - Consumes: project data, `loadProjectPage`, existing Bridge, `StoryblokServerRichText`.
 - Produces: `ProjectPageView`, typed block components, dynamic route.
 
-- [ ] **Step 1: Write failing real-render tests**
+- [x] **Step 1: Write failing real-render tests**
 
 Render with `renderToStaticMarkup` and the actual SDK renderer. Do not mock rich text. Assert title; omission of empty optional metadata rows; supplied metadata/tags; rich-text paragraph; image alt; video controls without required alt; optional caption; exact DOM block order; published/draft marker; and absence of token sentinels.
 
-- [ ] **Step 2: Write failing route tests**
+- [x] **Step 2: Write failing route tests**
 
 Mock only Next `notFound` and `loadProjectPage`. Assert awaited slug/search params are passed through, data renders, and `null` invokes `notFound()`.
 
-- [ ] **Step 3: Confirm RED**
+- [x] **Step 3: Confirm RED**
 
 Run:
 
@@ -370,19 +372,19 @@ Run:
 npm test -- 'next-app/app/projects/[slug]/project-page.test.tsx' 'next-app/app/projects/[slug]/page.test.tsx'
 ```
 
-- [ ] **Step 4: Implement server rendering**
+- [x] **Step 4: Implement server rendering**
 
 Import only `StoryblokServerRichText` from the SDK; do not call `storyblokInit`, `apiPlugin`, `useStoryblok`, or `StoryblokComponent`. Render blocks with an exhaustive switch. Use `<StoryblokServerRichText document={block.content} />`, semantic `<figure>`, `<img>`, and `<video controls playsInline preload="metadata">`.
 
-- [ ] **Step 5: Implement route and Bridge reuse**
+- [x] **Step 5: Implement route and Bridge reuse**
 
 Export `dynamic = "force-dynamic"`; await params/search params; load; call `notFound()` on `null`; render the existing `StoryblokPreviewBridge` only for preview.
 
-- [ ] **Step 6: Add neutral CSS**
+- [x] **Step 6: Add neutral CSS**
 
 Add focused project flow/header/meta/text/media rules, responsive padding, `max-width: 100%`, and `height: auto`. Do not reproduce legacy tabs or add Cloudinary logic.
 
-- [ ] **Step 7: Confirm GREEN and commit**
+- [x] **Step 7: Confirm GREEN and commit**
 
 ```sh
 npm test -- 'next-app/app/projects/[slug]/project-page.test.tsx' 'next-app/app/projects/[slug]/page.test.tsx'
@@ -399,7 +401,7 @@ git commit -m "feat: render Storyblok project page blocks"
 - Modify: `docs/storyblok-setup.md`
 - Modify: this plan and the approved design spec.
 
-- [ ] **Step 1: Document operations**
+- [x] **Step 1: Document operations**
 
 Document these commands:
 
@@ -412,7 +414,7 @@ npm run storyblok:project-page -- --publish
 
 Explain root management environment versus Next delivery environment, `/projects/product-design-tracer`, signed preview, disabled 404s, separate publish, rollback, and #82 ownership.
 
-- [ ] **Step 2: Run full checks**
+- [x] **Step 2: Run full checks**
 
 ```sh
 npm test -- --reporter=verbose
@@ -422,7 +424,7 @@ npm run build
 git diff --check
 ```
 
-- [ ] **Step 3: Scan secrets and protected paths**
+- [x] **Step 3: Scan secrets and protected paths**
 
 Verify no management token reference exists under `next-app`, no sentinel appears in emitted browser assets/HTML, and this command is empty:
 
@@ -430,7 +432,7 @@ Verify no management token reference exists under `next-app`, no sentinel appear
 git diff origin/main -- index.html style.css render-projects.js projects.json content/case-studies .github/workflows
 ```
 
-- [ ] **Step 4: Commit docs**
+- [x] **Step 4: Commit docs**
 
 Mark Tasks 1–6 complete, then commit the READMEs, design amendments, and this plan with `docs: explain project page setup and verification`.
 
@@ -440,27 +442,27 @@ Mark Tasks 1–6 complete, then commit the READMEs, design amendments, and this 
 
 **Files:** No tracked changes; keep before/after JSON and server logs in a `mktemp -d` directory.
 
-- [ ] **Step 1: Snapshot live state**
+- [x] **Step 1: Snapshot live state**
 
 Capture the full `project` component plus every existing `projects/*` ID, slug, `updated_at`, and SHA-256 content hash. Confirm the tracer is absent. Never store tokens.
 
-- [ ] **Step 2: Run real dry-run**
+- [x] **Step 2: Run real dry-run**
 
 Source the saved checkout's root `.env` and run `npm run storyblok:project-page`. Expect four creates, one additive schema update, one draft create, and no writes.
 
-- [ ] **Step 3: Apply draft migration**
+- [x] **Step 3: Apply draft migration**
 
 Run `npm run storyblok:project-page -- --apply`. Expect only four component creates, one `project` component update, and one unpublished tracer create.
 
-- [ ] **Step 4: Compare live state**
+- [x] **Step 4: Compare live state**
 
 Assert every pre-existing project hash and timestamp is unchanged; legacy schema fields are equivalent after ignoring management field IDs; only approved fields were added; tracer is unpublished, hidden from home, enabled, thumbnail-empty, and header/text/media ordered.
 
-- [ ] **Step 5: Start Next with delivery credentials only**
+- [x] **Step 5: Start Next with delivery credentials only**
 
 Load public/preview/region values, remove management token and space ID from the Next process environment, and start `npm run dev` with logs in the temp directory.
 
-- [ ] **Step 6: Verify draft and 404s**
+- [x] **Step 6: Verify draft and 404s**
 
 Using a current valid signed URL, prove the tracer returns 200/draft with title, rich text, asset URL, alt, and Bridge. Prove unsigned tracer returns 404 before publish, unknown returns 404, Aesop returns 404, and responses/logs contain no tokens.
 
@@ -468,21 +470,24 @@ Using a current valid signed URL, prove the tracer returns 200/draft with title,
 
 In the Visual Editor, save a harmless tracer-text change, observe the Bridge reload, then restore the approved text. Do not open or save another project.
 
+Not run automatically: the signed draft route and Bridge were verified directly,
+but no editor content mutation was made solely for this smoke check.
+
 ---
 
 ### Task 8: Publish, review, and update PR #88
 
 **Files:** Only review fixes, if any.
 
-- [ ] **Step 1: Publish separately**
+- [x] **Step 1: Publish separately**
 
 Run `npm run storyblok:project-page -- --publish`. Verify only the exact tracer ID reaches the publish endpoint.
 
-- [ ] **Step 2: Verify live states**
+- [x] **Step 2: Verify live states**
 
 Prove unsigned tracer is 200/published; signed is 200/draft; content matches; unknown and existing disabled projects are 404; static homepage output remains equivalent.
 
-- [ ] **Step 3: Run final verification fresh**
+- [x] **Step 3: Run final verification fresh**
 
 ```sh
 npm test -- --reporter=verbose
@@ -493,11 +498,11 @@ git diff --check
 git status --short --branch
 ```
 
-- [ ] **Step 4: Review against #72 and the design**
+- [x] **Step 4: Review against #72 and the design**
 
 Check every criterion plus credential boundaries, no existing-story writes, no Aesop coupling, no #82 architecture, and no protected static changes. Any code fix starts with a failing test.
 
-- [ ] **Step 5: Push without force**
+- [x] **Step 5: Push without force**
 
 Commit review fixes if present, then run:
 
@@ -505,10 +510,10 @@ Commit review fixes if present, then run:
 git push origin HEAD:refs/heads/codex/72-storyblok-project-page
 ```
 
-- [ ] **Step 6: Formally link the ticket**
+- [x] **Step 6: Formally link the ticket**
 
 Replace `Relates to #72` in PR #88 with `Closes #72`. Keep the PR draft; do not merge or mark ready without a separate request.
 
-- [ ] **Step 7: Report evidence**
+- [x] **Step 7: Report evidence**
 
 Report PR URL, final commit, test/build counts, published and preview checks, preservation hashes, external CI state, and ignored/generated artifacts.

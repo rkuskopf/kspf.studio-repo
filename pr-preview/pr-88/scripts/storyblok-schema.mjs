@@ -1,3 +1,5 @@
+import { PROJECT_PAGE_COMPONENTS, PROJECT_PAGE_FIELDS } from "./storyblok-project-page-schema.mjs";
+
 const field = (type, displayName, pos, extra = {}) => ({
   type,
   display_name: displayName,
@@ -13,6 +15,7 @@ const blocks = (displayName, pos, allowed, extra = {}) =>
   });
 
 export const STORYBLOK_COMPONENTS = [
+  ...PROJECT_PAGE_COMPONENTS,
   {
     name: "nav_settings",
     display_name: "Navigation",
@@ -230,6 +233,7 @@ export const STORYBLOK_COMPONENTS = [
       alt: field("text", "Alt text", 6),
       show_on_home: field("boolean", "Show on home", 7, { default_value: "true" }),
       order: field("number", "Order", 8, { decimals: 0, min_value: 0 }),
+      ...PROJECT_PAGE_FIELDS,
     },
   },
   {
