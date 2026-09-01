@@ -442,27 +442,27 @@ Mark Tasks 1–6 complete, then commit the READMEs, design amendments, and this 
 
 **Files:** No tracked changes; keep before/after JSON and server logs in a `mktemp -d` directory.
 
-- [ ] **Step 1: Snapshot live state**
+- [x] **Step 1: Snapshot live state**
 
 Capture the full `project` component plus every existing `projects/*` ID, slug, `updated_at`, and SHA-256 content hash. Confirm the tracer is absent. Never store tokens.
 
-- [ ] **Step 2: Run real dry-run**
+- [x] **Step 2: Run real dry-run**
 
 Source the saved checkout's root `.env` and run `npm run storyblok:project-page`. Expect four creates, one additive schema update, one draft create, and no writes.
 
-- [ ] **Step 3: Apply draft migration**
+- [x] **Step 3: Apply draft migration**
 
 Run `npm run storyblok:project-page -- --apply`. Expect only four component creates, one `project` component update, and one unpublished tracer create.
 
-- [ ] **Step 4: Compare live state**
+- [x] **Step 4: Compare live state**
 
 Assert every pre-existing project hash and timestamp is unchanged; legacy schema fields are equivalent after ignoring management field IDs; only approved fields were added; tracer is unpublished, hidden from home, enabled, thumbnail-empty, and header/text/media ordered.
 
-- [ ] **Step 5: Start Next with delivery credentials only**
+- [x] **Step 5: Start Next with delivery credentials only**
 
 Load public/preview/region values, remove management token and space ID from the Next process environment, and start `npm run dev` with logs in the temp directory.
 
-- [ ] **Step 6: Verify draft and 404s**
+- [x] **Step 6: Verify draft and 404s**
 
 Using a current valid signed URL, prove the tracer returns 200/draft with title, rich text, asset URL, alt, and Bridge. Prove unsigned tracer returns 404 before publish, unknown returns 404, Aesop returns 404, and responses/logs contain no tokens.
 
@@ -470,21 +470,24 @@ Using a current valid signed URL, prove the tracer returns 200/draft with title,
 
 In the Visual Editor, save a harmless tracer-text change, observe the Bridge reload, then restore the approved text. Do not open or save another project.
 
+Not run automatically: the signed draft route and Bridge were verified directly,
+but no editor content mutation was made solely for this smoke check.
+
 ---
 
 ### Task 8: Publish, review, and update PR #88
 
 **Files:** Only review fixes, if any.
 
-- [ ] **Step 1: Publish separately**
+- [x] **Step 1: Publish separately**
 
 Run `npm run storyblok:project-page -- --publish`. Verify only the exact tracer ID reaches the publish endpoint.
 
-- [ ] **Step 2: Verify live states**
+- [x] **Step 2: Verify live states**
 
 Prove unsigned tracer is 200/published; signed is 200/draft; content matches; unknown and existing disabled projects are 404; static homepage output remains equivalent.
 
-- [ ] **Step 3: Run final verification fresh**
+- [x] **Step 3: Run final verification fresh**
 
 ```sh
 npm test -- --reporter=verbose
@@ -495,11 +498,11 @@ git diff --check
 git status --short --branch
 ```
 
-- [ ] **Step 4: Review against #72 and the design**
+- [x] **Step 4: Review against #72 and the design**
 
 Check every criterion plus credential boundaries, no existing-story writes, no Aesop coupling, no #82 architecture, and no protected static changes. Any code fix starts with a failing test.
 
-- [ ] **Step 5: Push without force**
+- [x] **Step 5: Push without force**
 
 Commit review fixes if present, then run:
 
@@ -507,10 +510,10 @@ Commit review fixes if present, then run:
 git push origin HEAD:refs/heads/codex/72-storyblok-project-page
 ```
 
-- [ ] **Step 6: Formally link the ticket**
+- [x] **Step 6: Formally link the ticket**
 
 Replace `Relates to #72` in PR #88 with `Closes #72`. Keep the PR draft; do not merge or mark ready without a separate request.
 
-- [ ] **Step 7: Report evidence**
+- [x] **Step 7: Report evidence**
 
 Report PR URL, final commit, test/build counts, published and preview checks, preservation hashes, external CI state, and ignored/generated artifacts.

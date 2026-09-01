@@ -1,7 +1,7 @@
 # Storyblok project-page tracer design
 
 **Issue:** #72 — Ship a Storyblok project page with header, text, and media blocks
-**Status:** Approved; implementation and local verification complete through Task 6. Live draft application and publication remain Tasks 7–8.
+**Status:** Implemented and published through the `product-design-tracer`; the optional Visual Editor save/restore smoke check remains manual.
 **Date:** 2026-08-28
 
 ## Goal
