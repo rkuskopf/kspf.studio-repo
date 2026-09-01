@@ -9,19 +9,16 @@ import {
   type StoryblokBridgeConstructor,
 } from "../lib/storyblok/bridge";
 
-declare global {
-  interface Window {
-    StoryblokBridge?: StoryblokBridgeConstructor;
-  }
-}
-
 export default function StoryblokPreviewBridge() {
   const connected = useRef(false);
   const connect = useCallback(() => {
-    if (connected.current || typeof window.StoryblokBridge !== "function") return;
+    const Bridge = (
+      window as Window & { StoryblokBridge?: StoryblokBridgeConstructor }
+    ).StoryblokBridge;
+    if (connected.current || typeof Bridge !== "function") return;
 
     connected.current = true;
-    subscribeToStoryblokBridge(window.StoryblokBridge, () => window.location.reload());
+    subscribeToStoryblokBridge(Bridge, () => window.location.reload());
   }, []);
 
   return (
