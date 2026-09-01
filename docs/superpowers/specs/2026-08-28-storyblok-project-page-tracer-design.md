@@ -1,7 +1,7 @@
 # Storyblok project-page tracer design
 
 **Issue:** #72 — Ship a Storyblok project page with header, text, and media blocks
-**Status:** Approved for implementation planning
+**Status:** Approved for implementation
 **Date:** 2026-08-28
 
 ## Goal
@@ -63,10 +63,11 @@ field. Tags are outside `body`, so they remain stable project metadata.
 
 The new root fields remain optional at the Storyblok schema level because making
 them globally required would interfere with editing the existing preview-only
-records. The delivery mapper treats `title`, `client`, `year`, `discipline`, a
-valid `thumbnail`, and a valid `body` as required whenever
-`page_enabled === true`. Tags may be empty, but they always map from the separate
-metadata field rather than from body content.
+records. For an enabled page, the delivery mapper requires a non-empty `title`,
+`page_enabled === true`, and a valid ordered `body`. `client`, `year`,
+`discipline`, `thumbnail`, and `tags` are optional metadata. When supplied, each
+is validated and mapped from its separate metadata field rather than from body
+content.
 
 `page_enabled` is the routing boundary. Missing, `false`, or incorrectly typed
 values do not opt a story into a page. Adding fields to the schema must not
@@ -88,8 +89,10 @@ visible instead of producing an ambiguous page.
 
 `text` contains one required Storyblok Richtext field named `content`. The
 server-rendered React component uses `StoryblokServerRichText` from
-`@storyblok/react`. The React SDK is not used for delivery, authentication, or
-environment access.
+`@storyblok/react`. Add `@storyblok/react` as an explicit application dependency
+and use only its RSC-compatible rich-text renderer in #72. The React SDK is not
+used for delivery, authentication, preview selection, Bridge registration,
+environment access, or general Storyblok client initialisation.
 
 The first tracer needs only a short paragraph, while the SDK renderer preserves
 the native Storyblok document model for later authoring.
@@ -100,13 +103,27 @@ the native Storyblok document model for later authoring.
 
 - one required image-or-video Asset field named `asset`, with external asset URLs
   allowed for the existing Storyblok–Cloudinary boundary;
-- required `alt` text for images;
+- optional `alt` text at the Storyblok schema level;
 - optional `caption` text.
 
-The typed mapper accepts only HTTPS asset URLs, determines image versus video
-from Storyblok asset metadata and the filename, and rejects unsupported media.
-The component renders semantic `<figure>`, `<img>` or `<video>`, and
-`<figcaption>` markup. Interactive galleries and slideshows remain in #71.
+The mapper exposes a pure `detectProjectMediaType(asset)` boundary. It classifies
+recognised `image/*` and `video/*` MIME values, independently classifies a
+case-insensitive filename extension after removing query and fragment text, and
+rejects assets when recognised MIME and extension classifications disagree. If
+only one source is recognised, that source determines the type; if neither is
+recognised, the asset is unsupported. Initial recognised image extensions are
+`.avif`, `.gif`, `.jpeg`, `.jpg`, `.png`, `.svg`, and `.webp`; recognised video
+extensions are `.m4v`, `.mov`, `.mp4`, and `.webm`.
+
+`media.alt` remains optional for editors because video does not require image alt
+text. After type detection, the mapper requires a non-empty `alt` value for an
+image and permits it to be absent for a video. The component renders semantic
+`<figure>`, `<img>` or `<video>`, and `<figcaption>` markup.
+
+This boundary only decides how #72 renders the supplied asset. It does not add
+Cloudinary URL transforms, delivery helpers, responsive variants, dimensions,
+loading policy, or a final asset contract; #82 owns that architecture.
+Interactive galleries and slideshows remain in #71.
 
 ## Fresh tracer story
 
@@ -132,11 +149,12 @@ Create only one new story under the existing `projects/` folder:
   2. one `text` block with a short, factual tracer paragraph
   3. one `media` block
 
-Use one neutral, non-Aesop asset already available through the current
-Storyblok–Cloudinary boundary. The `thumbnail` and `media` block may reference
-the same asset object; no asset is re-uploaded or duplicated. If no suitable
-existing asset is available, stop before uploading or inventing portfolio work
-and report that narrow content blocker.
+Use the existing tracked KSPF brand mark at
+`assets/flav/Frame 19.png` as the tracer's neutral media through Storyblok's
+allowed external-asset URL shape. Set the media alt text to `KSPF brand mark` and
+leave the optional `thumbnail` empty. This proves the media block without
+borrowing another project's imagery, uploading a duplicate, or establishing the
+Cloudinary model reserved for #82.
 
 The story is created as a draft first. After draft preview and route checks pass,
 publish the same story and verify the public route. Do not leave a deliberately
@@ -166,6 +184,11 @@ The command must:
 The checked-in `STORYBLOK_COMPONENTS` schema also receives the additive model so
 a new space would be created correctly. The existing broad setup script remains
 non-destructive toward components already present in a live space.
+
+Keep this dedicated additive, dry-run-first migration even though the repository
+already has a Storyblok setup command: the existing setup flow creates missing
+components but deliberately does not merge new fields into the live `project`
+component.
 
 Migration tests use an injected fake management API to prove the merge preserves
 unknown and legacy fields, the default run is read-only, reruns are idempotent,
@@ -243,7 +266,8 @@ Implementation follows red-green-refactor cycles and covers:
 2. Published and draft project delivery, token selection, AP region URL, cache
    busting, safe slug handling, response mapping, and secret redaction.
 3. Missing, unpublished, wrong-component, and non-opted-in not-found behavior.
-4. Strict validation for metadata, tag, header, rich-text, and media values.
+4. Strict validation for optional metadata, tag, header, rich-text, and media
+   values, including MIME/extension agreement and image-only alt requirements.
 5. Header, rich-text, image/video, caption, and exact body-order rendering.
 6. Preview Bridge inclusion only for authenticated draft rendering.
 7. A production build, the complete Vitest suite, the unchanged legacy Node test
@@ -274,7 +298,7 @@ continue to use their original fields throughout.
 - Two-column or embed blocks from #70
 - Galleries or slideshows from #71
 - Final multi-site theming or `rowan.kspf.au` routing from #73 and #45
-- Cloudinary optimisation, responsive variants, or loading policy from #66, #78,
-  and #79
+- The final Cloudinary asset, transformation, responsive-variant, or loading
+  architecture owned by #82
 - Deployable preview cookies, a preview toolbar, or live unsaved keystrokes
 - Production cutover or changes to the static GitHub Pages deployment
