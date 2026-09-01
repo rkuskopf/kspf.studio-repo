@@ -1,7 +1,7 @@
 # Storyblok project-page tracer design
 
 **Issue:** #72 — Ship a Storyblok project page with header, text, and media blocks
-**Status:** Approved for implementation
+**Status:** Approved; implementation and local verification complete through Task 6. Live draft application and publication remain Tasks 7–8.
 **Date:** 2026-08-28
 
 ## Goal

@@ -101,7 +101,56 @@ python3 -m http.server 8000 --bind 127.0.0.1
 
 The local preview is `http://localhost:8000/`.
 
-## 4. Preview drafts inside Storyblok
+## 4. Create and preview the project-page tracer
+
+The project-page migration is deliberately separate from the existing broad
+setup/import flow. It reads only the repository-root management environment:
+
+- `STORYBLOK_SPACE_ID`
+- `STORYBLOK_MANAGEMENT_TOKEN`
+- `STORYBLOK_REGION`
+
+Keep those values in the untracked root `.env` file, export them into the shell
+that runs the migration, and never place the management credential under
+`next-app/`. The Next.js delivery environment is separate: its
+`next-app/.env.local` contains only `STORYBLOK_PUBLIC_TOKEN`,
+`STORYBLOK_PREVIEW_TOKEN`, and `STORYBLOK_REGION`.
+
+From the repository root, use the migration as three explicit stages:
+
+```sh
+npm run storyblok:project-page
+npm run storyblok:project-page -- --apply
+npm run dev
+npm run storyblok:project-page -- --publish
+```
+
+The first command is a dry run: it plans any missing block components, the
+additive `project` schema update, and the one draft tracer without writing.
+After reviewing that plan, `--apply` creates only
+`projects/product-design-tracer` and never updates an existing project story.
+It does not publish. Keep the management variables out of the Next.js process
+when starting `npm run dev`.
+
+Configure the tracer story's Real path as
+`/projects/product-design-tracer`, then use the local Visual Editor preview at
+`https://localhost:3000/projects/product-design-tracer`. Storyblok's signed
+query parameters permit a saved local draft; unsigned local requests stay on
+published delivery. Before publishing the new tracer, its unsigned route is
+therefore a 404. Unknown slugs and existing projects without
+`page_enabled === true` are also deliberate 404s.
+
+Publish is a separate, final step. Run `--publish` only after reviewing the
+draft route; it publishes the exact verified tracer and no other story. After a
+problem, leave the additive schema in place, disable and unpublish only the
+tracer, and revert the Next route if necessary. This preserves all existing
+project records and the static homepage.
+
+This slice only renders the supplied project-page image or video. Cloudinary
+references, transforms, responsive variants, dimensions, and loading policy are
+owned by #82 and are not configured by this migration.
+
+## 5. Preview drafts inside Storyblok
 
 The Visual Editor preview is local-only. It reads saved draft content into memory, keeps the preview token on the Node server, and does not change `projects.json` or any tracked `content/*.json` file.
 
