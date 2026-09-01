@@ -83,14 +83,15 @@
     {
       "title": "AP-REPS",
       "displayName": "AP—REPS",
-      "category": "Web Development",
+      "category": "Web",
       "description": "",
       "viewUrl": "https://apreps.com.au",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787639970/Sequence_01_2.mp4"
+        "https://a.storyblok.com/f/294596336853918/x/36f9855534/sequence-01_6.mp4",
+        "https://a.storyblok.com/f/294596336853918/x/d3a3cc1b8c/untitled-19-august-2026-at-14-22-00-3.mp4"
       ],
       "alt": "Project preview",
-      "showOnHome": false
+      "showOnHome": true
     },
     {
       "title": "Christopher Myles Henderson",
