@@ -24,13 +24,26 @@
       "showOnHome": true
     },
     {
+      "title": "The Athenaeum",
+      "displayName": "Aesop",
+      "category": "Product Design",
+      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
+      "viewUrl": "aesop.com",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1788241991/ath.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787805811/ath-collage.mp4"
+      ],
+      "alt": "",
+      "showOnHome": true
+    },
+    {
       "title": "Jak Architecture",
       "displayName": "Jak Architecture",
       "category": "Web",
       "description": "Portfolio site for Jak Architecture. \nDesigned by Chloe Larkin and built on Cargo with custom interactions",
       "viewUrl": "https://www.jakarchitecture.com",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787641328/mockup.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787804624/mockup_2.mp4",
         "https://a.storyblok.com/f/294596336853918/3024x1898/8a537db7a8/screenshot-2026-08-19-at-11-29-41-am.png",
         "https://a.storyblok.com/f/294596336853918/3024x1898/4a422773d4/screenshot-2026-08-19-at-11-27-23-am.png"
       ],
@@ -38,17 +51,17 @@
       "showOnHome": true
     },
     {
-      "title": "The Athenaeum",
-      "displayName": "Aesop",
-      "category": "Product Design",
-      "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
-      "viewUrl": "aesop.com",
+      "title": "",
+      "displayName": "alt. cosmetics",
+      "category": "Identity",
+      "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
+      "viewUrl": "",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787806425/3_6.mp4",
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787805811/ath-collage.mp4",
-        "https://a.storyblok.com/f/294596336853918/x/b703548eee/ath-1.mp4",
-        "/assets/uploads/ath-border-02.png",
-        "/assets/uploads/ath-border-03.png"
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218199/logo-over-image-lockup.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218204/Metal_thing.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218656/Asset_5_3x.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788217787/Artboard_2_1.png",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218114/alt_-_Sep_12026_at_8.24.jpg"
       ],
       "alt": "",
       "showOnHome": true
@@ -60,7 +73,7 @@
       "description": "",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1787648225/Sequence_01_1.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1788243546/Sequence_01_3.mp4",
         "/assets/uploads/albus-04.png",
         "/assets/uploads/Albus-video-02.mp4"
       ],
@@ -93,23 +106,7 @@
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.46.04am.png"
       ],
       "alt": "Project preview",
-      "showOnHome": true
-    },
-    {
-      "title": "",
-      "displayName": "alt. cosmetics",
-      "category": "Identity",
-      "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
-      "viewUrl": "",
-      "slides": [
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218114/alt_-_Sep_12026_at_8.24.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218199/logo-over-image-lockup.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218204/Metal_thing.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218656/Asset_5_3x.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788217787/Artboard_2_1.png"
-      ],
-      "alt": "",
-      "showOnHome": true
+      "showOnHome": false
     }
   ]
 }

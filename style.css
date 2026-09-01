@@ -466,6 +466,15 @@ body.grid-overlay {
   touch-action: pan-y;
 }
 
+body[data-page="home"] .hero {
+  max-height: 75vh;
+  max-height: 75dvh;
+}
+
+body[data-page="home"] .projects > .project-block:first-child .hero {
+  top: 40px;
+}
+
 .hero__media {
   grid-column: 1;
   grid-row: 1;
@@ -489,8 +498,8 @@ body.grid-overlay {
 .hero__media {
   width: auto;
   height: auto;
-  max-height: min(75vh, 590px);
-  max-height: min(75dvh, 590px);
+  max-height: 75vh;
+  max-height: 75dvh;
   object-fit: contain;
 }
 
@@ -1316,6 +1325,11 @@ body[data-page="home"] .project__category {
   .project__name {
     width: var(--hero-frame);
     justify-self: center;
+  }
+
+  body[data-page="home"] .projects > .project-block:first-child .project__name {
+    position: relative;
+    top: 40px;
   }
 
   .project__category {
