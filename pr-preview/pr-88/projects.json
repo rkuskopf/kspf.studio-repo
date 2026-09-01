@@ -44,21 +44,6 @@
       "showOnHome": true
     },
     {
-      "title": "",
-      "displayName": "alt. cosmetics",
-      "category": "Identity",
-      "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
-      "viewUrl": "",
-      "slides": [
-        "assets/uploads/alt.6.png",
-        "/assets/uploads/alt.-3-packaging.png",
-        "/assets/uploads/1.png",
-        "/assets/uploads/alt.video.01.mp4"
-      ],
-      "alt": "",
-      "showOnHome": false
-    },
-    {
       "title": "ALBUS LUMEN",
       "displayName": "Albus Lumen",
       "category": "Web",
@@ -98,6 +83,22 @@
         "assets/images/Websites%20local/Chris/Screenshot-2026-01-13-at-9.46.04am.png"
       ],
       "alt": "Project preview",
+      "showOnHome": true
+    },
+    {
+      "title": "",
+      "displayName": "alt. cosmetics",
+      "category": "Identity",
+      "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
+      "viewUrl": "",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218114/alt_-_Sep_12026_at_8.24.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218199/logo-over-image-lockup.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218204/Metal_thing.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218656/Asset_5_3x.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788217787/Artboard_2_1.png"
+      ],
+      "alt": "",
       "showOnHome": true
     }
   ]
