@@ -26,11 +26,10 @@ Set:
 - `STORYBLOK_REGION` to the space region: `eu`, `us`, `ca`, `ap`, or `cn`.
 
 Do not use `NEXT_PUBLIC_` variables for either token. The Next.js server reads
-them and passes only validated homepage content to React.
+them and passes only validated content to React.
 
-The existing setup and management scripts use the separate repository-root
-`.env` file documented in `docs/storyblok-setup.md`. Never add the management
-token to `next-app/.env.local`.
+This file is the delivery environment only. Keep its values limited to the
+public token, local preview token, and region shown above.
 
 ## Run the local site
 
@@ -57,10 +56,11 @@ In the Storyblok space:
 
 Storyblok appends its signed `_storyblok` and `_storyblok_tk[...]` parameters
 to the iframe URL. The Next.js server validates the complete signature with the
-Preview token before requesting `version=draft`. Arbitrary, partial, invalid,
-expired, or repeated parameters render published content instead. Every
-non-development runtime also renders published content, even if a request
-contains otherwise valid Visual Editor parameters.
+preview token before requesting `version=draft`. This applies to the homepage
+and an enabled project page. Arbitrary, partial, invalid, expired, or repeated
+parameters render published content instead. Every non-development runtime also
+renders published content, even if a request contains otherwise valid Visual
+Editor parameters.
 
 Select **Save** after editing the story. The Storyblok Bridge reloads the iframe
 and the server fetches the latest saved draft without using generated JSON or
@@ -71,14 +71,50 @@ There is intentionally no deployable Draft Mode endpoint, preview cookie, or
 preview toolbar in #58. Those belong with the later production-like preview and
 deployment work.
 
-## Verify
+## Project-page delivery
 
-Run the Next.js tests, unchanged legacy suite, and production build:
+The project-page tracer renders at
+`/projects/product-design-tracer`. It remains a normal published page for
+ordinary requests. While `npm run dev` is running, open the tracer in the
+Storyblok Visual Editor with its Real path set to
+`/projects/product-design-tracer`; Storyblok supplies the signed query
+parameters that permit the server to render its saved draft.
+
+The route intentionally returns 404 for an unknown slug, a missing or
+unpublished story in published delivery, a non-`project` story, or a project
+without `page_enabled === true`. Existing homepage projects therefore remain
+unroutable until explicitly enabled.
+
+The editor-facing migration and its separate root environment are documented in
+[`docs/storyblok-setup.md`](../docs/storyblok-setup.md). Run the delivery app
+with only this directory's `.env.local` values:
 
 ```sh
-npm test
+npm run dev
+```
+
+The project-page renderer only classifies and renders the supplied image or
+video asset. Cloudinary references, transforms, responsive variants,
+dimensions, and loading policy remain the responsibility of #82.
+
+## Project-page rollback
+
+Do not delete the additive Storyblok fields during rollback. Disable and
+unpublish only `projects/product-design-tracer`, then remove or revert the
+Next.js route if required. Existing projects and the static homepage retain
+their original behavior.
+
+## Verify
+
+Run the Next.js tests, unchanged legacy suite, schema verification, and
+production build:
+
+```sh
+npm test -- --reporter=verbose
 node --test scripts/tests/*.test.mjs
+node scripts/verify-storyblok.mjs
 npm run build
+git diff --check
 ```
 
 For live verification with `next-app/.env.local` populated:

@@ -1,13 +1,23 @@
 {
   "projects": [
     {
+      "title": "Product design tracer",
+      "displayName": "Product design tracer",
+      "category": "Product Design",
+      "description": "A minimal schema tracer for the project-page model.",
+      "viewUrl": "",
+      "slides": [],
+      "alt": "",
+      "showOnHome": false
+    },
+    {
       "title": "Arcteryx",
       "displayName": "Arcteryx",
       "category": "Print",
       "description": "",
       "viewUrl": "",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1787803450/poster_mockup_-_02.psdc.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788233769/poster_mockup_-_02.jpg",
         "https://res.cloudinary.com/kw2p64ib/image/upload/v1787891402/Posters_mockup.jpg"
       ],
       "alt": "",
