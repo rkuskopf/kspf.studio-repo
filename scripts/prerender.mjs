@@ -53,7 +53,9 @@ const replaceLink = (source, className, { label, href, hidden }) => {
   return source.replace(pattern, (link) => {
     const openingEnd = link.indexOf(">");
     let opening = link.slice(0, openingEnd + 1);
-    opening = setAttribute(opening, "href", href);
+    if (!opening.includes("data-info-scroll=")) {
+      opening = setAttribute(opening, "href", href);
+    }
     opening = setAttribute(opening, "hidden", hidden === true ? true : null);
     return `${opening}${escapeHtml(label || "")}</a>`;
   });
@@ -88,6 +90,13 @@ if (home) {
         )}\n    ${end}`
     );
   }
+}
+
+if (typeof site?.profile === "string") {
+  html = html.replace(
+    /(<p\b[^>]*class="js-home-profile"[^>]*>)[\s\S]*?(<\/p>)/i,
+    (_match, open, close) => `${open}${escapeHtml(site.profile)}${close}`
+  );
 }
 
 if (site?.nav) {

@@ -31,6 +31,16 @@ test("maps Storyblok ABOUT visibility with a disabled default", () => {
   assert.equal(mapSiteStory(siteStory(undefined)).nav.showAbout, false);
 });
 
+test("keeps Storyblok-managed INFO copy out of the source HTML fallback", async () => {
+  const html = await readFile(new URL("../../index.html", import.meta.url), "utf8");
+
+  assert.match(html, /<p class="js-home-profile"><\/p>/);
+  assert.match(html, /<h2 class="js-info-contact-title"><\/h2>/);
+  assert.match(html, /<a class="js-info-contact-email" hidden><\/a>/);
+  assert.match(html, /<ul class="js-info-services-list"><\/ul>/);
+  assert.doesNotMatch(html, /We offer free consultations/);
+});
+
 const renderAboutVisibility = async (showAbout, deploymentRevision = "") => {
   const source = await readFile(new URL("../../site-content.js", import.meta.url), "utf8");
   const attributes = new Map();
