@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en" data-force-scroll>
 <head>
-  <meta name="kspf-deployment-revision" content="6e7614f1f169-f13b29d0229b">
+  <meta name="kspf-deployment-revision" content="da13cb7a0dd5-f13b29d0229b">
   <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-516NWWS2Q8"></script>
 <script>
@@ -13,50 +13,79 @@
 </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script>
+    document.documentElement.classList.add("home-scroll-pending");
+    window.kspfHomeReady = { position: false, site: false, home: false, projects: false };
+    window.kspfMarkHomeReady = (part) => {
+      window.kspfHomeReady[part] = true;
+      if (
+        window.kspfHomeReady.site &&
+        window.kspfHomeReady.home &&
+        window.kspfHomeReady.projects &&
+        !window.kspfHomeReady.position
+      ) {
+        window.dispatchEvent(new Event("kspf:content-ready"));
+      }
+      if (Object.values(window.kspfHomeReady).every(Boolean)) {
+        document.documentElement.classList.remove("home-scroll-pending");
+      }
+    };
+    window.setTimeout(() => document.documentElement.classList.remove("home-scroll-pending"), 4000);
+  </script>
   <title>kspf.studio</title>
   <meta name="description" content="kspf is a digital practice." />
   <link rel="icon" type="image/png" href="assets/flav/Frame%2019.png" />
   <link rel="stylesheet" href="https://use.typekit.net/lkv5osw.css" />
-  <link rel="stylesheet" href="style.css?v=6e7614f1f169-f13b29d0229b" />
-  <script src="site-content.js?v=6e7614f1f169-f13b29d0229b" defer></script>
-  <script src="home-content.js?v=6e7614f1f169-f13b29d0229b" defer></script>
-  <script src="render-projects.js?v=6e7614f1f169-f13b29d0229b" defer></script>
-  <script src="slideshow.js?v=6e7614f1f169-f13b29d0229b" defer></script>
-  <script src="clients-overlay.js?v=6e7614f1f169-f13b29d0229b" defer></script>
-  <script src="smooth-scroll.js?v=6e7614f1f169-f13b29d0229b" defer></script>
+  <link rel="stylesheet" href="style.css?v=da13cb7a0dd5-f13b29d0229b" />
+  <script src="site-content.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="home-content.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="render-projects.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="slideshow.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="clients-overlay.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="smooth-scroll.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
+  <script src="info-scroll.js?v=da13cb7a0dd5-f13b29d0229b" defer></script>
 </head>
 
 <body data-page="home">
-  <header class="top">
-    <nav class="nav" aria-label="Primary">
-      <a class="nav__link nav__link--home is-active" href="/">KSPF</a>
-      <p class="intro nav__intro js-home-intro" title="Art Direction + Web Development">
-     Art Direction + Web Development
-    </p>
-      <a class="nav__link nav__link--information js-information-link" href="#services" hidden>ABOUT</a>
-    </nav>
-  </header>
-
-  <section class="overlay information-overlay" id="informationOverlay" aria-hidden="true">
-    <div class="information-overlay__inner">
-      <div class="information-overlay__contact">
-        <p class="information-overlay__contact-title js-info-contact-title">Contact</p>
-        <p class="js-info-contact-body">We offer free consultations to discuss your project needs.
-          <br>Please email us to arrange this or for for more information about our services</p>
-        <a class="js-info-contact-email" href="mailto:hello@kspf.au">hello@kspf.au</a>
+  <section class="home-information" id="information" aria-labelledby="information-title" tabindex="-1">
+    <div class="home-information__inner">
+      <h1 class="js-home-information-title" id="information-title"></h1>
+      <p class="js-home-profile">Visual Design + Web Development for contemporary brands</p>
+      <div class="home-information__details">
+        <div class="home-information__contact">
+          <h2 class="js-info-contact-title"></h2>
+          <p class="home-information__contact-body js-info-contact-body" hidden></p>
+          <a class="js-info-contact-email" hidden></a>
+        </div>
+        <div class="home-information__services">
+          <h2 class="js-info-services-title"></h2>
+          <ul class="js-info-services-list"></ul>
+        </div>
       </div>
     </div>
   </section>
 
-  <main class="wrap">
-    <div id="projects" class="projects" aria-live="polite"></div>
-  </main>
+  <div class="home-stage" id="work" tabindex="-1">
+    <header class="top">
+      <nav class="nav" aria-label="Primary">
+        <a class="nav__link nav__link--home is-active" href="#work" data-info-scroll="work">KSPF</a>
+        <p class="intro nav__intro js-home-intro" title="Art Direction + Web Development">
+     Art Direction + Web Development
+    </p>
+        <a class="nav__link nav__link--information" href="#information" data-info-scroll="information">INFO</a>
+      </nav>
+    </header>
 
-  <footer class="footer" id="services">
-    <p class="footer__label footer__contact-label">Contact</p>
-    <ul class="footer__contact-list js-footer-contact"></ul>
-    <p class="footer__label footer__services-label">Services</p>
-    <div class="footer__services js-footer-services"></div>
-  </footer>
+    <main class="wrap">
+      <div id="projects" class="projects" aria-live="polite"></div>
+    </main>
+
+    <footer class="footer" id="services">
+      <p class="footer__label footer__contact-label">Contact</p>
+      <ul class="footer__contact-list js-footer-contact"></ul>
+      <p class="footer__label footer__services-label">Services</p>
+      <div class="footer__services js-footer-services"></div>
+    </footer>
+  </div>
 </body>
 </html>

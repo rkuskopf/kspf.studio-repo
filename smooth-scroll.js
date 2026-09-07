@@ -52,6 +52,7 @@
 
     const link = getAnchorFromEvent(event);
     if (!link) return;
+    if (link.hasAttribute("data-info-scroll")) return;
     const hash = link.hash;
     const target = getTargetFromHash(hash);
     if (!target) return;

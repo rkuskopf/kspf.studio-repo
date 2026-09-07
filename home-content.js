@@ -4,7 +4,10 @@
   const metaDescription = document.querySelector('meta[name="description"]');
   const introEl = document.querySelector(".js-home-intro");
 
-  if (!metaDescription && !introEl) return;
+  if (!metaDescription && !introEl) {
+    window.kspfMarkHomeReady?.("home");
+    return;
+  }
 
   fetch(contentUrl("content/home.json"), { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
@@ -19,5 +22,6 @@
         introEl.setAttribute("title", data.intro);
       }
     })
-    .catch(() => {});
+    .catch(() => {})
+    .finally(() => window.kspfMarkHomeReady?.("home"));
 })();

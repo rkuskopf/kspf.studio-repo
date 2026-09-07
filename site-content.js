@@ -26,19 +26,27 @@
 
   const setHref = (el, value) => {
     if (!el || !value) return;
+    if (el.hasAttribute?.("data-info-scroll")) return;
     el.setAttribute("href", value);
   };
 
   const setEmail = (el, value) => {
-    if (!el || !value) return;
+    if (!el) return;
     const email = normalizeEmail(value);
+    el.hidden = !email;
     el.textContent = email;
-    el.setAttribute("href", `mailto:${email}`);
+    if (email) {
+      el.setAttribute("href", `mailto:${email}`);
+    } else {
+      el.removeAttribute("href");
+    }
   };
 
   const setBodyHtml = (el, value) => {
     if (!el || value === undefined || value === null) return;
-    const html = String(value)
+    const body = String(value).trim();
+    el.hidden = !body;
+    const html = body
       .split("\n")
       .map((line) => line.trim())
       .join("<br>");
@@ -134,6 +142,7 @@
       setText(link, nav.homeLabel);
       setHref(link, nav.homeHref);
     });
+    setText(document.querySelector(".js-home-information-title"), nav.homeLabel);
 
     const infoLinks = document.querySelectorAll(".js-information-link");
     infoLinks.forEach((link) => {
@@ -143,6 +152,7 @@
     });
 
     const profile = data.profile;
+    setText(document.querySelector(".js-home-profile"), profile);
 
     setText(document.querySelector(".js-info-contact-title"), info.contactTitle);
     setBodyHtml(document.querySelector(".js-info-contact-body"), info.contactBody);
@@ -168,10 +178,14 @@
     document.querySelector(".footer__services") ||
     document.querySelector(".js-info-contact-title");
 
-  if (!targetsExist) return;
+  if (!targetsExist) {
+    window.kspfMarkHomeReady?.("site");
+    return;
+  }
 
   fetch(contentUrl("content/site.json"), { cache: "no-cache" })
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => applySiteContent(data))
-    .catch(() => {});
+    .catch(() => {})
+    .finally(() => window.kspfMarkHomeReady?.("site"));
 })();

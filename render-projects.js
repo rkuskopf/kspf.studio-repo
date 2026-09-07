@@ -2,7 +2,10 @@
   const contentUrl =
     typeof window.kspfContentUrl === "function" ? window.kspfContentUrl : (path) => path;
   const container = document.getElementById("projects");
-  if (!container) return;
+  if (!container) {
+    window.kspfMarkHomeReady?.("projects");
+    return;
+  }
 
   const isVideoSrc = (src) => /\.(mp4|mov|webm|m4v)(\?|#|$)/i.test(src || "");
   const isVisibleOnHome = (project) => project && project.showOnHome !== false;
@@ -99,5 +102,6 @@
     })
     .catch(() => {
       container.textContent = "Projects failed to load.";
-    });
+    })
+    .finally(() => window.kspfMarkHomeReady?.("projects"));
 })();
