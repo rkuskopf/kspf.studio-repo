@@ -21,6 +21,10 @@
         introEl.textContent = data.intro;
         introEl.setAttribute("title", data.intro);
       }
+      document.documentElement.dataset.homeInitialSection =
+        data.initialSection === "info" ? "info" : "work";
+      const navigation = document.querySelector(".top");
+      if (navigation) navigation.hidden = data.showNavigation === false;
     })
     .catch(() => {})
     .finally(() => window.kspfMarkHomeReady?.("home"));

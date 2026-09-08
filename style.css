@@ -171,6 +171,10 @@ body[data-page="home"] .top {
   width: auto;
 }
 
+body[data-page="home"] .top[hidden] {
+  display: none;
+}
+
 body[data-page="home"] .projects {
   margin-top: 0;
   row-gap: 0;

@@ -1,5 +1,7 @@
 {
   "title": "kspf.studio",
   "metaDescription": "",
-  "intro": "Art Direction + Web Development"
+  "intro": "Art Direction + Web Development",
+  "initialSection": "work",
+  "showNavigation": true
 }

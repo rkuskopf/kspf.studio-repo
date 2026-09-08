@@ -201,6 +201,18 @@ export const STORYBLOK_COMPONENTS = [
       title: field("text", "Page title", 0),
       meta_description: field("textarea", "Meta description", 1),
       intro: field("textarea", "Intro", 2, { required: true }),
+      initial_section: field("option", "Starting section", 3, {
+        required: true,
+        source: "self",
+        default_value: "work",
+        options: [
+          { name: "Info", value: "info" },
+          { name: "Work", value: "work" },
+        ],
+      }),
+      show_navigation: field("boolean", "Show navigation", 4, {
+        default_value: "true",
+      }),
     },
   },
   {
