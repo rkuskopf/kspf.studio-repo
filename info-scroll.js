@@ -16,6 +16,11 @@
   }
 
   const targetFor = (name) => (name === "information" ? information : work);
+  const initialTarget = () => {
+    if (location.hash === "#information") return information;
+    if (location.hash === "#work") return work;
+    return root.dataset.homeInitialSection === "info" ? information : work;
+  };
   const topFor = (target) => target.getBoundingClientRect().top + window.scrollY;
 
   const finish = (target, markReady) => {
@@ -74,14 +79,12 @@
   });
 
   const setInitialPosition = () => {
-    const target = location.hash === "#information" ? information : work;
-    scrollToTarget(target, false, true);
+    scrollToTarget(initialTarget(), false, true);
   };
 
   window.addEventListener("kspf:content-ready", setInitialPosition, { once: true });
   requestAnimationFrame(() => {
-    const target = location.hash === "#information" ? information : work;
-    scrollToTarget(target, false);
+    scrollToTarget(initialTarget(), false);
     if (
       window.kspfHomeReady?.site &&
       window.kspfHomeReady?.home &&

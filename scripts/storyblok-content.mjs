@@ -95,6 +95,8 @@ export const mapHomeStory = (story) => {
     title: content.title || "",
     metaDescription: content.meta_description || "",
     intro: content.intro || "",
+    initialSection: content.initial_section === "info" ? "info" : "work",
+    showNavigation: content.show_navigation !== false,
   };
 };
 

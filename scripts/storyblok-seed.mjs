@@ -100,6 +100,8 @@ const homeStory = (home) => ({
     title: home.title || "",
     meta_description: home.metaDescription || "",
     intro: home.intro || "",
+    initial_section: home.initialSection === "info" ? "info" : "work",
+    show_navigation: home.showNavigation !== false,
   },
 });
 

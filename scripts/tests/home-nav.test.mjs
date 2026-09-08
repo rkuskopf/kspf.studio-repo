@@ -7,7 +7,7 @@ import test from "node:test";
 import { promisify } from "node:util";
 import vm from "node:vm";
 
-import { mapSiteStory } from "../storyblok-content.mjs";
+import { mapHomeStory, mapSiteStory } from "../storyblok-content.mjs";
 
 const execFileAsync = promisify(execFile);
 
@@ -29,6 +29,32 @@ test("maps Storyblok ABOUT visibility with a disabled default", () => {
   assert.equal(mapSiteStory(siteStory(true)).nav.showAbout, true);
   assert.equal(mapSiteStory(siteStory(false)).nav.showAbout, false);
   assert.equal(mapSiteStory(siteStory(undefined)).nav.showAbout, false);
+});
+
+test("maps reversible Storyblok homepage presentation settings", () => {
+  const homeStory = (content = {}) => ({
+    full_slug: "home",
+    content: { component: "home_page", ...content },
+  });
+
+  assert.deepEqual(
+    {
+      initialSection: mapHomeStory(homeStory()).initialSection,
+      showNavigation: mapHomeStory(homeStory()).showNavigation,
+    },
+    { initialSection: "work", showNavigation: true }
+  );
+  assert.deepEqual(
+    {
+      initialSection: mapHomeStory(
+        homeStory({ initial_section: "info", show_navigation: false })
+      ).initialSection,
+      showNavigation: mapHomeStory(
+        homeStory({ initial_section: "info", show_navigation: false })
+      ).showNavigation,
+    },
+    { initialSection: "info", showNavigation: false }
+  );
 });
 
 test("keeps Storyblok-managed INFO copy out of the source HTML fallback", async () => {
