@@ -13,8 +13,32 @@
       return aspect;
     });
 
+  const positionHitArea = (root, media, previous, next) => {
+    if (!root || !media || !previous || !next) return;
+    const rootRect = root.getBoundingClientRect();
+    const mediaRect = media.getBoundingClientRect();
+    if (mediaRect.width <= 0 || mediaRect.height <= 0) return;
+
+    const top = mediaRect.top - rootRect.top;
+    const left = mediaRect.left - rootRect.left;
+    const halfWidth = mediaRect.width / 2;
+    const shared = {
+      bottom: "auto",
+      height: `${mediaRect.height}px`,
+      right: "auto",
+      top: `${top}px`,
+      width: `${halfWidth}px`,
+    };
+
+    [previous, next].forEach((control) => {
+      Object.entries(shared).forEach(([name, value]) => control.style.setProperty(name, value));
+    });
+    previous.style.setProperty("left", `${left}px`);
+    next.style.setProperty("left", `${left + halfWidth}px`);
+  };
+
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { createMediaPortraitUpdater, setMediaPortraitClass };
+    module.exports = { createMediaPortraitUpdater, positionHitArea, setMediaPortraitClass };
   }
 
   const parseSlides = (raw) => {
@@ -262,6 +286,21 @@
     const shouldPlay = () => isInView && activeRoot === root;
     let wasPlaying = false;
     let playingVideoEl = null;
+    let hitAreaRafId = 0;
+    const updateHitArea = () => {
+      hitAreaRafId = 0;
+      positionHitArea(root, activeMediaEl, prev, next);
+    };
+    const scheduleHitArea = () => {
+      if (hitAreaRafId) return;
+      hitAreaRafId = window.requestAnimationFrame(updateHitArea);
+    };
+
+    allMedia.forEach((media) => {
+      media.addEventListener("load", scheduleHitArea);
+      media.addEventListener("loadedmetadata", scheduleHitArea);
+    });
+    window.addEventListener("resize", scheduleHitArea);
 
     const pauseVideo = (el) => {
       if (!el) return;
@@ -381,6 +420,7 @@
       hideAllExcept(el);
       showMedia(el, immediate);
       activeMediaEl = el;
+      scheduleHitArea();
     };
 
     const scheduleVideoCleanup = () => {
@@ -407,7 +447,7 @@
       const nextImageEl = activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
       activeImageEl = nextImageEl;
       nextImageEl.src = src;
-      updatePortraitFlag(nextImageEl, src);
+      updatePortraitFlag(nextImageEl, src).then(scheduleHitArea);
 
       videoSlots.forEach(pauseVideo);
       setActiveMedia(nextImageEl, immediate);
@@ -426,7 +466,7 @@
       const nextVideoEl = activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
       activeVideoEl = nextVideoEl;
       ensureVideoSrc(nextVideoEl, src);
-      updatePortraitFlag(nextVideoEl, src);
+      updatePortraitFlag(nextVideoEl, src).then(scheduleHitArea);
 
       if (shouldPlay()) {
         restoreVideoTime(nextVideoEl, src);
