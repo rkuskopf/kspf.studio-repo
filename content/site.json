@@ -2,21 +2,20 @@
   "nav": {
     "homeLabel": "KSPF",
     "homeHref": "/",
-    "informationLabel": "ABOUT",
-    "informationHref": "#services",
-    "showAbout": false,
+    "informationLabel": "INFO",
+    "informationHref": "#info",
+    "showAbout": true,
     "closeLabel": "x"
   },
   "informationOverlay": {
-    "contactTitle": "Contact",
-    "contactBody": "We offer free consultations to discuss your project needs.\nPlease email us to arrange this or for for more information about our services",
+    "contactTitle": "CONTACT",
+    "contactBody": "",
     "contactEmail": "hello@kspf.au",
-    "servicesTitle": "Services",
+    "servicesTitle": "SERVICES",
     "services": [
-      "Custom web Development",
-      "Shopify",
-      "Squarespace",
-      "UI/UX Design",
+      "Web Development",
+      "Art Direction",
+      "Product Design",
       "Creative Direction",
       "Design Research"
     ]
