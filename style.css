@@ -16,7 +16,7 @@
   --grid-cols: 12;
   --gutter: 5px;
   --viewport-w: 100vw;
-  --portrait-width: min(60vh, calc(var(--viewport-w) - 2 * var(--page-pad)));
+  --portrait-width: min(52.413793vh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
   --grid-col-w: calc((var(--viewport-w) - (var(--page-pad) * 2) - (var(--grid-cols) - 1) * var(--gutter)) / var(--grid-cols));
   --grid-step: calc(var(--grid-col-w) + var(--gutter));
   --nav-shift: calc(var(--grid-col-w) * 0.5);
@@ -51,7 +51,7 @@
 
 @supports (height: 100dvh) {
   :root {
-    --portrait-width: min(60dvh, calc(var(--viewport-w) - 2 * var(--page-pad)));
+    --portrait-width: min(52.413793dvh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
   }
 }
 
@@ -648,6 +648,10 @@ body[data-page="home"] .hero__media.is-portrait {
   opacity: 0;
   filter: blur(4px);
   pointer-events: none;
+}
+
+.hero__media.is-orientation-pending {
+  visibility: hidden;
 }
 
 .hero__media.is-active {

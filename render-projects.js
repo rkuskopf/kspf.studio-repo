@@ -27,7 +27,7 @@
     next.setAttribute("aria-label", "Next image");
 
     const img = document.createElement("img");
-    img.className = "hero__media hero__img";
+    img.className = "hero__media hero__img is-orientation-pending";
     const slides = project.slides || [];
     const firstImage = slides.find((src) => src && !isVideoSrc(src)) || "";
     img.src = firstImage || slides[0] || "";
@@ -35,7 +35,7 @@
     img.loading = index === 0 ? "eager" : "lazy";
 
     const video = document.createElement("video");
-    video.className = "hero__media hero__video";
+    video.className = "hero__media hero__video is-orientation-pending";
     video.muted = true;
     video.loop = true;
     video.playsInline = true;

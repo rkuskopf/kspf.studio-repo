@@ -4,14 +4,17 @@
   const setMediaPortraitClass = (media, aspect) => {
     const isPortrait = Number.isFinite(aspect) && aspect < 1;
     media.classList.toggle("is-portrait", isPortrait);
+    media.classList.remove("is-orientation-pending");
     return isPortrait;
   };
 
-  const createMediaPortraitUpdater = (loadMediaAspect) => (media, src) =>
-    loadMediaAspect(src).then((aspect) => {
+  const createMediaPortraitUpdater = (loadMediaAspect) => (media, src) => {
+    media.classList.add("is-orientation-pending");
+    return loadMediaAspect(src).then((aspect) => {
       setMediaPortraitClass(media, aspect);
       return aspect;
     });
+  };
 
   const positionHitArea = (root, media, previous, next) => {
     if (!root || !media || !previous || !next) return;
