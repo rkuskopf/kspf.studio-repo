@@ -40,6 +40,12 @@ const mediaElement = () => {
   return {
     classes,
     classList: {
+      add(name) {
+        classes.add(name);
+      },
+      remove(name) {
+        classes.delete(name);
+      },
       toggle(name, force) {
         if (force) classes.add(name);
         else classes.delete(name);
@@ -62,9 +68,17 @@ test("outgoing portrait media stays capped while landscape media fades in", asyn
   const outgoingPortrait = mediaElement();
   const incomingLandscape = mediaElement();
 
-  await updateOrientation(outgoingPortrait, "portrait.mp4");
-  await updateOrientation(incomingLandscape, "landscape.png");
+  const portraitUpdate = updateOrientation(outgoingPortrait, "portrait.mp4");
+  const landscapeUpdate = updateOrientation(incomingLandscape, "landscape.png");
+
+  assert.equal(outgoingPortrait.classes.has("is-orientation-pending"), true);
+  assert.equal(incomingLandscape.classes.has("is-orientation-pending"), true);
+
+  await portraitUpdate;
+  await landscapeUpdate;
 
   assert.equal(outgoingPortrait.classes.has("is-portrait"), true);
   assert.equal(incomingLandscape.classes.has("is-portrait"), false);
+  assert.equal(outgoingPortrait.classes.has("is-orientation-pending"), false);
+  assert.equal(incomingLandscape.classes.has("is-orientation-pending"), false);
 });
