@@ -16,6 +16,16 @@
     });
   };
 
+  const getFrameAspects = (aspects) => {
+    const valid = aspects.filter((aspect) => Number.isFinite(aspect) && aspect > 0);
+    const landscape = valid.filter((aspect) => aspect >= 1);
+    return {
+      desktop: valid.length ? Math.max(...valid) : null,
+      mobileLandscape: landscape.length ? Math.min(...landscape) : null,
+      hasPortrait: valid.some((aspect) => aspect < 1),
+    };
+  };
+
   const positionHitArea = (root, media, previous, next) => {
     if (!root || !media || !previous || !next) return;
     const rootRect = root.getBoundingClientRect();
@@ -41,7 +51,12 @@
   };
 
   if (typeof module !== "undefined" && module.exports) {
-    module.exports = { createMediaPortraitUpdater, positionHitArea, setMediaPortraitClass };
+    module.exports = {
+      createMediaPortraitUpdater,
+      getFrameAspects,
+      positionHitArea,
+      setMediaPortraitClass,
+    };
   }
 
   const parseSlides = (raw) => {
@@ -159,12 +174,27 @@
     if (!sources.length) return;
     const unique = Array.from(new Set(sources));
     Promise.all(unique.map(loadAspect)).then((aspects) => {
-      const maxAspect = Math.max(...aspects.filter(Boolean));
-      if (!Number.isFinite(maxAspect) || maxAspect <= 0) return;
-      const value = maxAspect.toFixed(4);
+      const frameAspects = getFrameAspects(aspects);
+      if (!frameAspects.desktop) return;
+      const value = frameAspects.desktop.toFixed(4);
       root.style.setProperty("--hero-aspect", value);
+      if (frameAspects.mobileLandscape) {
+        root.style.setProperty(
+          "--hero-mobile-landscape-aspect",
+          frameAspects.mobileLandscape.toFixed(4)
+        );
+      }
+      root.classList.toggle("has-portrait", frameAspects.hasPortrait);
       const projectBlock = root.closest(".project-block");
-      if (projectBlock) projectBlock.style.setProperty("--hero-aspect", value);
+      if (projectBlock) {
+        projectBlock.style.setProperty("--hero-aspect", value);
+        if (frameAspects.mobileLandscape) {
+          projectBlock.style.setProperty(
+            "--hero-mobile-landscape-aspect",
+            frameAspects.mobileLandscape.toFixed(4)
+          );
+        }
+      }
       const doc = document.documentElement;
       if (!doc.dataset.navHeroAspect) {
         doc.style.setProperty("--nav-hero-aspect", value);

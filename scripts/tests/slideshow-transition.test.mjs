@@ -82,3 +82,29 @@ test("outgoing portrait media stays capped while landscape media fades in", asyn
   assert.equal(outgoingPortrait.classes.has("is-orientation-pending"), false);
   assert.equal(incomingLandscape.classes.has("is-orientation-pending"), false);
 });
+
+test("mobile slideshow frame reserves the tallest rendered slide", async () => {
+  const { getFrameAspects } = await loadSlideshowExports();
+  assert.equal(
+    typeof getFrameAspects,
+    "function",
+    "slideshow must calculate separate desktop and mobile frame sizing"
+  );
+
+  assert.deepEqual(
+    { ...getFrameAspects([1.7624, 1.3746]) },
+    {
+      desktop: 1.7624,
+      mobileLandscape: 1.3746,
+      hasPortrait: false,
+    }
+  );
+  assert.deepEqual(
+    { ...getFrameAspects([1.7665, 0.5569]) },
+    {
+      desktop: 1.7665,
+      mobileLandscape: 1.7665,
+      hasPortrait: true,
+    }
+  );
+});

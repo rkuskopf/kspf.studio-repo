@@ -1435,7 +1435,7 @@ body[data-page="home"] .project__category {
 
 @media (max-width: 700px) {
   .project-block {
-    --hero-frame: min(var(--hero-intended-width), 100%);
+    --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "hero"
@@ -1446,7 +1446,13 @@ body[data-page="home"] .project__category {
   }
 
   .hero {
+    aspect-ratio: var(--hero-mobile-landscape-aspect, var(--hero-aspect, 1.6));
     justify-self: center;
+    width: var(--hero-frame);
+  }
+
+  body[data-page="home"] .hero.has-portrait {
+    min-height: calc(var(--portrait-width) * 1.25);
   }
 
   .project__name {
