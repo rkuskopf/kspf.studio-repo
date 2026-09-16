@@ -18,10 +18,39 @@ export type HomeContent = {
   title: string;
   metaDescription: string;
   intro: string;
+  initialSection: "info" | "work";
+  showNavigation: boolean;
+};
+
+export type SiteNavigation = {
+  homeLabel: string;
+  homeHref: string;
+  informationLabel: string;
+  informationHref: string;
+  showInformation: boolean;
+};
+
+export type SiteInformation = {
+  title: string;
+  profile: string;
+  contactTitle: string;
+  contactBody: string;
+  contactEmail: string;
+  servicesTitle: string;
+  services: string[];
+};
+
+export type SiteContent = {
+  storyId: number;
+  storyUuid: string;
+  nav: SiteNavigation;
+  information: SiteInformation;
 };
 
 export type HomePageData = {
   content: HomeContent;
+  site: SiteContent;
+  project: HomepageProject;
   isPreview: boolean;
 };
 
@@ -30,6 +59,18 @@ export type ProjectMediaType = "image" | "video";
 export type ProjectAsset = {
   url: string;
   type: ProjectMediaType;
+};
+
+export type HomepageProject = {
+  storyId: number;
+  storyUuid: string;
+  slug: string;
+  title: string;
+  displayName: string;
+  category: string;
+  alt: string;
+  order: number;
+  slides: ProjectAsset[];
 };
 
 export type ProjectMetadata = {

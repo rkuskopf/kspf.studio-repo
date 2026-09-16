@@ -1,6 +1,10 @@
 import "server-only";
 
-import { fetchHomeContent } from "./delivery";
+import {
+  fetchHomeContent,
+  fetchHomepageProjects,
+  fetchSiteContent,
+} from "./delivery";
 import { resolveStoryblokVersion } from "./preview";
 import type {
   HomePageData,
@@ -29,13 +33,22 @@ export async function loadHomePage({
     version === "draft"
       ? environment.STORYBLOK_PREVIEW_TOKEN
       : environment.STORYBLOK_PUBLIC_TOKEN;
-  const content = await fetchHomeContent({
+  const deliveryOptions = {
     version,
     token,
     region: environment.STORYBLOK_REGION,
     fetchImpl,
     cacheVersion: now,
-  });
+  };
+  const [content, site, projects] = await Promise.all([
+    fetchHomeContent(deliveryOptions),
+    fetchSiteContent(deliveryOptions),
+    fetchHomepageProjects(deliveryOptions),
+  ]);
+  const project = projects[0];
+  if (!project) {
+    throw new Error("Storyblok homepage has no visible projects.");
+  }
 
-  return { content, isPreview: version === "draft" };
+  return { content, site, project, isPreview: version === "draft" };
 }

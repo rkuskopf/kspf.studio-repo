@@ -40,11 +40,89 @@ const homeResponse = {
   },
 };
 
+const siteResponse = {
+  story: {
+    id: 7,
+    uuid: "site-uuid",
+    content: {
+      component: "site_settings",
+      nav: [{
+        component: "nav_settings",
+        home_label: "KSPF",
+        home_href: { url: "/" },
+        information_label: "INFO",
+        information_href: { url: "#information" },
+        show_about: true,
+      }],
+      information_overlay: [{
+        component: "information_overlay",
+        contact_title: "Contact",
+        contact_body: "",
+        contact_email: "hello@kspf.au",
+        services_title: "Services",
+        services: [{ component: "text_item", text: "Web Development" }],
+      }],
+      profile: "Independent design practice.",
+    },
+  },
+};
+
+const projectsResponse = {
+  stories: [
+    {
+      id: 12,
+      uuid: "second-uuid",
+      slug: "second",
+      full_slug: "projects/second",
+      position: 2,
+      content: {
+        component: "project",
+        title: "Second",
+        display_name: "Second",
+        category: "Web",
+        alt: "Second preview",
+        order: 2,
+        show_on_home: true,
+        slides: [{
+          component: "media_slide",
+          asset: { filename: "https://example.com/second.jpg", content_type: "image/jpeg" },
+        }],
+      },
+    },
+    {
+      id: 11,
+      uuid: "arcteryx-uuid",
+      slug: "arcteryx",
+      full_slug: "projects/arcteryx",
+      position: 1,
+      content: {
+        component: "project",
+        title: "Arcteryx",
+        display_name: "ARCTERYX",
+        category: "Print",
+        alt: "Arcteryx preview",
+        order: 1,
+        show_on_home: true,
+        slides: [{
+          component: "media_slide",
+          asset: { filename: "https://example.com/arcteryx.jpg", content_type: "image/jpeg" },
+        }],
+      },
+    },
+  ],
+};
+
 const requestRecorder = () => {
   const requests: URL[] = [];
   const fetchImpl: typeof fetch = async (input) => {
-    requests.push(new URL(String(input)));
-    return new Response(JSON.stringify(homeResponse), {
+    const url = new URL(String(input));
+    requests.push(url);
+    const payload = url.pathname.endsWith("/stories/home")
+      ? homeResponse
+      : url.pathname.endsWith("/stories/site")
+        ? siteResponse
+        : projectsResponse;
+    return new Response(JSON.stringify(payload), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -70,8 +148,13 @@ describe("the server-only homepage boundary", () => {
 
     expect(data.isPreview).toBe(false);
     expect(data.content.title).toBe("kspf.studio");
-    expect(requests[0].searchParams.get("version")).toBe("published");
-    expect(requests[0].searchParams.get("token")).toBe("public-sentinel");
+    expect(data.site.nav.homeLabel).toBe("KSPF");
+    expect(data.project.displayName).toBe("ARCTERYX");
+    expect(requests).toHaveLength(3);
+    expect(requests.every((request) => request.searchParams.get("version") === "published"))
+      .toBe(true);
+    expect(requests.every((request) => request.searchParams.get("token") === "public-sentinel"))
+      .toBe(true);
   });
 
   it("uses the preview token and draft content for a signed local request", async () => {
@@ -90,9 +173,13 @@ describe("the server-only homepage boundary", () => {
     });
 
     expect(data.isPreview).toBe(true);
-    expect(requests[0].searchParams.get("version")).toBe("draft");
-    expect(requests[0].searchParams.get("token")).toBe(PREVIEW_TOKEN);
-    expect(requests[0].searchParams.get("cv")).toBe(String(NOW));
+    expect(requests).toHaveLength(3);
+    expect(requests.every((request) => request.searchParams.get("version") === "draft"))
+      .toBe(true);
+    expect(requests.every((request) => request.searchParams.get("token") === PREVIEW_TOKEN))
+      .toBe(true);
+    expect(requests.every((request) => request.searchParams.get("cv") === String(NOW)))
+      .toBe(true);
   });
 
   it("forces a signed production request through published delivery", async () => {
@@ -110,8 +197,11 @@ describe("the server-only homepage boundary", () => {
     });
 
     expect(data.isPreview).toBe(false);
-    expect(requests[0].searchParams.get("version")).toBe("published");
-    expect(requests[0].searchParams.get("token")).toBe("public-sentinel");
+    expect(requests).toHaveLength(3);
+    expect(requests.every((request) => request.searchParams.get("version") === "published"))
+      .toBe(true);
+    expect(requests.every((request) => request.searchParams.get("token") === "public-sentinel"))
+      .toBe(true);
   });
 
   it("fails clearly when published delivery is not configured", async () => {
