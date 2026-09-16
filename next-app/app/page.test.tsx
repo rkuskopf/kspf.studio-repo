@@ -112,6 +112,12 @@ describe("the Storyblok-backed App Router route", () => {
       markup.indexOf('id="homepage-project-arcteryx-title"')
     );
     expect(markup).not.toContain("<footer");
+    expect(markup.indexOf("homepage-project__name")).toBeLessThan(
+      markup.indexOf("homepage-hero")
+    );
+    expect(markup.indexOf("homepage-hero")).toBeLessThan(
+      markup.indexOf("homepage-project__category")
+    );
   });
 
   it("renders typed draft home content through the same presentation path", () => {
