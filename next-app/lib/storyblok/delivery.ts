@@ -251,11 +251,17 @@ const mapHomepageSlide = (value: unknown) => {
     return invalidHomepageProjects("has an invalid slide block");
   }
   const asset = isRecord(value.asset) ? value.asset : undefined;
-  const url =
-    (asset && typeof asset.filename === "string" && asset.filename) ||
-    (typeof value.legacy_url === "string" && value.legacy_url) ||
+  const assetUrl = asset && typeof asset.filename === "string" && asset.filename;
+  const legacyUrl = typeof value.legacy_url === "string" && value.legacy_url;
+  const sourceUrl =
+    assetUrl ||
+    legacyUrl ||
     "";
-  if (!url) return invalidHomepageProjects("has a slide without media");
+  if (!sourceUrl) return invalidHomepageProjects("has a slide without media");
+  const url =
+    legacyUrl && !/^[a-z][a-z0-9+.-]*:/i.test(legacyUrl) && !legacyUrl.startsWith("//")
+      ? new URL(legacyUrl.replace(/^\/+/, ""), "https://kspf.au/").href
+      : sourceUrl;
   return { url, type: mediaType(url, asset?.content_type) };
 };
 

@@ -392,7 +392,7 @@ describe("homepage aggregate delivery records", () => {
             url: "https://res.cloudinary.com/kspf/video/upload/second.mp4",
             type: "video",
           },
-          { url: "assets/second.jpg", type: "image" },
+          { url: "https://kspf.au/assets/second.jpg", type: "image" },
         ],
       },
     ]);
