@@ -50,7 +50,7 @@ export type SiteContent = {
 export type HomePageData = {
   content: HomeContent;
   site: SiteContent;
-  project: HomepageProject;
+  projects: HomepageProject[];
   isPreview: boolean;
 };
 

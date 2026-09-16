@@ -24,8 +24,10 @@ const project: HomepageProject = {
   ],
 };
 
-const render = (value: HomepageProject) =>
-  renderToStaticMarkup(createElement(HomepageSlideshow, { project: value }));
+const render = (value: HomepageProject, priority = false) =>
+  renderToStaticMarkup(
+    createElement(HomepageSlideshow, { project: value, priority })
+  );
 
 describe("homepage slideshow state", () => {
   it("wraps forwards and backwards without leaving the slide range", () => {
@@ -41,19 +43,35 @@ describe("homepage slideshow state", () => {
   });
 
   it("disables video autoplay and looping when reduced motion is requested", () => {
-    expect(videoMotionAttributes(true)).toEqual({ autoPlay: false, loop: false });
-    expect(videoMotionAttributes(false)).toEqual({ autoPlay: true, loop: true });
+    expect(videoMotionAttributes(false, false)).toEqual({
+      autoPlay: false,
+      loop: true,
+    });
+    expect(videoMotionAttributes(false, true)).toEqual({
+      autoPlay: true,
+      loop: true,
+    });
+    expect(videoMotionAttributes(true, true)).toEqual({
+      autoPlay: false,
+      loop: false,
+    });
   });
 });
 
 describe("homepage slideshow presentation", () => {
   it("renders the first image with project alt text and labelled controls", () => {
-    const markup = render(project);
+    const markup = render(project, true);
 
     expect(markup).toContain('src="https://example.com/first.jpg"');
     expect(markup).toContain('alt="Arcteryx campaign preview"');
-    expect(markup).toContain('aria-label="Previous image"');
-    expect(markup).toContain('aria-label="Next image"');
+    expect(markup).toContain('tabindex="0"');
+    expect(markup).toContain('loading="eager"');
+    expect(markup).toContain('aria-label="Previous ARCTERYX image"');
+    expect(markup).toContain('aria-label="Next ARCTERYX image"');
+  });
+
+  it("lazy-loads images outside the first project", () => {
+    expect(render(project)).toContain('loading="lazy"');
   });
 
   it("renders a current video paused by default until motion preference hydrates", () => {

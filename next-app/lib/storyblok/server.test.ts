@@ -112,7 +112,7 @@ const projectsResponse = {
   ],
 };
 
-const requestRecorder = () => {
+const requestRecorder = (projectPayload: unknown = projectsResponse) => {
   const requests: URL[] = [];
   const fetchImpl: typeof fetch = async (input) => {
     const url = new URL(String(input));
@@ -121,7 +121,7 @@ const requestRecorder = () => {
       ? homeResponse
       : url.pathname.endsWith("/stories/site")
         ? siteResponse
-        : projectsResponse;
+        : projectPayload;
     return new Response(JSON.stringify(payload), {
       status: 200,
       headers: { "Content-Type": "application/json" },
@@ -149,7 +149,10 @@ describe("the server-only homepage boundary", () => {
     expect(data.isPreview).toBe(false);
     expect(data.content.title).toBe("kspf.studio");
     expect(data.site.nav.homeLabel).toBe("KSPF");
-    expect(data.project.displayName).toBe("ARCTERYX");
+    expect(data.projects.map((project) => project.displayName)).toEqual([
+      "ARCTERYX",
+      "Second",
+    ]);
     expect(requests).toHaveLength(3);
     expect(requests.every((request) => request.searchParams.get("version") === "published"))
       .toBe(true);
@@ -227,5 +230,21 @@ describe("the server-only homepage boundary", () => {
         now: NOW,
       })
     ).rejects.toThrow(/STORYBLOK_PREVIEW_TOKEN/);
+  });
+
+  it("fails clearly when Storyblok has no visible homepage projects", async () => {
+    const { fetchImpl } = requestRecorder({ stories: [] });
+
+    await expect(
+      loadHomePage({
+        searchParams: {},
+        environment: {
+          NODE_ENV: "development",
+          STORYBLOK_PUBLIC_TOKEN: "public-sentinel",
+        },
+        fetchImpl,
+        now: NOW,
+      })
+    ).rejects.toThrow("Storyblok homepage has no visible projects.");
   });
 });
