@@ -1,0 +1,9 @@
+assets/uploads/ALBUS VIDEO 01.mov
+.env
+.env.local
+.env.*.local
+.storyblok-preview/
+node_modules/
+next-app/.next/
+next-app/next-env.d.ts
+coverage/
