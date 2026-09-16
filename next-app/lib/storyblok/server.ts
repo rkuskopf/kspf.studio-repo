@@ -45,10 +45,9 @@ export async function loadHomePage({
     fetchSiteContent(deliveryOptions),
     fetchHomepageProjects(deliveryOptions),
   ]);
-  const project = projects[0];
-  if (!project) {
+  if (projects.length === 0) {
     throw new Error("Storyblok homepage has no visible projects.");
   }
 
-  return { content, site, project, isPreview: version === "draft" };
+  return { content, site, projects, isPreview: version === "draft" };
 }
