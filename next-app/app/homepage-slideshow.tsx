@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { HomepageProject } from "../lib/storyblok/types";
+import { useHomepageViewport } from "./use-homepage-viewport";
 
 export function nextSlideIndex(current: number, delta: number, length: number) {
   if (length <= 0) return 0;
@@ -13,9 +14,12 @@ export function isPortraitDimensions(width: number, height: number) {
   return width > 0 && height > 0 && width / height < 1;
 }
 
-export function videoMotionAttributes(prefersReducedMotion: boolean) {
+export function videoMotionAttributes(
+  prefersReducedMotion: boolean,
+  isVisible: boolean
+) {
   return {
-    autoPlay: !prefersReducedMotion,
+    autoPlay: !prefersReducedMotion && isVisible,
     loop: !prefersReducedMotion,
   };
 }
@@ -27,7 +31,6 @@ export default function HomepageSlideshow({
   project: HomepageProject;
   priority?: boolean;
 }) {
-  void priority;
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
@@ -35,6 +38,8 @@ export default function HomepageSlideshow({
   const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const imageElement = useRef<HTMLImageElement | null>(null);
   const videoElement = useRef<HTMLVideoElement | null>(null);
+  const { ref: viewportElement, isVisible, isNearViewport } =
+    useHomepageViewport<HTMLElement>();
   const slide = project.slides[index] ?? project.slides[0];
   const hasMultipleSlides = project.slides.length > 1;
 
@@ -56,7 +61,13 @@ export default function HomepageSlideshow({
   }, []);
 
   useEffect(() => {
-    if (typeof Image === "undefined" || !hasMultipleSlides) return;
+    if (
+      typeof Image === "undefined" ||
+      !hasMultipleSlides ||
+      !isNearViewport
+    ) {
+      return;
+    }
     const neighborIndexes = [
       nextSlideIndex(index, -1, project.slides.length),
       nextSlideIndex(index, 1, project.slides.length),
@@ -68,7 +79,7 @@ export default function HomepageSlideshow({
         image.src = neighbor.url;
       }
     });
-  }, [hasMultipleSlides, index, project.slides]);
+  }, [hasMultipleSlides, index, isNearViewport, project.slides]);
 
   useEffect(() => {
     if (slide?.type === "image" && imageElement.current?.complete) {
@@ -94,12 +105,12 @@ export default function HomepageSlideshow({
   useEffect(() => {
     const video = videoElement.current;
     if (slide?.type !== "video" || !video) return;
-    if (prefersReducedMotion) {
+    if (prefersReducedMotion || !isVisible) {
       video.pause();
       return;
     }
     video.play().catch(() => {});
-  }, [prefersReducedMotion, slide?.type, slide?.url]);
+  }, [isVisible, prefersReducedMotion, slide?.type, slide?.url]);
 
   if (!slide) return null;
 
@@ -113,6 +124,7 @@ export default function HomepageSlideshow({
 
   return (
     <figure
+      ref={viewportElement}
       className="homepage-hero"
       tabIndex={0}
       aria-label={`${project.displayName} slideshow`}
@@ -151,13 +163,13 @@ export default function HomepageSlideshow({
           <button
             className="homepage-hero__hit homepage-hero__hit--previous"
             type="button"
-            aria-label="Previous image"
+            aria-label={`Previous ${project.displayName} image`}
             onClick={() => move(-1)}
           />
           <button
             className="homepage-hero__hit homepage-hero__hit--next"
             type="button"
-            aria-label="Next image"
+            aria-label={`Next ${project.displayName} image`}
             onClick={() => move(1)}
           />
         </>
@@ -169,7 +181,7 @@ export default function HomepageSlideshow({
           className={mediaClassName}
           key={slide.url}
           src={slide.url}
-          {...videoMotionAttributes(prefersReducedMotion)}
+          {...videoMotionAttributes(prefersReducedMotion, isVisible)}
           muted
           playsInline
           preload="metadata"
@@ -192,7 +204,7 @@ export default function HomepageSlideshow({
           key={slide.url}
           src={slide.url}
           alt={project.alt || project.displayName}
-          loading="eager"
+          loading={priority ? "eager" : "lazy"}
           onLoad={(event) => {
             setIsPortrait(
               isPortraitDimensions(

@@ -97,7 +97,7 @@ describe("the Storyblok-backed App Router route", () => {
     expect(markup).toContain('href="#information">INFO</a>');
     expect(markup).toContain("ARCTERYX");
     expect(markup).toContain("Print");
-    expect(markup).toContain('aria-label="Previous image"');
+    expect(markup).toContain('aria-label="Previous ARCTERYX image"');
   });
 
   it("renders every project in order as labelled server content", () => {
