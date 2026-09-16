@@ -6,6 +6,7 @@ import type { HomepageProject } from "../lib/storyblok/types";
 import HomepageSlideshow, {
   isPortraitDimensions,
   nextSlideIndex,
+  videoMotionAttributes,
 } from "./homepage-slideshow";
 
 const project: HomepageProject = {
@@ -38,6 +39,11 @@ describe("homepage slideshow state", () => {
     expect(isPortraitDimensions(1600, 1000)).toBe(false);
     expect(isPortraitDimensions(0, 1000)).toBe(false);
   });
+
+  it("disables video autoplay and looping when reduced motion is requested", () => {
+    expect(videoMotionAttributes(true)).toEqual({ autoPlay: false, loop: false });
+    expect(videoMotionAttributes(false)).toEqual({ autoPlay: true, loop: true });
+  });
 });
 
 describe("homepage slideshow presentation", () => {
@@ -50,7 +56,7 @@ describe("homepage slideshow presentation", () => {
     expect(markup).toContain('aria-label="Next image"');
   });
 
-  it("renders a current video with inline muted looping playback attributes", () => {
+  it("renders a current video paused by default until motion preference hydrates", () => {
     const markup = render({
       ...project,
       slides: [{ url: "https://example.com/first.mp4", type: "video" }],
@@ -58,8 +64,9 @@ describe("homepage slideshow presentation", () => {
 
     expect(markup).toContain('src="https://example.com/first.mp4"');
     expect(markup).toContain("playsInline");
-    expect(markup).toContain("loop");
     expect(markup).toContain("muted");
+    expect(markup).not.toContain("autoPlay");
+    expect(markup).not.toContain("loop");
   });
 
   it("omits inactive controls when only one slide exists", () => {

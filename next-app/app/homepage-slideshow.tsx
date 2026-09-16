@@ -13,6 +13,13 @@ export function isPortraitDimensions(width: number, height: number) {
   return width > 0 && height > 0 && width / height < 1;
 }
 
+export function videoMotionAttributes(prefersReducedMotion: boolean) {
+  return {
+    autoPlay: !prefersReducedMotion,
+    loop: !prefersReducedMotion,
+  };
+}
+
 export default function HomepageSlideshow({
   project,
 }: {
@@ -21,6 +28,7 @@ export default function HomepageSlideshow({
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
   const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const imageElement = useRef<HTMLImageElement | null>(null);
   const videoElement = useRef<HTMLVideoElement | null>(null);
@@ -31,6 +39,18 @@ export default function HomepageSlideshow({
     setIsClassified(false);
     setIndex((current) => nextSlideIndex(current, delta, project.slides.length));
   };
+
+  useEffect(() => {
+    const query = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!query) {
+      setPrefersReducedMotion(false);
+      return;
+    }
+    const updatePreference = () => setPrefersReducedMotion(query.matches);
+    updatePreference();
+    query.addEventListener("change", updatePreference);
+    return () => query.removeEventListener("change", updatePreference);
+  }, []);
 
   useEffect(() => {
     if (typeof Image === "undefined" || !hasMultipleSlides) return;
@@ -67,6 +87,16 @@ export default function HomepageSlideshow({
       setIsClassified(true);
     }
   }, [slide?.type, slide?.url]);
+
+  useEffect(() => {
+    const video = videoElement.current;
+    if (slide?.type !== "video" || !video) return;
+    if (prefersReducedMotion) {
+      video.pause();
+      return;
+    }
+    video.play().catch(() => {});
+  }, [prefersReducedMotion, slide?.type, slide?.url]);
 
   if (!slide) return null;
 
@@ -136,9 +166,8 @@ export default function HomepageSlideshow({
           className={mediaClassName}
           key={slide.url}
           src={slide.url}
-          autoPlay
+          {...videoMotionAttributes(prefersReducedMotion)}
           muted
-          loop
           playsInline
           preload="metadata"
           aria-label={project.alt || project.displayName}
