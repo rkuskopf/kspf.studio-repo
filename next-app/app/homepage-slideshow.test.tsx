@@ -64,6 +64,7 @@ describe("homepage slideshow presentation", () => {
 
     expect(markup).toContain('src="https://example.com/first.jpg"');
     expect(markup).toContain('alt="Arcteryx campaign preview"');
+    expect(markup).toContain('tabindex="0"');
     expect(markup).toContain('loading="eager"');
     expect(markup).toContain('aria-label="Previous ARCTERYX image"');
     expect(markup).toContain('aria-label="Next ARCTERYX image"');

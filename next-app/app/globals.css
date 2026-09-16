@@ -169,6 +169,11 @@ body {
   outline: none;
 }
 
+.homepage-hero:focus-visible {
+  outline: 1px solid #000;
+  outline-offset: 3px;
+}
+
 .homepage-hero__media {
   display: block;
   max-width: 100%;
