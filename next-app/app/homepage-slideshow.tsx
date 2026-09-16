@@ -22,9 +22,12 @@ export function videoMotionAttributes(prefersReducedMotion: boolean) {
 
 export default function HomepageSlideshow({
   project,
+  priority = false,
 }: {
   project: HomepageProject;
+  priority?: boolean;
 }) {
+  void priority;
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);

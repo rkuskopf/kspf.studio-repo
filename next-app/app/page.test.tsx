@@ -37,20 +37,33 @@ const publishedData: HomePageData = {
       services: ["Web Development", "Creative Direction"],
     },
   },
-  project: {
-    storyId: 11,
-    storyUuid: "arcteryx-uuid",
-    slug: "arcteryx",
-    title: "Arcteryx",
-    displayName: "ARCTERYX",
-    category: "Print",
-    alt: "Arcteryx campaign preview",
-    order: 1,
-    slides: [
-      { url: "https://example.com/arcteryx-1.jpg", type: "image" },
-      { url: "https://example.com/arcteryx-2.jpg", type: "image" },
-    ],
-  },
+  projects: [
+    {
+      storyId: 11,
+      storyUuid: "arcteryx-uuid",
+      slug: "arcteryx",
+      title: "Arcteryx",
+      displayName: "ARCTERYX",
+      category: "Print",
+      alt: "Arcteryx campaign preview",
+      order: 1,
+      slides: [
+        { url: "https://example.com/arcteryx-1.jpg", type: "image" },
+        { url: "https://example.com/arcteryx-2.jpg", type: "image" },
+      ],
+    },
+    {
+      storyId: 12,
+      storyUuid: "second-uuid",
+      slug: "second",
+      title: "Second",
+      displayName: "Second project",
+      category: "Web",
+      alt: "Second project preview",
+      order: 2,
+      slides: [{ url: "https://example.com/second.jpg", type: "image" }],
+    },
+  ],
   isPreview: false,
 };
 
@@ -87,6 +100,20 @@ describe("the Storyblok-backed App Router route", () => {
     expect(markup).toContain('aria-label="Previous image"');
   });
 
+  it("renders every project in order as labelled server content", () => {
+    const markup = render(publishedData);
+
+    expect(markup.indexOf("ARCTERYX")).toBeLessThan(markup.indexOf("Second project"));
+    expect(markup.match(/class="homepage-project"/g)).toHaveLength(2);
+    expect(markup).toContain('aria-labelledby="homepage-project-arcteryx-title"');
+    expect(markup).toContain('aria-labelledby="homepage-project-second-title"');
+    expect(markup).not.toContain('aria-live="polite"');
+    expect(markup.indexOf('id="information"')).toBeLessThan(
+      markup.indexOf('id="homepage-project-arcteryx-title"')
+    );
+    expect(markup).not.toContain("<footer");
+  });
+
   it("renders typed draft home content through the same presentation path", () => {
     const markup = render({
       content: {
@@ -95,7 +122,7 @@ describe("the Storyblok-backed App Router route", () => {
         intro: "Saved draft introduction",
       },
       site: publishedData.site,
-      project: publishedData.project,
+      projects: publishedData.projects,
       isPreview: true,
     });
 

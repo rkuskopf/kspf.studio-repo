@@ -71,12 +71,23 @@ export function HomeContentView({ data }: { data: HomePageData }) {
           </nav>
         </header>
 
-        <div className="homepage-projects" aria-live="polite">
-          <section className="homepage-project">
-            <p className="homepage-project__name">{data.project.displayName}</p>
-            <HomepageSlideshow project={data.project} />
-            <p className="homepage-project__category">{data.project.category}</p>
-          </section>
+        <div className="homepage-projects">
+          {data.projects.map((project, index) => {
+            const titleId = `homepage-project-${project.slug}-title`;
+            return (
+              <section
+                className="homepage-project"
+                aria-labelledby={titleId}
+                key={project.storyId}
+              >
+                <p className="homepage-project__name" id={titleId}>
+                  {project.displayName}
+                </p>
+                <HomepageSlideshow project={project} priority={index === 0} />
+                <p className="homepage-project__category">{project.category}</p>
+              </section>
+            );
+          })}
         </div>
       </div>
       {data.isPreview ? <StoryblokPreviewBridge /> : null}
