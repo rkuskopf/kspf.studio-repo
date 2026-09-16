@@ -4,8 +4,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "KSPF",
-  description: "KSPF portfolio migration foundation",
+  title: "kspf.studio",
+  description: "kspf is a digital practice.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {

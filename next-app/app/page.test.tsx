@@ -14,6 +14,42 @@ const publishedData: HomePageData = {
     title: "Published KSPF",
     metaDescription: "Published portfolio",
     intro: "Published introduction",
+    initialSection: "work",
+    showNavigation: true,
+  },
+  site: {
+    storyId: 7,
+    storyUuid: "site-uuid",
+    nav: {
+      homeLabel: "KSPF",
+      homeHref: "#work",
+      informationLabel: "INFO",
+      informationHref: "#information",
+      showInformation: true,
+    },
+    information: {
+      title: "KSPF",
+      profile: "Independent design practice.",
+      contactTitle: "Contact",
+      contactBody: "Melbourne\nAustralia",
+      contactEmail: "hello@kspf.au",
+      servicesTitle: "Services",
+      services: ["Web Development", "Creative Direction"],
+    },
+  },
+  project: {
+    storyId: 11,
+    storyUuid: "arcteryx-uuid",
+    slug: "arcteryx",
+    title: "Arcteryx",
+    displayName: "ARCTERYX",
+    category: "Print",
+    alt: "Arcteryx campaign preview",
+    order: 1,
+    slides: [
+      { url: "https://example.com/arcteryx-1.jpg", type: "image" },
+      { url: "https://example.com/arcteryx-2.jpg", type: "image" },
+    ],
   },
   isPreview: false,
 };
@@ -27,12 +63,28 @@ afterEach(() => {
 });
 
 describe("the Storyblok-backed App Router route", () => {
-  it("renders typed published home content", () => {
+  it("renders Information before Work with the current content hierarchy", () => {
     const markup = render(publishedData);
 
-    expect(markup).toContain("<h1>Published KSPF</h1>");
-    expect(markup).toContain("Published introduction");
+    expect(markup.indexOf('id="information"')).toBeLessThan(markup.indexOf('id="work"'));
+    expect(markup).toContain('<h1 id="information-title">KSPF</h1>');
+    expect(markup).toContain("Independent design practice.");
+    expect(markup).toContain('href="mailto:hello@kspf.au"');
+    expect(markup).toContain("Melbourne</span><span><br/>Australia");
+    expect(markup).toContain("Web Development");
     expect(markup).toContain('data-storyblok-content="published"');
+  });
+
+  it("renders primary navigation and the first project metadata", () => {
+    const markup = render(publishedData);
+
+    expect(markup).toContain('<nav class="homepage-nav" aria-label="Primary">');
+    expect(markup).toContain('href="#work">KSPF</a>');
+    expect(markup).toContain("Published introduction");
+    expect(markup).toContain('href="#information">INFO</a>');
+    expect(markup).toContain("ARCTERYX");
+    expect(markup).toContain("Print");
+    expect(markup).toContain('aria-label="Previous image"');
   });
 
   it("renders typed draft home content through the same presentation path", () => {
@@ -42,10 +94,11 @@ describe("the Storyblok-backed App Router route", () => {
         title: "Draft KSPF",
         intro: "Saved draft introduction",
       },
+      site: publishedData.site,
+      project: publishedData.project,
       isPreview: true,
     });
 
-    expect(markup).toContain("<h1>Draft KSPF</h1>");
     expect(markup).toContain("Saved draft introduction");
     expect(markup).toContain('data-storyblok-content="draft"');
   });
