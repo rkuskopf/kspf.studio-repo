@@ -1,18 +1,84 @@
 import { loadHomePage } from "../lib/storyblok/server";
 import type { HomePageData, StoryblokSearchParams } from "../lib/storyblok/types";
+import HomepageInitialPosition from "./homepage-initial-position";
+import HomepageSlideshow from "./homepage-slideshow";
 import StoryblokPreviewBridge from "./storyblok-preview-bridge";
 
 export const dynamic = "force-dynamic";
 
 export function HomeContentView({ data }: { data: HomePageData }) {
+  const { information, nav } = data.site;
+  const contactLines = information.contactBody.split("\n");
+
   return (
     <main
-      className="foundation"
+      className="homepage"
       data-storyblok-content={data.isPreview ? "draft" : "published"}
     >
-      <p className="foundation__eyebrow">Storyblok homepage tracer</p>
-      <h1>{data.content.title}</h1>
-      <p className="foundation__summary">{data.content.intro}</p>
+      <HomepageInitialPosition section={data.content.initialSection} />
+      <section
+        className="homepage-information"
+        id="information"
+        aria-labelledby="information-title"
+        tabIndex={-1}
+      >
+        <div className="homepage-information__inner">
+          <h1 id="information-title">{information.title}</h1>
+          <p>{information.profile}</p>
+          <div className="homepage-information__details">
+            <div>
+              <h2>{information.contactTitle}</h2>
+              {information.contactBody ? (
+                <p>
+                  {contactLines.map((line, index) => (
+                    <span key={`${line}-${index}`}>
+                      {index > 0 ? <br /> : null}
+                      {line}
+                    </span>
+                  ))}
+                </p>
+              ) : null}
+              {information.contactEmail ? (
+                <a href={`mailto:${information.contactEmail.replace(/^mailto:/i, "")}`}>
+                  {information.contactEmail.replace(/^mailto:/i, "")}
+                </a>
+              ) : null}
+            </div>
+            <div>
+              <h2>{information.servicesTitle}</h2>
+              <ul>
+                {information.services.map((service) => (
+                  <li key={service}>{service}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="homepage-stage" id="work" tabIndex={-1}>
+        <header className="homepage-top" hidden={!data.content.showNavigation}>
+          <nav className="homepage-nav" aria-label="Primary">
+            <a className="homepage-nav__home" href="#work">
+              {nav.homeLabel}
+            </a>
+            <p className="homepage-nav__intro" title={data.content.intro}>
+              {data.content.intro}
+            </p>
+            <a className="homepage-nav__information" href="#information">
+              {nav.informationLabel}
+            </a>
+          </nav>
+        </header>
+
+        <div className="homepage-projects" aria-live="polite">
+          <section className="homepage-project">
+            <p className="homepage-project__name">{data.project.displayName}</p>
+            <HomepageSlideshow project={data.project} />
+            <p className="homepage-project__category">{data.project.category}</p>
+          </section>
+        </div>
+      </div>
       {data.isPreview ? <StoryblokPreviewBridge /> : null}
     </main>
   );

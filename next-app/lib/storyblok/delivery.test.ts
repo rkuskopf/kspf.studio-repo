@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { fetchHomeContent } from "./delivery";
+import {
+  fetchHomeContent,
+  fetchHomepageProjects,
+  fetchSiteContent,
+} from "./delivery";
 
 const homeResponse = {
   story: {
@@ -15,9 +19,87 @@ const homeResponse = {
       title: "kspf.studio",
       meta_description: "Portfolio",
       intro: "Art Direction + Web Development",
+      initial_section: "info",
+      show_navigation: false,
     },
   },
 };
+
+const siteResponse = {
+  story: {
+    id: 7,
+    uuid: "site-uuid",
+    name: "Site",
+    slug: "site",
+    full_slug: "site",
+    content: {
+      _uid: "site-content-uid",
+      component: "site_settings",
+      nav: [
+        {
+          _uid: "nav-uid",
+          component: "nav_settings",
+          home_label: "KSPF",
+          home_href: { linktype: "url", url: "/" },
+          information_label: "INFO",
+          information_href: { linktype: "url", url: "#information" },
+          show_about: true,
+          close_label: "x",
+        },
+      ],
+      information_overlay: [
+        {
+          _uid: "information-uid",
+          component: "information_overlay",
+          contact_title: "Contact",
+          contact_body: "Melbourne\nAustralia",
+          contact_email: "hello@kspf.au",
+          services_title: "Services",
+          services: [
+            { _uid: "service-1", component: "text_item", text: "Web Development" },
+            { _uid: "service-2", component: "text_item", text: "Creative Direction" },
+          ],
+        },
+      ],
+      profile: "An independent design practice.",
+      footer: [],
+    },
+  },
+};
+
+const projectStory = ({
+  id,
+  slug,
+  order,
+  position,
+  hidden = false,
+  slides,
+}: {
+  id: number;
+  slug: string;
+  order?: number;
+  position: number;
+  hidden?: boolean;
+  slides: unknown[];
+}) => ({
+  id,
+  uuid: `${slug}-uuid`,
+  name: slug,
+  slug,
+  full_slug: `projects/${slug}`,
+  position,
+  content: {
+    _uid: `${slug}-content-uid`,
+    component: "project",
+    title: slug.toUpperCase(),
+    display_name: slug === "arcteryx" ? "ARCTERYX" : "Second project",
+    category: slug === "arcteryx" ? "Print" : "Web",
+    slides,
+    ...(hidden ? {} : { alt: `${slug} project preview` }),
+    show_on_home: !hidden,
+    ...(order === undefined ? {} : { order }),
+  },
+});
 
 const jsonResponse = (body: unknown, status = 200) =>
   new Response(JSON.stringify(body), {
@@ -49,6 +131,8 @@ describe("direct Storyblok home delivery", () => {
       title: "kspf.studio",
       metaDescription: "Portfolio",
       intro: "Art Direction + Web Development",
+      initialSection: "info",
+      showNavigation: false,
     });
     expect(requestedUrl?.origin).toBe("https://api-ap.storyblok.com");
     expect(requestedUrl?.pathname).toBe("/v2/cdn/stories/home");
@@ -183,5 +267,138 @@ describe("direct Storyblok home delivery", () => {
         fetchImpl,
       })
     ).rejects.toThrow(/Storyblok home story/);
+  });
+});
+
+describe("homepage aggregate delivery records", () => {
+  it("maps the site navigation and information hierarchy", async () => {
+    let requestedUrl: URL | undefined;
+    const fetchImpl: typeof fetch = async (input) => {
+      requestedUrl = new URL(String(input));
+      return jsonResponse(siteResponse);
+    };
+
+    const content = await fetchSiteContent({
+      version: "published",
+      token: "public-sentinel",
+      region: "ap",
+      fetchImpl,
+    });
+
+    expect(content).toEqual({
+      storyId: 7,
+      storyUuid: "site-uuid",
+      nav: {
+        homeLabel: "KSPF",
+        homeHref: "/",
+        informationLabel: "INFO",
+        informationHref: "#information",
+        showInformation: true,
+      },
+      information: {
+        title: "KSPF",
+        profile: "An independent design practice.",
+        contactTitle: "Contact",
+        contactBody: "Melbourne\nAustralia",
+        contactEmail: "hello@kspf.au",
+        servicesTitle: "Services",
+        services: ["Web Development", "Creative Direction"],
+      },
+    });
+    expect(requestedUrl?.pathname).toBe("/v2/cdn/stories/site");
+    expect(requestedUrl?.searchParams.get("version")).toBe("published");
+    expect(requestedUrl?.searchParams.get("token")).toBe("public-sentinel");
+  });
+
+  it("returns visible projects in configured order with asset and legacy slides", async () => {
+    let requestedUrl: URL | undefined;
+    const fetchImpl: typeof fetch = async (input) => {
+      requestedUrl = new URL(String(input));
+      return jsonResponse({
+        stories: [
+          projectStory({
+            id: 12,
+            slug: "second",
+            order: 2,
+            position: 10,
+            slides: [{
+              _uid: "second-slide",
+              component: "media_slide",
+              legacy_url: "https://res.cloudinary.com/kspf/video/upload/second.mp4",
+            }, {
+              _uid: "second-local-slide",
+              component: "media_slide",
+              legacy_url: "assets/second.jpg",
+            }],
+          }),
+          projectStory({
+            id: 11,
+            slug: "arcteryx",
+            order: 1,
+            position: 20,
+            slides: [{
+              _uid: "arcteryx-slide",
+              component: "media_slide",
+              asset: {
+                filename: "https://a.storyblok.com/f/313862/arcteryx.jpg",
+                content_type: "image/jpeg",
+              },
+            }],
+          }),
+          projectStory({
+            id: 10,
+            slug: "hidden",
+            order: 0,
+            position: 0,
+            hidden: true,
+            slides: [],
+          }),
+        ],
+      });
+    };
+
+    const projects = await fetchHomepageProjects({
+      version: "draft",
+      token: "preview-sentinel",
+      fetchImpl,
+      cacheVersion: 456,
+    });
+
+    expect(projects).toEqual([
+      {
+        storyId: 11,
+        storyUuid: "arcteryx-uuid",
+        slug: "arcteryx",
+        title: "ARCTERYX",
+        displayName: "ARCTERYX",
+        category: "Print",
+        alt: "arcteryx project preview",
+        order: 1,
+        slides: [
+          { url: "https://a.storyblok.com/f/313862/arcteryx.jpg", type: "image" },
+        ],
+      },
+      {
+        storyId: 12,
+        storyUuid: "second-uuid",
+        slug: "second",
+        title: "SECOND",
+        displayName: "Second project",
+        category: "Web",
+        alt: "second project preview",
+        order: 2,
+        slides: [
+          {
+            url: "https://res.cloudinary.com/kspf/video/upload/second.mp4",
+            type: "video",
+          },
+          { url: "assets/second.jpg", type: "image" },
+        ],
+      },
+    ]);
+    expect(requestedUrl?.pathname).toBe("/v2/cdn/stories");
+    expect(requestedUrl?.searchParams.get("starts_with")).toBe("projects/");
+    expect(requestedUrl?.searchParams.get("version")).toBe("draft");
+    expect(requestedUrl?.searchParams.get("cv")).toBe("456");
   });
 });
