@@ -11,27 +11,27 @@
       "showOnHome": false
     },
     {
-      "title": "Arcteryx",
-      "displayName": "ARCTERYX",
-      "category": "Print",
-      "description": "",
-      "viewUrl": "",
-      "slides": [
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788233769/poster_mockup_-_02.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1787891402/Posters_mockup.jpg"
-      ],
-      "alt": "",
-      "showOnHome": true
-    },
-    {
       "title": "The Athenaeum",
-      "displayName": "Aesop",
-      "category": "Product Design",
+      "displayName": "AESOP.COM – GLOBAL",
+      "category": "PRODUCT DESIGN",
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
       "slides": [
         "https://res.cloudinary.com/kw2p64ib/video/upload/v1788241991/ath.mp4",
         "https://res.cloudinary.com/kw2p64ib/video/upload/v1787805811/ath-collage.mp4"
+      ],
+      "alt": "",
+      "showOnHome": true
+    },
+    {
+      "title": "Arcteryx",
+      "displayName": "ARCTERYX",
+      "category": "CAMPAIGN",
+      "description": "",
+      "viewUrl": "",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788233769/poster_mockup_-_02.jpg",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1787891402/Posters_mockup.jpg"
       ],
       "alt": "",
       "showOnHome": true
