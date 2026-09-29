@@ -12,8 +12,8 @@
     },
     {
       "title": "The Athenaeum",
-      "displayName": "AESOP.COM – GLOBAL",
-      "category": "PRODUCT DESIGN",
+      "displayName": "001",
+      "category": "AESOP\n\nThe Athenaeum",
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
       "slides": [
@@ -25,8 +25,8 @@
     },
     {
       "title": "Arcteryx",
-      "displayName": "ARCTERYX",
-      "category": "CAMPAIGN",
+      "displayName": "002",
+      "category": "ARCTERYX\n\nPrint campaign",
       "description": "",
       "viewUrl": "",
       "slides": [
@@ -38,8 +38,8 @@
     },
     {
       "title": "Jak Architecture",
-      "displayName": "Jak Architecture",
-      "category": "Web",
+      "displayName": "003",
+      "category": "JAK ARCHITECTURE\n\nPortfolio site",
       "description": "Portfolio site for Jak Architecture. \nDesigned by Chloe Larkin and built on Cargo with custom interactions",
       "viewUrl": "https://www.jakarchitecture.com",
       "slides": [
@@ -52,8 +52,8 @@
     },
     {
       "title": "",
-      "displayName": "alt. cosmetics",
-      "category": "Identity",
+      "displayName": "004",
+      "category": "ALT. COSMETICS\n\nIdentity design",
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "viewUrl": "",
       "slides": [
@@ -68,8 +68,8 @@
     },
     {
       "title": "ALBUS LUMEN",
-      "displayName": "Albus Lumen",
-      "category": "Web",
+      "displayName": "005",
+      "category": "ALBUS LUMEN\n\nShopify navigation and blog",
       "description": "",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
@@ -82,8 +82,8 @@
     },
     {
       "title": "AP-REPS",
-      "displayName": "AP—REPS",
-      "category": "Web",
+      "displayName": "006",
+      "category": "AP-REPS\n\nPortfolio site",
       "description": "",
       "viewUrl": "https://apreps.com.au",
       "slides": [
