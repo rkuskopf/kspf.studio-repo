@@ -93,7 +93,19 @@ const projectStory = ({
     component: "project",
     title: slug.toUpperCase(),
     display_name: slug === "arcteryx" ? "ARCTERYX" : "Second project",
-    category: slug === "arcteryx" ? "Print" : "Web",
+    category: slug === "arcteryx" ? {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Print" }],
+        },
+        {
+          type: "paragraph",
+          content: [{ type: "text", text: "Campaign" }],
+        },
+      ],
+    } : "Web",
     slides,
     ...(hidden ? {} : { alt: `${slug} project preview` }),
     show_on_home: !hidden,
@@ -165,6 +177,20 @@ describe("direct Storyblok home delivery", () => {
     expect(requestedUrl?.searchParams.get("token")).toBe("preview-sentinel");
     expect(requestedUrl?.searchParams.get("cv")).toBe("123");
     expect(requestedInit?.cache).toBe("no-store");
+  });
+
+  it("maps a missing optional navigation intro to an empty string", async () => {
+    const response = structuredClone(homeResponse);
+    delete (response.story.content as Record<string, unknown>).intro;
+    const fetchImpl: typeof fetch = async () => jsonResponse(response);
+
+    await expect(
+      fetchHomeContent({
+        version: "draft",
+        token: "preview-sentinel",
+        fetchImpl,
+      })
+    ).resolves.toMatchObject({ intro: "" });
   });
 
   it("names the missing credential for each content version", async () => {
@@ -371,7 +397,7 @@ describe("homepage aggregate delivery records", () => {
         slug: "arcteryx",
         title: "ARCTERYX",
         displayName: "ARCTERYX",
-        category: "Print",
+        category: "Print\nCampaign",
         alt: "arcteryx project preview",
         order: 1,
         slides: [

@@ -44,7 +44,7 @@ const publishedData: HomePageData = {
       slug: "arcteryx",
       title: "Arcteryx",
       displayName: "ARCTERYX",
-      category: "Print",
+      category: "Print\nCampaign",
       alt: "Arcteryx campaign preview",
       order: 1,
       slides: [
@@ -96,7 +96,7 @@ describe("the Storyblok-backed App Router route", () => {
     expect(markup).toContain("Published introduction");
     expect(markup).toContain('href="#information">INFO</a>');
     expect(markup).toContain("ARCTERYX");
-    expect(markup).toContain("Print");
+    expect(markup).toContain("<span>Print</span><span><br/>Campaign</span>");
     expect(markup).toContain('aria-label="Previous ARCTERYX image"');
   });
 
@@ -118,6 +118,15 @@ describe("the Storyblok-backed App Router route", () => {
     expect(markup.indexOf("homepage-hero")).toBeLessThan(
       markup.indexOf("homepage-project__category")
     );
+  });
+
+  it("omits the optional navigation intro when it is blank", () => {
+    const markup = render({
+      ...publishedData,
+      content: { ...publishedData.content, intro: "" },
+    });
+
+    expect(markup).not.toContain("homepage-nav__intro");
   });
 
   it("renders typed draft home content through the same presentation path", () => {

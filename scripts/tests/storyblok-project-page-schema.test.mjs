@@ -10,8 +10,15 @@ test("extends project without changing legacy fields", () => {
     "title", "display_name", "category", "description", "view_url",
     "slides", "alt", "show_on_home", "order",
   ]);
+  assert.equal(schema.category.type, "richtext");
   assert.equal(schema.page_enabled.default_value, "false");
   assert.deepEqual(schema.body.component_whitelist, ["project_header", "text", "media"]);
+});
+
+test("allows the homepage navigation intro to be left blank", () => {
+  const schema = byName.get("home_page").schema;
+
+  assert.equal(schema.intro.required, undefined);
 });
 
 test("defines the initial project-page blocks", () => {

@@ -62,9 +62,11 @@ export function HomeContentView({ data }: { data: HomePageData }) {
             <a className="homepage-nav__home" href="#work">
               {nav.homeLabel}
             </a>
-            <p className="homepage-nav__intro" title={data.content.intro}>
-              {data.content.intro}
-            </p>
+            {data.content.intro.trim() ? (
+              <p className="homepage-nav__intro" title={data.content.intro}>
+                {data.content.intro}
+              </p>
+            ) : null}
             <a className="homepage-nav__information" href="#information">
               {nav.informationLabel}
             </a>
@@ -74,6 +76,7 @@ export function HomeContentView({ data }: { data: HomePageData }) {
         <div className="homepage-projects">
           {data.projects.map((project, index) => {
             const titleId = `homepage-project-${project.slug}-title`;
+            const categoryLines = project.category.split("\n");
             return (
               <section
                 className="homepage-project"
@@ -84,7 +87,14 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                   {project.displayName}
                 </p>
                 <HomepageSlideshow project={project} priority={index === 0} />
-                <p className="homepage-project__category">{project.category}</p>
+                <p className="homepage-project__category">
+                  {categoryLines.map((line, lineIndex) => (
+                    <span key={`${line}-${lineIndex}`}>
+                      {lineIndex > 0 ? <br /> : null}
+                      {line}
+                    </span>
+                  ))}
+                </p>
               </section>
             );
           })}

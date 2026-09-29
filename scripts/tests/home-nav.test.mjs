@@ -161,6 +161,60 @@ test("pre-renders the CMS intro into the three-row navigation", async (t) => {
   );
 });
 
+test("pre-render hides and clears the navigation intro when it is blank", async (t) => {
+  const targetDir = await mkdtemp(join(tmpdir(), "kspf-home-nav-empty-"));
+  t.after(() => rm(targetDir, { recursive: true, force: true }));
+  await mkdir(join(targetDir, "content"));
+  await writeFile(
+    join(targetDir, "index.html"),
+    '<html><head><title>Home</title></head><body><p class="intro nav__intro js-home-intro" title="Placeholder">Placeholder</p></body></html>',
+    "utf8"
+  );
+  await writeFile(
+    join(targetDir, "content/home.json"),
+    JSON.stringify({ intro: "" }),
+    "utf8"
+  );
+
+  await execFileAsync(process.execPath, [
+    new URL("../prerender.mjs", import.meta.url).pathname,
+    targetDir,
+  ]);
+
+  const html = await readFile(join(targetDir, "index.html"), "utf8");
+  assert.match(html, /<p class="intro nav__intro js-home-intro" hidden><\/p>/);
+  assert.doesNotMatch(html, /Placeholder/);
+});
+
+test("draft hydration hides the navigation intro when it is blank", async () => {
+  const source = await readFile(new URL("../../home-content.js", import.meta.url), "utf8");
+  const intro = {
+    hidden: false,
+    textContent: "Placeholder",
+    setAttribute() {},
+  };
+  const navigation = { hidden: false };
+  const document = {
+    documentElement: { dataset: {} },
+    querySelector(selector) {
+      if (selector === ".js-home-intro") return intro;
+      if (selector === ".top") return navigation;
+      return null;
+    },
+  };
+  const fetch = async () => ({
+    ok: true,
+    json: async () => ({ intro: "", showNavigation: true }),
+  });
+  const window = { kspfMarkHomeReady() {} };
+
+  vm.runInNewContext(source, { document, fetch, console, window });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  assert.equal(intro.textContent, "");
+  assert.equal(intro.hidden, true);
+});
+
 test("pre-renders the Storyblok navigation so hydration cannot swap its initial labels", async (t) => {
   const targetDir = await mkdtemp(join(tmpdir(), "kspf-site-nav-"));
   t.after(() => rm(targetDir, { recursive: true, force: true }));

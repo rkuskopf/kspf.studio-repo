@@ -80,14 +80,19 @@ if (home) {
     );
   }
 
-  if (typeof home.intro === "string" && home.intro) {
-    // Replace the inner text of the intro paragraph and keep its title in sync.
+  if (typeof home.intro === "string") {
+    // Replace the intro fallback and hide the row when editors leave it blank.
     html = html.replace(
       /(<p\b(?=[^>]*\bclass="[^"]*\bjs-home-intro\b[^"]*")[^>]*)(>)[\s\S]*?(<\/p>)/i,
-      (_m, open, close, end) =>
-        `${open.replace(/\s+title="[^"]*"/i, "")} title="${escapeAttr(home.intro)}"${close}\n     ${escapeHtml(
+      (_m, open, close, end) => {
+        const cleanOpen = open
+          .replace(/\s+title="[^"]*"/i, "")
+          .replace(/\s+hidden(?:="")?/i, "");
+        if (!home.intro.trim()) return `${cleanOpen} hidden${close}${end}`;
+        return `${cleanOpen} title="${escapeAttr(home.intro)}"${close}\n     ${escapeHtml(
           home.intro
-        )}\n    ${end}`
+        )}\n    ${end}`;
+      }
     );
   }
 }
