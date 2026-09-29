@@ -20,7 +20,19 @@ const projectStory = () => ({
     component: "project",
     title: "Product design tracer",
     display_name: "Product design tracer",
-    category: "Product Design",
+    category: {
+      type: "doc",
+      content: [
+        {
+          type: "paragraph",
+          content: [
+            { type: "text", text: "Product" },
+            { type: "hard_break" },
+            { type: "text", text: "Design" },
+          ],
+        },
+      ],
+    },
     description: "A minimal schema tracer.",
     show_on_home: false,
     client: "KSPF",
@@ -116,7 +128,7 @@ describe("canonical project story mapping", () => {
       slug: "product-design-tracer",
       title: "Product design tracer",
       displayName: "Product design tracer",
-      category: "Product Design",
+      category: "Product\nDesign",
       description: "A minimal schema tracer.",
       showOnHome: false,
       metadata: {

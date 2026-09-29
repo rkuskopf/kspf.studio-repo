@@ -37,3 +37,37 @@ test("project media stays hidden until slideshow orientation is classified", asy
   assert.equal(media.classList.contains("is-orientation-pending"), true);
   assert.equal(window.getComputedStyle(media).visibility, "hidden");
 });
+
+test("project category preserves mapped rich-text line breaks", async () => {
+  const window = new Window({ url: "https://localhost:8001/" });
+  const { document } = window;
+  const css = await readFile(new URL("../../style.css", import.meta.url), "utf8");
+  const source = await readFile(new URL("../../render-projects.js", import.meta.url), "utf8");
+
+  document.head.innerHTML = `<style>${css}</style>`;
+  document.body.dataset.page = "home";
+  document.body.innerHTML = '<div id="projects" class="projects"></div>';
+
+  window.kspfContentUrl = (path) => path;
+  window.kspfMarkHomeReady = () => {};
+  const fetch = async () => ({
+    ok: true,
+    async json() {
+      return {
+        projects: [{
+          title: "The Athenaeum",
+          category: "Aesop.com –\nThe Athenaeum",
+          slides: ["/portrait.jpg"],
+        }],
+      };
+    },
+  });
+
+  vm.runInNewContext(source, { console, document, fetch, window });
+  await new Promise((resolve) => setImmediate(resolve));
+
+  const category = document.querySelector(".project__category");
+  assert.ok(category);
+  assert.equal(category.textContent, "Aesop.com –\nThe Athenaeum");
+  assert.equal(window.getComputedStyle(category).whiteSpace, "pre-line");
+});

@@ -1,5 +1,6 @@
 import { storyblokDeliveryBaseUrl } from "./delivery";
 import { StoryblokConfigurationError } from "./preview";
+import { storyblokPlainText } from "./rich-text";
 import type {
   ProjectAsset,
   ProjectBlock,
@@ -182,6 +183,13 @@ const mapBlock = (value: unknown): ProjectBlock => {
 const previewString = (value: unknown, label: string) =>
   optionalString(value, label) ?? "";
 
+const previewRichText = (value: unknown, label: string) => {
+  if (value === undefined || value === "") return "";
+  const text = storyblokPlainText(value);
+  if (text === null) return invalidProjectStory(`has an invalid ${label}`);
+  return text;
+};
+
 export function mapProjectStory(story: unknown): ProjectContent | null {
   if (!isRecord(story) || !isRecord(story.content)) return null;
   const content = story.content;
@@ -221,7 +229,7 @@ export function mapProjectStory(story: unknown): ProjectContent | null {
     slug: story.slug,
     title: content.title,
     displayName: previewString(content.display_name, "display name"),
-    category: previewString(content.category, "category"),
+    category: previewRichText(content.category, "category"),
     description: previewString(content.description, "description"),
     showOnHome: content.show_on_home !== false,
     metadata: mapMetadata(content),

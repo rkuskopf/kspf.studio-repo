@@ -200,7 +200,7 @@ export const STORYBLOK_COMPONENTS = [
     schema: {
       title: field("text", "Page title", 0),
       meta_description: field("textarea", "Meta description", 1),
-      intro: field("textarea", "Intro", 2, { required: true }),
+      intro: field("textarea", "Intro", 2),
       initial_section: field("option", "Starting section", 3, {
         required: true,
         source: "self",
@@ -238,7 +238,7 @@ export const STORYBLOK_COMPONENTS = [
     schema: {
       title: field("text", "Title", 0),
       display_name: field("text", "Display name", 1, { required: true }),
-      category: field("text", "Category", 2),
+      category: field("richtext", "Category", 2),
       description: field("textarea", "Description", 3),
       view_url: field("multilink", "View URL", 4),
       slides: blocks("Slides", 5, "media_slide"),

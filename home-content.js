@@ -18,8 +18,10 @@
         metaDescription.setAttribute("content", data.metaDescription);
       }
       if (data.intro !== undefined && data.intro !== null && introEl) {
-        introEl.textContent = data.intro;
-        introEl.setAttribute("title", data.intro);
+        const intro = typeof data.intro === "string" ? data.intro : "";
+        introEl.textContent = intro;
+        introEl.setAttribute("title", intro);
+        introEl.hidden = !intro.trim();
       }
       document.documentElement.dataset.homeInitialSection =
         data.initialSection === "info" ? "info" : "work";

@@ -6,6 +6,27 @@ const textItems = (value) =>
     .map((item) => (typeof item === "string" ? item : item.text))
     .filter((item) => typeof item === "string" && item.length);
 
+const richTextNodeText = (node) => {
+  if (!node || typeof node !== "object") return "";
+  if (node.type === "text") return typeof node.text === "string" ? node.text : "";
+  if (node.type === "hard_break") return "\n";
+  if (!Array.isArray(node.content)) return "";
+
+  const separator = node.type === "doc" || node.type === "bullet_list" ||
+    node.type === "ordered_list" ? "\n" : "";
+  return node.content.map(richTextNodeText).join(separator);
+};
+
+export const storyblokPlainText = (value) => {
+  if (typeof value === "string") return value;
+  if (!value || typeof value !== "object" || value.type !== "doc" ||
+      !Array.isArray(value.content)) return "";
+
+  return value.content
+    .map((node) => richTextNodeText(node).trimEnd())
+    .join("\n");
+};
+
 export const storyblokLink = (value) => {
   if (!value) return "";
   if (typeof value === "string") return value;
@@ -124,7 +145,7 @@ export const mapProjectStory = (story) => {
   return {
     title: content.title || "",
     displayName: content.display_name || content.title || story.name || "",
-    category: content.category || "",
+    category: storyblokPlainText(content.category),
     description: content.description || "",
     viewUrl: storyblokLink(content.view_url),
     slides: slideUrls(content.slides),

@@ -1,4 +1,5 @@
 import { StoryblokConfigurationError } from "./preview";
+import { storyblokPlainText } from "./rich-text";
 import type {
   HomeContent,
   HomepageProject,
@@ -64,7 +65,7 @@ const mapHomeContent = (payload: unknown): HomeContent => {
   if (typeof content.title !== "string") {
     return invalidHomeStory("has an invalid title");
   }
-  if (typeof content.intro !== "string") {
+  if (content.intro !== undefined && typeof content.intro !== "string") {
     return invalidHomeStory("has an invalid intro");
   }
   if (
@@ -92,7 +93,7 @@ const mapHomeContent = (payload: unknown): HomeContent => {
     storyUuid: story.uuid,
     title: content.title,
     metaDescription: content.meta_description ?? "",
-    intro: content.intro,
+    intro: content.intro ?? "",
     initialSection: content.initial_section === "info" ? "info" : "work",
     showNavigation: content.show_navigation !== false,
   };
@@ -303,6 +304,10 @@ const mapHomepageProjectStory = (value: unknown) => {
     "project display name",
     invalidHomepageProjects
   );
+  const category = storyblokPlainText(content.category);
+  if (category === null) {
+    return invalidHomepageProjects("has an invalid project category");
+  }
 
   return {
     visible,
@@ -312,11 +317,7 @@ const mapHomepageProjectStory = (value: unknown) => {
       slug: value.slug,
       title,
       displayName,
-      category: requiredString(
-        content.category,
-        "project category",
-        invalidHomepageProjects
-      ),
+      category,
       alt: requiredString(content.alt, "project alt text", invalidHomepageProjects),
       order,
       slides: Array.isArray(content.slides) ? content.slides.map(mapHomepageSlide) : [],
