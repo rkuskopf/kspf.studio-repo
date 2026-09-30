@@ -1,5 +1,5 @@
 import Lenis from './assets/vendor/lenis-1.3.26/lenis.module.js';
-import { createGestureLimiter, settleCurve, WHEEL_MULTIPLIER, LERP, INPUT_IDLE_MS } from './home-scroll-gesture.js';
+import { createGestureLimiter, transitionCurve, WHEEL_MULTIPLIER } from './home-scroll-gesture.js';
 
 const root = document.documentElement;
 const desktop = matchMedia('(min-width: 701px) and (hover: hover) and (pointer: fine)');
@@ -9,15 +9,13 @@ const information = document.getElementById('information');
 const projects = document.getElementById('projects');
 let lenis;
 let frame = 0;
-let settleTimer = 0;
 let frameSeconds = 1/60;
 let navigating = false;
 let finishNavigation;
 let navigationTarget;
-const gesture = createGestureLimiter({ resistance: 1 });
+const gesture = createGestureLimiter();
 
 const resetGesture = () => {
-  clearTimeout(settleTimer);
   gesture.reset();
 };
 const points = () => {
@@ -30,15 +28,6 @@ const points = () => {
       return clamp(scrollY + rect.top + rect.height/2 - innerHeight/2);
     }),
   ])];
-};
-const settle = () => {
-  if (!lenis || navigating) return;
-  const destination = gesture.destination();
-  if (destination === undefined) return;
-  const distance = destination - lenis.animatedScroll;
-  if (Math.abs(distance) < 0.5) return;
-  const curve = settleCurve(distance, lenis.velocity / frameSeconds);
-  lenis.scrollTo(destination, { ...curve, lerp: 0 });
 };
 
 const update = () => {
@@ -63,19 +52,24 @@ const update = () => {
     smoothWheel: true,
     syncTouch: false,
     wheelMultiplier: WHEEL_MULTIPLIER,
-    lerp: LERP,
     overscroll: false,
     virtualScroll(data) {
       if (data.event.type !== 'wheel' || data.event.ctrlKey || data.event.shiftKey ||
           Math.abs(data.deltaX) > Math.abs(data.deltaY)) return false;
-      // Retain Lenis prevention for zero/clamped deltas: returning false here
-      // would let native wheel movement escape the gesture bounds.
+      // Consume the wheel synchronously; no native or partial wheel movement.
       data.event.preventDefault();
-      if (navigating) { data.deltaY = 0; return; }
-      data.deltaY = gesture.input(data.deltaY, lenis.animatedScroll,
+      if (navigating) return false;
+      const destination = gesture.input(data.deltaY, lenis.animatedScroll,
         lenis.targetScroll, points(), performance.now());
-      clearTimeout(settleTimer);
-      settleTimer = setTimeout(settle, INPUT_IDLE_MS);
+      if (destination !== undefined) {
+        const curve = transitionCurve(destination-lenis.animatedScroll,
+          lenis.velocity/frameSeconds);
+        lenis.scrollTo(destination, { ...curve, lerp: 0,
+          onComplete: () => gesture.land() });
+      }
+      // We already issued the complete transition. Do not let Lenis also
+      // interpret the same packet as a partial wheel target.
+      return false;
     },
   });
   root.classList.add('has-home-scroll');
@@ -123,7 +117,7 @@ window.addEventListener('resize', () => { resetGesture(); lenis?.resize(); });
 // Keyboard, touch and scrollbar input are native and cancel the wheel policy.
 const cancelWheel = () => {
   resetGesture();
-  if (!navigating) lenis?.scrollTo(lenis.actualScroll, { immediate: true });
+  if (!navigating && lenis) { lenis.stop(); lenis.start(); }
 };
 window.addEventListener('touchstart', cancelWheel, { passive: true });
 window.addEventListener('pointerdown', cancelWheel, { passive: true });
