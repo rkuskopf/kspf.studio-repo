@@ -8,7 +8,7 @@
     return;
   }
 
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let animationFrame = 0;
 
   if ("scrollRestoration" in history) {
@@ -40,12 +40,16 @@
 
   const scrollToTarget = (target, animate = true, markReady = false) => {
     if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
     root.classList.add("is-info-scrolling");
+
+    if (window.kspfHomeScroll?.navigate(target, animate && !reduceMotion.matches,
+      () => finish(target, markReady))) return;
 
     const start = window.scrollY;
     const end = topFor(target);
     const distance = end - start;
-    const duration = animate && !reduceMotion ? 900 : 0;
+    const duration = animate && !reduceMotion.matches ? 900 : 0;
 
     if (!duration || Math.abs(distance) < 1) {
       window.scrollTo(0, end);

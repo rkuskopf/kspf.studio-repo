@@ -1,16 +1,62 @@
-# Issue 96 — desktop scrolling
+# Issue 96 — desktop scrolling, local review
 
-First local pass, 2026-09-30:
+## Diagnosis before editing
 
-- Desktop project targets use `scroll-snap-stop: always`; mobile rules and row geometry are unchanged.
-- Scrolling manually from Information into Work now clears `is-info-scrolling`. Previously that class persisted and disabled native project snapping until a Work navigation click.
-- Browser verification at 1280px confirms desktop targets compute to `always` and the root returns to `y mandatory` after entering Work.
-- Existing test suite: 97 tests passed. These tests do not prove physical trackpad gesture behaviour.
+The correct draft preview is https://localhost:8001/#work. Before editing its
+root computed to `scroll-snap-type: y mandatory` and `scroll-behavior: smooth`.
+There was no wheel damping controller. `smooth-scroll.js` handles anchor
+clicks only. Native wheel input moved the page first; browser snapping then
+performed the settle. `scroll-snap-stop: always` limits traversal but does not
+attenuate initial input. This explains the reported fast start and later settle.
 
-Still required before closing the issue:
+## Implementation
 
-1. Test native snap stops with a Mac trackpad: light flick, slow drag, strong momentum, immediate reversal.
-2. Add and tune desktop damping against https://www.seconda.paris/pages/archive. Lenis was evaluated from its official documentation (https://github.com/darkroomengineering/lenis); it provides smoothing and a snap plugin, but must replace native snapping while active, not compete with it. No dependency has been added in this first pass.
-3. Verify Information/Work navigation, slideshow controls, mobile touch and reduced motion after adding damping.
+- Vendored Lenis 1.3.26 from official npm, with integrity verification and MIT
+  license. No CDN or build step. Only the static homepage imports it.
+- Desktop with fine pointer/hover and no reduced-motion preference uses one
+  Lenis instance. CSS native snapping and smooth behaviour are disabled while
+  it is active. Row geometry, spacing, media sizes and Storyblok are unchanged.
+- `wheelMultiplier: 0.65` attenuates the first event and every following event.
+  `virtualScroll` caps individual events at 120px and clamps targets between
+  the starting project and its neighbour. Zero/clamped events are still
+  prevented so native momentum cannot escape the bounds.
+- `lerp: 0.12` interpolates from the first animation frame. After 110ms without
+  input, the same Lenis instance settles to the adjacent project. Short Hermite
+  easing carries current velocity into the settle and ends at zero velocity.
+  The generic snap plugin is not used: its nearest-target selection does not
+  enforce the one-gesture adjacency policy.
+- Release requires a 220ms event gap and a settled destination. Reversal
+  retargets immediately. Browser WheelEvents do not expose portable physical
+  gesture boundaries; this gap is a heuristic requiring Mac trackpad review.
+- Information/Work keep history, focus, targets and 900ms navigation timing;
+  desktop animation delegates to Lenis. Reduced motion is read live. Mobile
+  and coarse-pointer scrolling remain native. Keyboard/touch cancel pending
+  wheel settling. Slideshow code is untouched.
 
-The issue remains open. No subjective reference-feel comparison or one-gesture guarantee is claimed yet.
+## Verification
+
+- Correct 8001 preview: Lenis active, CSS snap `none`, behaviour `auto`; six
+  rows still 471.71875px high, matching the baseline.
+- Light automated scroll: first to adjacent project, scrollY 346 to 887.5;
+  adjacent project centre error 0.03125px.
+- Browser nav: INFO reached scrollY 0, then Work returned to 346. Next image
+  changed the first project's video source, confirming slideshow interaction.
+- Final suites: 78 static-site tests and 97 Next.js tests passed.
+- Real Lenis under deterministic DOM/frame timing: first wheel is prevented,
+  with no synchronous native jump. A 40px event becomes a 26px resisted target
+  and moves less than 7px on its first 16ms frame. Tests cover light flick,
+  continuous slow drag, strong decaying momentum, immediate reversal, nav,
+  keyboard cancellation, live reduced-motion changes and mobile fallback.
+- Seconda was opened directly and exercised with automated light/strong
+  scrolls. A very light scroll left its window position unchanged; stronger
+  input moved to 919.5px. This observational comparison cannot establish that
+  its subjective physical trackpad feel has been reproduced.
+
+## Still open
+
+Browser debugger calls stalled, preventing useful live velocity traces.
+Deterministic checks cannot certify physical Mac trackpad feel. Before closing
+#96, compare the initial resistance and settle against
+https://www.seconda.paris/pages/archive with actual light flicks, slow drags,
+strong momentum and rapid reversal. Review navigation and slideshow controls
+in the draft preview too. Implementation remains uncommitted; nothing is merged.
