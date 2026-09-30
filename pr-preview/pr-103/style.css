@@ -76,6 +76,12 @@ html.is-info-scrolling {
   scroll-behavior: auto !important;
 }
 
+/* Lenis owns both desktop wheel interpolation and project settling. */
+html.has-home-scroll {
+  scroll-snap-type: none !important;
+  scroll-behavior: auto !important;
+}
+
 .home-stage {
   position: relative;
   margin-right: calc(-1 * var(--page-pad));
