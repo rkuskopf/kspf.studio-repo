@@ -155,7 +155,11 @@ html.is-info-scrolling {
 }
 
 html:has(body[data-page="home"]) {
+  --home-project-snap-offset: 100px;
+  --home-project-snap-offset: max(0px, calc((100dvh - clamp(560px, 80dvh, 800px)) / 2));
   scroll-snap-type: y mandatory;
+  scroll-padding-top: 100px;
+  scroll-padding-top: var(--home-project-snap-offset);
 }
 
 body[data-page="home"] {
@@ -165,7 +169,8 @@ body[data-page="home"] {
 
 body[data-page="home"] .top {
   position: absolute;
-  top: 30px;
+  top: -70px;
+  top: calc(30px - var(--home-project-snap-offset));
   left: var(--page-pad);
   right: var(--page-pad);
   width: auto;
@@ -181,7 +186,9 @@ body[data-page="home"] .projects {
 }
 
 body[data-page="home"] .project-block {
-  min-height: 100dvh;
+  height: 800px;
+  height: clamp(560px, 80dvh, 800px);
+  min-height: 0;
   position: relative;
   scroll-snap-align: start;
 }
@@ -602,9 +609,6 @@ body[data-page="home"] .hero {
   max-height: 75dvh;
 }
 
-body[data-page="home"] .projects > .project-block:first-child .hero {
-  top: 40px;
-}
 
 .hero__media {
   grid-column: 1;
@@ -1435,6 +1439,15 @@ body[data-page="home"] .project__category {
 }
 
 @media (max-width: 700px) {
+  html:has(body[data-page="home"]) {
+    --home-project-snap-offset: 0px;
+    scroll-padding-top: 0;
+  }
+
+  body[data-page="home"] .top {
+    top: 30px;
+  }
+
   .project-block {
     --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
@@ -1444,6 +1457,13 @@ body[data-page="home"] .project__category {
     row-gap: 10px;
     align-content: center;
     padding: 0;
+  }
+
+  body[data-page="home"] .project-block {
+    height: auto;
+    min-height: 0;
+    padding-top: clamp(48px, 9dvh, 80px);
+    padding-bottom: clamp(48px, 9dvh, 80px);
   }
 
   .hero {
