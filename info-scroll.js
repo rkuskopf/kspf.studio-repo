@@ -23,6 +23,13 @@
   };
   const topFor = (target) => target.getBoundingClientRect().top + window.scrollY;
 
+  // Native scrolling out of Information must restore the project snap mode too.
+  window.addEventListener("scroll", () => {
+    if (!animationFrame && window.scrollY >= topFor(work) - 1) {
+      root.classList.remove("is-info-scrolling");
+    }
+  }, { passive: true });
+
   const finish = (target, markReady) => {
     if (markReady) window.kspfMarkHomeReady?.("position");
     if (target === work) {

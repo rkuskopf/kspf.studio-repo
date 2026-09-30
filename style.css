@@ -1478,6 +1478,11 @@ body[data-page="home"] .project__category {
 }
 
 @media (min-width: 701px) {
+  /* Native snap must stop at each desktop project before adding damping. */
+  body[data-page="home"] .project-block {
+    scroll-snap-stop: always;
+  }
+
   body[data-page="home"] .project__name {
     grid-area: auto;
     position: absolute;
