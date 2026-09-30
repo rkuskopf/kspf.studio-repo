@@ -17,6 +17,7 @@
   --gutter: 5px;
   --viewport-w: 100vw;
   --portrait-width: min(52.413793vh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
+  --home-project-row-height: calc(var(--portrait-width) * 1.25);
   --grid-col-w: calc((var(--viewport-w) - (var(--page-pad) * 2) - (var(--grid-cols) - 1) * var(--gutter)) / var(--grid-cols));
   --grid-step: calc(var(--grid-col-w) + var(--gutter));
   --nav-shift: calc(var(--grid-col-w) * 0.5);
@@ -155,11 +156,7 @@ html.is-info-scrolling {
 }
 
 html:has(body[data-page="home"]) {
-  --home-project-snap-offset: 100px;
-  --home-project-snap-offset: max(0px, calc((100dvh - clamp(560px, 80dvh, 800px)) / 2));
   scroll-snap-type: y mandatory;
-  scroll-padding-top: 100px;
-  scroll-padding-top: var(--home-project-snap-offset);
 }
 
 body[data-page="home"] {
@@ -169,8 +166,7 @@ body[data-page="home"] {
 
 body[data-page="home"] .top {
   position: absolute;
-  top: -70px;
-  top: calc(30px - var(--home-project-snap-offset));
+  top: 30px;
   left: var(--page-pad);
   right: var(--page-pad);
   width: auto;
@@ -182,15 +178,14 @@ body[data-page="home"] .top[hidden] {
 
 body[data-page="home"] .projects {
   margin-top: 0;
-  row-gap: 0;
+  padding-block: max(0px, calc((100dvh - var(--home-project-row-height)) / 2));
 }
 
 body[data-page="home"] .project-block {
-  height: 800px;
-  height: clamp(560px, 80dvh, 800px);
+  height: var(--home-project-row-height);
   min-height: 0;
   position: relative;
-  scroll-snap-align: start;
+  scroll-snap-align: center;
 }
 
 body[data-page="home"] .footer {
@@ -1439,13 +1434,8 @@ body[data-page="home"] .project__category {
 }
 
 @media (max-width: 700px) {
-  html:has(body[data-page="home"]) {
-    --home-project-snap-offset: 0px;
-    scroll-padding-top: 0;
-  }
-
-  body[data-page="home"] .top {
-    top: 30px;
+  body[data-page="home"] .projects {
+    padding-block: 0;
   }
 
   .project-block {
@@ -1464,6 +1454,7 @@ body[data-page="home"] .project__category {
     min-height: 0;
     padding-top: clamp(48px, 9dvh, 80px);
     padding-bottom: clamp(48px, 9dvh, 80px);
+    scroll-snap-align: start;
   }
 
   .hero {
@@ -1479,11 +1470,6 @@ body[data-page="home"] .project__category {
   .project__name {
     width: var(--hero-frame);
     justify-self: center;
-  }
-
-  body[data-page="home"] .projects > .project-block:first-child .project__name {
-    position: relative;
-    top: 40px;
   }
 
   .project__category {
