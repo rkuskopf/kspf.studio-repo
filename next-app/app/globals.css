@@ -145,8 +145,9 @@ body {
 
 .homepage-project {
   position: relative;
-  min-height: 100vh;
-  min-height: 100dvh;
+  height: 800px;
+  height: clamp(560px, 80dvh, 800px);
+  min-height: 0;
   display: grid;
   grid-template-columns: minmax(max-content, 1fr) minmax(0, 800px) minmax(max-content, 1fr);
   column-gap: var(--homepage-gutter);
@@ -265,6 +266,8 @@ body {
   }
 
   .homepage-project {
+    height: auto;
+    min-height: 0;
     align-content: center;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -272,6 +275,8 @@ body {
       "media"
       "name";
     gap: 10px;
+    padding-top: clamp(48px, 9dvh, 80px);
+    padding-bottom: clamp(48px, 9dvh, 80px);
   }
 
   .homepage-hero {
