@@ -609,9 +609,6 @@ body[data-page="home"] .hero {
   max-height: 75dvh;
 }
 
-body[data-page="home"] .projects > .project-block:first-child .hero {
-  top: 40px;
-}
 
 .hero__media {
   grid-column: 1;
