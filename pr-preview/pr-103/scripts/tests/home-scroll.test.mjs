@@ -1,47 +1,44 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { createGestureLimiter, settleCurve } from '../../home-scroll-gesture.js';
+import { createGestureLimiter, transitionCurve } from '../../home-scroll-gesture.js';
 import { Window } from 'happy-dom';
 
 const points = [0, 540, 1080, 1620];
-test('first delta is resisted, even a huge event cannot cross the adjacent project', () => {
+test('tiny intentional input commits immediately; noise produces no partial movement', () => {
   const gesture = createGestureLimiter();
-  assert.equal(gesture.input(40, 0, 0, points, 0), 26);
-  assert.equal(gesture.input(4000, 2, 26, points, 16), 120);
-  for (let t = 32, target = 146; t < 160; t += 16) {
-    target += gesture.input(4000, target, target, points, t);
-    assert.ok(target <= 540);
-  }
-  assert.equal(gesture.input(4000, 540, 540, points, 200), 0);
-  assert.equal(gesture.destination(), 540);
+  assert.equal(gesture.input(0.2, 540, 540, points, 0), undefined);
+  assert.equal(gesture.input(2, 540, 540, points, 16), 1080);
+  assert.equal(gesture.input(4000, 600, 1080, points, 32), undefined);
 });
-test('a continuous slow drag and its momentum remain within one project', () => {
+test('landing releases immediately; a renewed pulse is accepted during the old momentum tail', () => {
   const gesture = createGestureLimiter();
-  let target = 540;
-  for (let t = 0; t < 2000; t += 40) {
-    target += gesture.input(12, target, target, points, t);
-    assert.ok(target <= 1080);
-  }
-  assert.equal(gesture.destination(), 1080);
+  gesture.input(40, 540, 540, points, 0);
+  gesture.input(30, 600, 1080, points, 16);
+  gesture.input(20, 850, 1080, points, 32);
+  gesture.land();
+  assert.equal(gesture.input(15, 1080, 1080, points, 48), undefined);
+  assert.equal(gesture.input(40, 1080, 1080, points, 64), 1620);
 });
-test('reversal immediately returns toward the preceding project without lockout', () => {
+test('a new tiny gesture after landing has no cooldown', () => {
   const gesture = createGestureLimiter();
-  gesture.input(200, 540, 540, points, 0);
-  assert.ok(gesture.input(-200, 610, 670, points, 16) < 0);
-  assert.equal(gesture.destination(), 540);
+  gesture.input(40, 540, 540, points, 0);
+  gesture.land();
+  assert.equal(gesture.input(2, 1080, 1080, points, 16), 1620);
 });
-test('a fresh gesture after settling can advance again; tiny noise stays put', () => {
+test('sustained drag/momentum does not initiate another project on landing', () => {
   const gesture = createGestureLimiter();
-  gesture.input(100, 0, 0, points, 0);
-  assert.equal(gesture.destination(), 540);
-  gesture.input(100, 540, 540, points, 400);
-  assert.equal(gesture.destination(), 1080);
-  const noise = createGestureLimiter();
-  noise.input(1, 540, 540, points, 0);
-  assert.equal(noise.destination(), 540);
+  assert.equal(gesture.input(12, 540, 540, points, 0), 1080);
+  for(let t=16;t<320;t+=16) assert.equal(gesture.input(12, 600, 1080, points, t),undefined);
+  gesture.land();
+  for(let t=320;t<900;t+=16) assert.equal(gesture.input(12,1080,1080,points,t),undefined);
+});
+test('reversal retargets immediately without waiting for landing', () => {
+  const gesture = createGestureLimiter();
+  gesture.input(40, 540, 540, points, 0);
+  assert.equal(gesture.input(-2, 600, 1080, points, 16), 540);
 });
 test('settling starts with the existing velocity and ends with zero velocity', () => {
-  const { duration, easing } = settleCurve(400, 180);
+  const { duration, easing } = transitionCurve(400, 180);
   const dt = 0.00001;
   assert.equal(easing(0), 0);
   assert.equal(easing(1), 1);
@@ -127,9 +124,20 @@ test('real Lenis: damped first frame, flick, slow drag, momentum, reversal and n
   assert.ok(wheel(40), 'first wheel must be prevented before native scrolling');
   assert.equal(y,300,'no synchronous native jump');
   advance(16);
-  assert.ok(y>300 && y<307,'first movement is below the already resisted 26px target');
+  assert.ok(y>300 && y<307,'the single transition starts gently on its first frame');
+  const normalFirstFrame = y;
   advance(1000);
   assert.ok(Math.abs(y-840)<1,'light flick settles at adjacent project');
+  browser.kspfHomeScroll.navigate(work,false,()=>{});
+  wheel(2);advance(16);
+  assert.ok(Math.abs(y-normalFirstFrame)<0.001,'tiny gesture uses the same curve as normal input');
+  advance(1000);
+  assert.ok(Math.abs(y-840)<1,'tiny gesture reaches the adjacent project');
+  browser.kspfHomeScroll.navigate(work,false,()=>{});
+  wheel(40);advance(300);
+  assert.ok(Math.abs(y-840)<1);
+  wheel(2);advance(16);
+  assert.ok(y>840,'next gesture begins immediately after landing');
   browser.kspfHomeScroll.navigate(work,false,()=>{});
   for(let i=0;i<40;i++){wheel(12);advance(40); assert.ok(y<=840.5);}
   advance(1000);
