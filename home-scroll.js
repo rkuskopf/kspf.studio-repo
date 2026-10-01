@@ -55,9 +55,12 @@ const update = () => {
     overscroll: false,
     virtualScroll(data) {
       if (data.event.type !== 'wheel' || data.event.ctrlKey || data.event.shiftKey ||
-          Math.abs(data.deltaX) > Math.abs(data.deltaY)) return false;
+          (data.deltaY === 0 && data.deltaX !== 0)) return false;
       // Consume the wheel synchronously; no native or partial wheel movement.
       data.event.preventDefault();
+      // Dominantly horizontal packets must not leak their vertical component
+      // into native scrolling while the desktop controller is active.
+      if (Math.abs(data.deltaX) > Math.abs(data.deltaY)) return false;
       if (navigating) return false;
       const destination = gesture.input(data.deltaY, lenis.animatedScroll,
         lenis.targetScroll, points(), performance.now());

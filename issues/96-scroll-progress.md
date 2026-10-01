@@ -2,44 +2,59 @@
 
 ## Diagnosed causes
 
-The first implementation used native wheel movement followed by CSS snap.
-The Lenis follow-up removed that native phase but still had two JavaScript
-phases: partial wheel targets with `INTENT_PX = 12`, then settling after
-`INPUT_IDLE_MS = 110`. Small inputs visibly crept until the separate settle
-committed the rest of the row. `GESTURE_GAP_MS = 220` then kept same-direction
-input clamped after arrival, creating the reported lockout.
+Native wheel movement followed by CSS snapping explained the original fast
+start and separate settle. The first Lenis version instead had partial wheel
+movement, an accumulated intent threshold, a delayed settle and a landing
+cooldown. Commit `0f0bfa4` removed those phases in favour of one immediate eased
+adjacent-project transition, but released gesture ownership when it landed.
+Its 80ms packet window and 10% amplitude-rise heuristic could mistake residual
+momentum for new input. A 1px → 1.2px tail fluctuation reproduced a second jump.
+The prior tests incorrectly accepted renewed pulses within that same stream.
 
-## Current implementation
+## Current local correction
 
-- Input below a tiny 0.5px normalized noise dead zone is consumed without moving.
-- The first intentional vertical packet immediately chooses the adjacent
-  project. Lenis runs one short Hermite curve all the way to that point.
-- Input magnitude does not change the motion curve. There is no partial wheel
-  target, cumulative intent threshold, delayed settle timer or landing cooldown.
-- Same-direction input during the transition is consumed without retargeting.
-  Direction reversal immediately chooses the project just left.
-- Lenis completion releases the active gesture immediately. A separate packet
-  history rejects sustained/decaying input trains after landing, while a renewed
-  pulse or reversal starts another transition immediately. The 80ms packet-gap
-  check identifies continuity between input events; it is not a delay from
-  landing. Browser WheelEvents have no portable momentum-phase signal, so a
-  genuinely new smaller pulse that resembles an ongoing tail can still be
-  ambiguous. Physical trackpad review remains necessary.
-- Native CSS snap stays disabled while Lenis is active. Information/Work,
-  mobile/coarse-pointer native scrolling, reduced motion, keyboard cancellation,
-  row dimensions, spacing and slideshow logic retain their existing behaviour.
+A gesture owns its chosen project until vertical wheel input has been quiet
+for 140ms, measured from the last packet. Landing only marks animation complete;
+it does not release input ownership. Every packet, including noise below the
+0.5px dead zone, extends continuity. Same-direction packets cannot choose a new
+destination during that continuous stream, regardless of magnitude or whether
+animation has landed. Direction reversal remains immediate. After input quiet,
+the next intentional packet starts the next transition without a landing lock.
+No accumulated intent threshold, renewed-pulse inference or additional library
+is used. The experimental classifier and its fixtures were removed from scope.
+
+Lenis owns the existing single eased transition and consumes native wheel input
+synchronously. Native CSS snap stays disabled while the desktop controller is
+active. Row geometry, media, navigation, mobile and reduced motion are unchanged.
+
+## Direct Seconda inspection
+
+Inspected the live archive DOM, computed styles and its public theme scripts on
+1 October 2026. Seconda uses native `scroll-snap-type: y mandatory` on the root,
+`scroll-snap-align: start` and `scroll-snap-stop: always` on collection rows.
+Root scroll behaviour is `auto`; reduced motion disables snap. Its archive
+script updates visibility and horizontal thumbnail navigation; it contains no
+vertical wheel interception or Lenis controller. There are no Lenis damping
+settings to copy. Its native snap feel remains the visual reference, while our
+requested immediate easing and input ownership are implemented in Lenis.
+
+Sources:
+- https://www.seconda.paris/pages/archive
+- https://www.seconda.paris/cdn/shop/t/4/assets/style_page.css?v=110179266305547459631788959224
+- https://www.seconda.paris/cdn/shop/t/4/assets/script_collections.js?v=101686221807848249881788958758
 
 ## Verification and status
 
-Regression tests failed against the previous implementation before changes.
-The real Lenis test harness now checks identical first-frame motion for tiny
-and normal input, immediate navigation after landing, slow sustained input,
-strong decaying momentum, direction reversal, Information navigation, keyboard
-cancellation and reduced-motion/mobile fallback. Policy tests cover residual
-momentum and renewed input immediately after landing.
+Regression coverage explicitly lands the animation, continues residual and
+renewed-amplitude packets, checks that only one project is selected, then waits
+for input quiet and confirms that the next tiny input advances one more project.
+The real Lenis harness checks continuous post-landing tails, light flicks,
+sustained slow input, strong momentum, immediate reversal, damped first frame,
+navigation, keyboard cancellation and native fallbacks.
+
+80 static-site tests and 97 Next.js tests passed. These are deterministic input
+simulations, not certification of physical Mac trackpad feel. Physical review
+against Seconda remains outstanding. Five existing files changed; no new vendor
+library or fixture files. Correction remains uncommitted and unpushed.
 
 Preview: https://localhost:8001/#work
-
-Changes are uncommitted. No PR merge or review-comment reply has been made.
-Issue #96 remains open pending physical Mac trackpad comparison against
-https://www.seconda.paris/pages/archive and review of the updated motion.

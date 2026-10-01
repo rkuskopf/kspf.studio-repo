@@ -10,20 +10,35 @@ test('tiny intentional input commits immediately; noise produces no partial move
   assert.equal(gesture.input(2, 540, 540, points, 16), 1080);
   assert.equal(gesture.input(4000, 600, 1080, points, 32), undefined);
 });
-test('landing releases immediately; a renewed pulse is accepted during the old momentum tail', () => {
+test('landing retains ownership until the physical input stream goes quiet', () => {
   const gesture = createGestureLimiter();
-  gesture.input(40, 540, 540, points, 0);
-  gesture.input(30, 600, 1080, points, 16);
-  gesture.input(20, 850, 1080, points, 32);
+  assert.equal(gesture.input(40, 540, 540, points, 0), 1080);
+  for (let time=16; time<=304; time+=16) {
+    assert.equal(gesture.input(20, 800, 1080, points, time), undefined);
+  }
   gesture.land();
-  assert.equal(gesture.input(15, 1080, 1080, points, 48), undefined);
-  assert.equal(gesture.input(40, 1080, 1080, points, 64), 1620);
+  // Neither tiny residual input nor a renewed amplitude creates a destination.
+  assert.equal(gesture.input(1, 1080, 1080, points, 320), undefined);
+  assert.equal(gesture.input(40, 1080, 1080, points, 336), undefined);
+  assert.equal(gesture.input(0.2, 1080, 1080, points, 400), undefined);
+  assert.equal(gesture.input(2, 1080, 1080, points, 520), undefined);
+  assert.equal(gesture.input(2, 1080, 1080, points, 660), 1620);
 });
-test('a new tiny gesture after landing has no cooldown', () => {
+test('input quiet can end a gesture before animation lands; next input has no landing lock', () => {
   const gesture = createGestureLimiter();
   gesture.input(40, 540, 540, points, 0);
+  assert.equal(gesture.input(2, 800, 1080, points, 140), 1620);
+});
+test('a 1px to 1.2px tail fluctuation cannot initiate a second transition', () => {
+  const gesture = createGestureLimiter();
+  gesture.input(40,0,0,points,0);
+  gesture.input(30,200,540,points,16);
+  gesture.input(20,450,540,points,32);
   gesture.land();
-  assert.equal(gesture.input(2, 1080, 1080, points, 16), 1620);
+  assert.equal(gesture.input(1,540,540,points,48),undefined);
+  assert.equal(gesture.input(1.2,540,540,points,64),undefined);
+  assert.equal(gesture.input(0.2,540,540,points,96),undefined);
+  assert.equal(gesture.input(1,540,540,points,160),undefined);
 });
 test('sustained drag/momentum does not initiate another project on landing', () => {
   const gesture = createGestureLimiter();
@@ -120,6 +135,9 @@ test('real Lenis: damped first frame, flick, slow drag, momentum, reversal and n
   };
   await import(`../../home-scroll.js?test=${Date.now()}`);
   assert.ok(document.documentElement.classList.contains('has-home-scroll'));
+  const diagonal = new browser.WheelEvent('wheel',{deltaX:200,deltaY:40,cancelable:true,bubbles:true});
+  browser.dispatchEvent(diagonal);
+  assert.ok(diagonal.defaultPrevented,'diagonal input cannot leak into native vertical scrolling');
   advance(32);
   assert.ok(wheel(40), 'first wheel must be prevented before native scrolling');
   assert.equal(y,300,'no synchronous native jump');
@@ -137,7 +155,18 @@ test('real Lenis: damped first frame, flick, slow drag, momentum, reversal and n
   wheel(40);advance(300);
   assert.ok(Math.abs(y-840)<1);
   wheel(2);advance(16);
-  assert.ok(y>840,'next gesture begins immediately after landing');
+  assert.ok(y>840,'next gesture begins immediately after input has been quiet');
+  browser.kspfHomeScroll.navigate(work,false,()=>{});
+  wheel(40);
+  for(let i=0;i<20;i++){advance(16);wheel(20);}
+  assert.ok(Math.abs(y-840)<1,'transition has landed while the stream continues');
+  advance(16);wheel(1);advance(16);wheel(40);advance(16);wheel(0.2);
+  advance(120);wheel(2);advance(100);
+  assert.ok(Math.abs(y-840)<1,'all continuous post-landing packets stay on one project');
+  advance(40);wheel(2);advance(16);
+  assert.ok(y>840,'next packet after input quiet starts the following project');
+  advance(700);
+  assert.ok(Math.abs(y-1380)<1,'new stream settles at exactly the following project');
   browser.kspfHomeScroll.navigate(work,false,()=>{});
   for(let i=0;i<40;i++){wheel(12);advance(40); assert.ok(y<=840.5);}
   advance(1000);
