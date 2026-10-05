@@ -29,9 +29,15 @@ const update = () => {
     lerp: 0.1,
     wheelMultiplier: 0.85,
     overscroll: false,
-    virtualScroll({ event, deltaY }) {
+    virtualScroll(data) {
+      const { event, deltaY } = data;
       // Deliberate scrolling can interrupt an Information/Work animation too.
-      if (event.type === 'wheel' && !event.ctrlKey && deltaY) finishNavigation?.();
+      if (event.type === 'wheel' && !event.ctrlKey && deltaY) {
+        finishNavigation?.();
+        // Work is the upper scroll boundary until Information is explicitly opened.
+        const minimum = window.kspfHomeMinimumScroll?.() ?? 0;
+        if (deltaY < 0) data.deltaY = Math.max(deltaY, minimum-lenis.targetScroll);
+      }
     },
   });
   root.classList.add('has-home-scroll');
@@ -44,6 +50,14 @@ const update = () => {
 };
 
 window.kspfHomeScroll = {
+  setPosition(position) {
+    if (!lenis) return false;
+    // Resynchronise after native input before Lenis compares its target.
+    lenis.stop();
+    lenis.start();
+    lenis.scrollTo(position, { immediate: true });
+    return true;
+  },
   navigate(target, animate, onComplete) {
     if (!lenis) return false;
     navigationTarget = target;
