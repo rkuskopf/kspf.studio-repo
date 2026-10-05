@@ -108,6 +108,17 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   wheel(-400);advance(16);
   assert.ok(y<beforeReverse,'reversal responds on the next frame');
   advance(1000);assert.ok(Math.abs(y-300)<1);
+  browser.kspfHomeMinimumScroll = () => 300;
+  wheel(-800);advance(1000);
+  assert.ok(Math.abs(y-300)<1, 'upward wheel input stops at Work without entering Information');
+  wheel(100);advance(1000);
+  assert.ok(Math.abs(y-385)<1, 'downward free scrolling remains responsive at the boundary');
+  wheel(-800);advance(1000);
+  assert.ok(Math.abs(y-300)<1, 'a strong upward gesture from projects ends at Work');
+  browser.scrollTo(0, 0);
+  browser.kspfHomeScroll.setPosition(300);
+  assert.equal(y, 300, 'native input is corrected even when Lenis already targets the Work boundary');
+  browser.kspfHomeMinimumScroll = () => 0;
   let finished=false;
   browser.kspfHomeScroll.navigate(document.getElementById('information'),true,()=>{finished=true;});
   advance(1000);assert.ok(Math.abs(y)<1);assert.ok(finished,'navigation completes');
