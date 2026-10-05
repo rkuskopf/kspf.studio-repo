@@ -156,7 +156,9 @@ html.is-info-scrolling {
 }
 
 html:has(body[data-page="home"]) {
-  scroll-snap-type: y mandatory;
+  /* Free scrolling on every device; desktop wheel smoothing is separate. */
+  scroll-snap-type: none;
+  scroll-behavior: auto;
 }
 
 body[data-page="home"] {
