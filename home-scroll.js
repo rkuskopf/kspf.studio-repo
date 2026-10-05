@@ -37,6 +37,12 @@ const update = () => {
         // Work is the upper scroll boundary until Information is explicitly opened.
         const minimum = window.kspfHomeMinimumScroll?.() ?? 0;
         if (deltaY < 0) data.deltaY = Math.max(deltaY, minimum-lenis.targetScroll);
+        // Lenis ignores zero movement before preventing the native wheel event.
+        // Consume blocked input here so the browser cannot overshoot the boundary.
+        if (data.deltaY === 0) {
+          event.preventDefault();
+          return false;
+        }
       }
     },
   });

@@ -109,8 +109,12 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   assert.ok(y<beforeReverse,'reversal responds on the next frame');
   advance(1000);assert.ok(Math.abs(y-300)<1);
   browser.kspfHomeMinimumScroll = () => 300;
-  wheel(-800);advance(1000);
+  assert.ok(wheel(-800), 'upward input at the boundary must be consumed before native scrolling');advance(1000);
   assert.ok(Math.abs(y-300)<1, 'upward wheel input stops at Work without entering Information');
+  for (let i=0; i<20; i++) {
+    assert.ok(wheel(-1000), 'continued strong upward packets cannot escape into native scrolling');
+    advance(16);
+  }
   wheel(100);advance(1000);
   assert.ok(Math.abs(y-385)<1, 'downward free scrolling remains responsive at the boundary');
   wheel(-800);advance(1000);
