@@ -2,6 +2,6 @@
   "title": "kspf.studio",
   "metaDescription": "",
   "intro": "",
-  "initialSection": "work",
-  "showNavigation": true
+  "initialSection": "info",
+  "showNavigation": false
 }

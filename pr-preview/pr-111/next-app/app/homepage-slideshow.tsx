@@ -112,6 +112,24 @@ export default function HomepageSlideshow({
     video.play().catch(() => {});
   }, [isVisible, prefersReducedMotion, slide?.type, slide?.url]);
 
+  useEffect(() => {
+    const block = viewportElement.current?.closest<HTMLElement>(".homepage-project");
+    if (!block) return;
+    const labels = [...block.querySelectorAll<HTMLElement>(".homepage-project__number, .homepage-project__category")];
+    const updateWidth = () => {
+      const width = Math.max(0, ...labels.map(label => label.getBoundingClientRect().width));
+      if (width > 0) block.style.setProperty("--homepage-meta-width", `${Math.ceil(width)}px`);
+    };
+    updateWidth();
+    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(updateWidth) : null;
+    labels.forEach(label => observer?.observe(label));
+    window.addEventListener("resize", updateWidth);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener("resize", updateWidth);
+    };
+  }, [viewportElement]);
+
   if (!slide) return null;
 
   const mediaClassName = [
