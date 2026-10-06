@@ -44,3 +44,11 @@
 ## Final browser review changes
 
 The user requested an additional 10px of space and a stable vertical title position. Both homepages now use a 20px gap below the slideshow container. Removed the per-image bottom-edge offset. Next.js mobile uses a stable portrait-height container; desktop media is constrained to its reserved track in both implementations. Mixed-orientation slide changes keep both title coordinates unchanged at 1208×862, 609×862, 390×844, and 700×400. Short desktop (1440×600) checks confirm media does not overlap the caption.
+
+## Responsive follow-up verification
+
+- At 660×1200 and 550×1200, portrait-only static and Next.js projects retain a 20px image/title gap.
+- At 740×1200 and 701×1200, loaded portrait/landscape media leaves at least 20px before the right-hand metadata.
+- At 740×1200, 660×1200, and 609×862, mixed static slides preserve both title coordinates within their project.
+- Read-only review found no remaining material blockers. All 82 Node tests, 99 Vitest tests, and the production build pass.
+- Port8001 had been replaced by a server in the separate free-scroll worktree. The preview now serves this PR branch; that worktree's uncommitted files were preserved.
