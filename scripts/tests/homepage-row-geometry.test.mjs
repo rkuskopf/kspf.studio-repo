@@ -43,7 +43,7 @@ test("static homepage rows use the portrait track without moving navigation", as
   );
   assert.match(
     css,
-    /body\[data-page="home"\] \.project-block\s*{[^}]*height:\s*var\(--home-project-row-height\)/s,
+    /body\[data-page="home"\] \.project-block\s*{[^}]*grid-template-rows:\s*var\(--home-project-row-height\) auto/s,
   );
   assert.equal(style.minHeight, "0");
   assert.equal(style.scrollSnapAlign, "center");
@@ -80,7 +80,7 @@ test("Next.js homepage rows mirror the static portrait track", async () => {
   );
   assert.match(
     css,
-    /\.homepage-project\s*{[^}]*height:\s*var\(--homepage-project-row-height\)/s,
+    /\.homepage-project\s*{[^}]*grid-template-rows:\s*var\(--homepage-project-row-height\) auto/s,
   );
   assert.equal(style.minHeight, "0");
   assert.equal(style.scrollSnapAlign, "center");

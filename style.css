@@ -85,7 +85,7 @@ html.is-info-scrolling {
 .home-information {
   min-height: clamp(260px, 35vh, 400px);
   min-height: clamp(260px, 35dvh, 400px);
-  padding: 60px 0 80px;
+  padding: 30px 0 55px;
 }
 
 .home-information__inner {
@@ -138,12 +138,7 @@ html.is-info-scrolling {
   margin: 0;
 }
 
-@media (max-width: 700px) {
-  .home-information {
-    padding-top: 40px;
-    padding-bottom: 55px;
-  }
-
+@media (max-width: 857px) {
   .home-information__details {
     column-gap: 16px;
     margin-top: 22px;
@@ -183,8 +178,25 @@ body[data-page="home"] .projects {
   padding-block: max(0px, calc((100dvh - var(--home-project-row-height)) / 2));
 }
 
+/* Without navigation, let Information lead directly into the first project. */
+body[data-page="home"]:has(.top[hidden]) .home-information {
+  min-height: 0;
+}
+
+body[data-page="home"]:has(.top[hidden]) .projects {
+  padding-top: 0;
+}
+
+@media (min-width: 701px) {
+  body[data-page="home"]:has(.top[hidden]) .projects {
+    padding-top: clamp(48px, 9dvh, 80px);
+  }
+}
+
 body[data-page="home"] .project-block {
-  height: var(--home-project-row-height);
+  height: auto;
+  grid-template-rows: var(--home-project-row-height) auto;
+  row-gap: 20px;
   min-height: 0;
   position: relative;
   scroll-snap-align: center;
@@ -567,7 +579,7 @@ body[data-page="home"] .nav__link--information {
       max(0px, calc(100% - var(--project-meta-width) - var(--project-meta-gap) - var(--project-meta-width) - var(--project-meta-gap))));
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--hero-frame) minmax(0, 1fr);
-  grid-template-areas: "name hero category";
+  grid-template-areas: "number hero category" "name name name";
   align-items: center;
 }
 
@@ -726,6 +738,7 @@ body[data-page="home"] .hero__media.is-portrait {
   outline-offset: -1px;
 }
 
+.project__number,
 .project__name,
 .project__category {
   margin: 0;
@@ -750,6 +763,16 @@ body[data-page="home"] .hero__media.is-portrait {
 }
 
 body[data-page="home"] .project__name {
+  grid-area: name;
+  width: var(--portrait-width);
+  justify-self: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.project__number {
+  grid-area: number;
+  justify-self: start;
 }
 
 body[data-page="home"] .project__category {
@@ -1435,9 +1458,9 @@ body[data-page="home"] .project__category {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 857px) {
   body[data-page="home"] .projects {
-    padding-block: 0;
+    padding-block: clamp(48px, 9dvh, 80px);
   }
 
   .project-block {
@@ -1446,16 +1469,17 @@ body[data-page="home"] .project__category {
     grid-template-areas:
       "hero"
       "name";
-    row-gap: 10px;
+    row-gap: 20px;
     align-content: center;
     padding: 0;
   }
 
   body[data-page="home"] .project-block {
+    grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
-    padding-top: clamp(48px, 9dvh, 80px);
-    padding-bottom: clamp(48px, 9dvh, 80px);
+    padding-top: 0;
+    padding-bottom: 0;
     scroll-snap-align: start;
   }
 
@@ -1466,7 +1490,15 @@ body[data-page="home"] .project__category {
   }
 
   body[data-page="home"] .hero.has-portrait {
-    min-height: calc(var(--portrait-width) * 1.25);
+    aspect-ratio: auto;
+    height: max(var(--home-project-row-height), min(75dvh,
+      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
+    min-height: var(--home-project-row-height);
+  }
+
+  body[data-page="home"]:has(.top[hidden]) .project-block:first-child .hero.has-portrait {
+    aspect-ratio: auto;
+    height: calc(var(--portrait-width) * 1.25);
   }
 
   .project__name {
@@ -1474,16 +1506,22 @@ body[data-page="home"] .project__category {
     justify-self: center;
   }
 
+  .project__number,
   .project__category {
     display: none;
   }
 }
 
-@media (min-width: 701px) {
-  body[data-page="home"] .project__name {
+@media (min-width: 858px) {
+  body[data-page="home"] .hero,
+  body[data-page="home"] .hero__media:not(.is-portrait) {
+    max-height: var(--home-project-row-height);
+  }
+
+  body[data-page="home"] .project__number {
     grid-area: auto;
     position: absolute;
-    top: 50%;
+    top: calc(var(--home-project-row-height) / 2);
     left: var(--page-pad);
     transform: translateY(-50%);
     text-align: left;
@@ -1492,7 +1530,7 @@ body[data-page="home"] .project__category {
   body[data-page="home"] .project__category {
     grid-area: auto;
     position: absolute;
-    top: 50%;
+    top: calc(var(--home-project-row-height) / 2);
     right: var(--page-pad);
     display: block;
     transform: translateY(-50%);

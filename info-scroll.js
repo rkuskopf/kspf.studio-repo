@@ -10,6 +10,8 @@
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let animationFrame = 0;
+  let navigating = false;
+  let informationOpen = false;
 
   if ("scrollRestoration" in history) {
     history.scrollRestoration = "manual";
@@ -22,18 +24,44 @@
     return root.dataset.homeInitialSection === "info" ? information : work;
   };
   const topFor = (target) => target.getBoundingClientRect().top + window.scrollY;
+  const informationLink = [...links].find((link) => link.dataset.infoScroll === "information");
+  // A scroll boundary is useful only when the CMS provides a visible way back.
+  const restrictInformation = () => root.dataset.homeInitialSection !== "info" &&
+    Boolean(informationLink) && !informationLink.closest("[hidden]");
+  window.kspfHomeMinimumScroll = () =>
+    restrictInformation() && !informationOpen ? topFor(work) : 0;
+
+  const syncWorkSection = () => {
+    if (navigating) return;
+    const workTop = topFor(work);
+    if (restrictInformation() && !informationOpen && window.scrollY < workTop - 1) {
+      if (!window.kspfHomeScroll?.setPosition?.(workTop)) window.scrollTo(0, workTop);
+      return;
+    }
+    if (window.scrollY < workTop - 1) return;
+    informationOpen = false;
+    root.classList.remove("is-info-scrolling");
+    if (location.hash === "#information") {
+      history.replaceState({ ...history.state, homeSection: "work" }, "", "#work");
+    }
+  };
+  window.addEventListener("scroll", syncWorkSection, { passive: true });
 
   const finish = (target, markReady) => {
+    navigating = false;
     if (markReady) window.kspfMarkHomeReady?.("position");
     if (target === work) {
       root.classList.remove("is-info-scrolling");
     }
     target.focus({ preventScroll: true });
+    syncWorkSection();
   };
 
   const scrollToTarget = (target, animate = true, markReady = false) => {
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animationFrame = 0;
+    navigating = true;
+    informationOpen = target === information;
     root.classList.add("is-info-scrolling");
 
     if (window.kspfHomeScroll?.navigate(target, animate && !reduceMotion.matches,
@@ -71,9 +99,11 @@
   links.forEach((link) => {
     link.addEventListener("click", (event) => {
       event.preventDefault();
-      const name = link.dataset.infoScroll;
+      const returnToWork = link.dataset.infoScroll === "information" &&
+        window.scrollY < topFor(work) - 1;
+      const name = returnToWork ? "work" : link.dataset.infoScroll;
       const target = targetFor(name);
-      history.pushState({ homeSection: name }, "", link.getAttribute("href"));
+      history.pushState({ homeSection: name }, "", returnToWork ? "#work" : link.getAttribute("href"));
       scrollToTarget(target);
     });
   });

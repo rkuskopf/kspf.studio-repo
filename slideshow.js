@@ -97,10 +97,10 @@
 
   const updateProjectMetadataWidth = (block) => {
     if (!block) return;
-    const name = block.querySelector(".project__name");
+    const number = block.querySelector(".project__number");
     const category = block.querySelector(".project__category");
     const width = Math.max(
-      name ? name.getBoundingClientRect().width : 0,
+      number ? number.getBoundingClientRect().width : 0,
       category ? category.getBoundingClientRect().width : 0
     );
     if (width > 0) {
@@ -267,7 +267,7 @@
     if (projectBlock) {
       updateProjectMetadataWidth(projectBlock);
       if (metadataObserver) {
-        projectBlock.querySelectorAll(".project__name, .project__category")
+        projectBlock.querySelectorAll(".project__number, .project__category")
           .forEach((meta) => metadataObserver.observe(meta));
       }
     }

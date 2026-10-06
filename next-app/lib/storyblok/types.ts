@@ -62,6 +62,7 @@ export type ProjectAsset = {
 };
 
 export type HomepageProject = {
+  projectNumber?: string;
   storyId: number;
   storyUuid: string;
   slug: string;

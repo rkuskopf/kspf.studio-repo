@@ -145,6 +145,7 @@ export const mapProjectStory = (story) => {
   return {
     title: content.title || "",
     displayName: content.display_name || content.title || story.name || "",
+    projectNumber: typeof content.project_number === "string" ? content.project_number.trim() : "",
     category: storyblokPlainText(content.category),
     description: content.description || "",
     viewUrl: storyblokLink(content.view_url),

@@ -397,6 +397,7 @@ describe("homepage aggregate delivery records", () => {
         slug: "arcteryx",
         title: "ARCTERYX",
         displayName: "ARCTERYX",
+        projectNumber: "",
         category: "Print\nCampaign",
         alt: "arcteryx project preview",
         order: 1,
@@ -410,6 +411,7 @@ describe("homepage aggregate delivery records", () => {
         slug: "second",
         title: "SECOND",
         displayName: "Second project",
+        projectNumber: "",
         category: "Web",
         alt: "second project preview",
         order: 2,
@@ -427,4 +429,12 @@ describe("homepage aggregate delivery records", () => {
     expect(requestedUrl?.searchParams.get("version")).toBe("draft");
     expect(requestedUrl?.searchParams.get("cv")).toBe("456");
   });
+});
+
+it("delivers project numbers independently of sort order", async () => {
+  const first = projectStory({ id: 1, slug: "first", order: 2, position: 1, slides: [{ component: "media_slide", legacy_url: "https://example.com/first.jpg" }] });
+  const second = projectStory({ id: 2, slug: "second", order: 1, position: 2, slides: [{ component: "media_slide", legacy_url: "https://example.com/second.jpg" }] });
+  (first.content as Record<string, unknown>).project_number = "007";
+  const projects = await fetchHomepageProjects({ version: "published", token: "test", fetchImpl: async () => jsonResponse({ stories: [first, second] }) });
+  expect(projects.map(project => project.projectNumber)).toEqual(["", "007"]);
 });
