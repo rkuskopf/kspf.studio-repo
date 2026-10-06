@@ -152,7 +152,9 @@ body {
 
 .homepage-project {
   position: relative;
-  height: var(--homepage-project-row-height);
+  height: auto;
+  grid-template-rows: var(--homepage-project-row-height) auto;
+  row-gap: 20px;
   min-height: 0;
   display: grid;
   grid-template-columns: minmax(max-content, 1fr) minmax(0, 800px) minmax(max-content, 1fr);
@@ -165,9 +167,10 @@ body {
 .homepage-hero {
   position: relative;
   grid-column: 2;
+  grid-row: 1;
   width: 100%;
   height: auto;
-  max-height: 75dvh;
+  max-height: var(--homepage-project-row-height);
   aspect-ratio: 1.6;
   margin: 0;
   display: grid;
@@ -184,8 +187,7 @@ body {
 .homepage-hero__media {
   display: block;
   max-width: 100%;
-  max-height: 75vh;
-  max-height: 75dvh;
+  max-height: var(--homepage-project-row-height);
   width: auto;
   height: auto;
   object-fit: contain;
@@ -239,6 +241,7 @@ body {
   outline-offset: -1px;
 }
 
+.homepage-project__number,
 .homepage-project__name,
 .homepage-project__category {
   position: static;
@@ -250,13 +253,24 @@ body {
   white-space: nowrap;
 }
 
-.homepage-project__name {
+.homepage-project__number {
   grid-column: 1;
+  grid-row: 1;
   justify-self: start;
+}
+
+.homepage-project__name {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: var(--homepage-portrait-width);
+  justify-self: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .homepage-project__category {
   grid-column: 3;
+  grid-row: 1;
   justify-self: end;
 }
 
@@ -282,6 +296,7 @@ body {
   }
 
   .homepage-project {
+    grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
     align-content: center;
@@ -290,7 +305,7 @@ body {
     grid-template-areas:
       "media"
       "name";
-    gap: 10px;
+    gap: 20px;
     padding-top: clamp(48px, 9dvh, 80px);
     padding-bottom: clamp(48px, 9dvh, 80px);
     scroll-snap-align: start;
@@ -299,13 +314,15 @@ body {
   .homepage-hero {
     grid-area: media;
     width: calc(100dvw - 30px);
-    height: auto;
+    height: var(--homepage-project-row-height);
+    grid-template-rows: minmax(0, 1fr);
     min-height: 0;
     max-height: none;
     aspect-ratio: auto;
   }
 
   .homepage-hero__media {
+    max-height: 100%;
     width: 100%;
     max-width: 100%;
     height: auto;
@@ -319,10 +336,11 @@ body {
 
   .homepage-project__name {
     grid-area: name;
-    width: calc(100dvw - 30px);
+    width: var(--homepage-portrait-width);
     justify-self: center;
   }
 
+  .homepage-project__number,
   .homepage-project__category {
     display: none;
   }

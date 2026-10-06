@@ -83,10 +83,13 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                 aria-labelledby={titleId}
                 key={project.storyId}
               >
+                <p className="homepage-project__number">
+                  {project.projectNumber?.trim() || String(index + 1).padStart(2, "0")}
+                </p>
+                <HomepageSlideshow project={project} priority={index === 0} />
                 <p className="homepage-project__name" id={titleId}>
                   {project.displayName}
                 </p>
-                <HomepageSlideshow project={project} priority={index === 0} />
                 <p className="homepage-project__category">
                   {categoryLines.map((line, lineIndex) => (
                     <span key={`${line}-${lineIndex}`}>
