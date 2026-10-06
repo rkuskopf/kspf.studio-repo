@@ -1459,7 +1459,7 @@ body[data-page="home"] .project__category {
 
 @media (max-width: 857px) {
   body[data-page="home"] .projects {
-    padding-block: 0;
+    padding-block: clamp(48px, 9dvh, 80px);
   }
 
   .project-block {
@@ -1477,8 +1477,8 @@ body[data-page="home"] .project__category {
     grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
-    padding-top: clamp(48px, 9dvh, 80px);
-    padding-bottom: clamp(48px, 9dvh, 80px);
+    padding-top: 0;
+    padding-bottom: 0;
     scroll-snap-align: start;
   }
 

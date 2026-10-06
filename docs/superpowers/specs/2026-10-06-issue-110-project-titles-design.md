@@ -41,3 +41,7 @@ The user requested reverting the follow-up that shrank portraits to fit desktop 
 ## Mobile gap correction
 
 Keep the 857px breakpoint and original portrait sizes. Restore only the static mobile container-height correction: portrait-only slideshows use the portrait frame height, while mixed slideshows use the larger required portrait/landscape height across all slides. The container does not follow the current slide. This removes width-dependent empty space below portrait-only media without bringing back desktop portrait shrinking.
+
+## Project-spacing correction
+
+Apply mobile top/bottom breathing room once on the projects feed, not on every project. Project containers have no mobile vertical padding, so the existing feed row gap controls the separation across the 857/858px layout transition. Preserve the 20px caption gap and stable container height. Existing wide-screen spacing remains 100px above 1280px; the gap is 70px at narrower widths.

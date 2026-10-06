@@ -292,7 +292,7 @@ body {
   }
 
   .homepage-projects {
-    padding-block: 0;
+    padding-block: clamp(48px, 9dvh, 80px);
   }
 
   .homepage-project {
@@ -306,8 +306,8 @@ body {
       "media"
       "name";
     gap: 20px;
-    padding-top: clamp(48px, 9dvh, 80px);
-    padding-bottom: clamp(48px, 9dvh, 80px);
+    padding-top: 0;
+    padding-bottom: 0;
     scroll-snap-align: start;
   }
 
