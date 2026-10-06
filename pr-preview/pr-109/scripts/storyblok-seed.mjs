@@ -137,6 +137,7 @@ const projectStory = (project, index) => ({
     _uid: uid(),
     title: project.title || "",
     display_name: project.displayName || project.title || "",
+    project_number: project.projectNumber || "",
     category: project.category || "",
     description: project.description || "",
     view_url: toLink(project.viewUrl),

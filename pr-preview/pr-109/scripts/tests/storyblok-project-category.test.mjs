@@ -39,3 +39,11 @@ test("maps rich-text category paragraphs to newline-separated plain text", () =>
 test("keeps legacy plain-text project categories working", () => {
   assert.equal(mapProjectStory(projectStory("Web Development")).category, "Web Development");
 });
+
+test("maps an editorial project number without losing leading zeroes", () => {
+  const story = projectStory("Print");
+  story.content.project_number = "007";
+  assert.equal(mapProjectStory(story).projectNumber, "007");
+  delete story.content.project_number;
+  assert.equal(mapProjectStory(story).projectNumber, "");
+});

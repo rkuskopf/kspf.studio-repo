@@ -1,7 +1,7 @@
 import Lenis from './assets/vendor/lenis-1.3.26/lenis.module.js';
 
 const root = document.documentElement;
-const desktop = matchMedia('(min-width: 701px) and (hover: hover) and (pointer: fine)');
+const desktop = matchMedia('(min-width: 858px) and (hover: hover) and (pointer: fine)');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const projects = document.getElementById('projects');
 let lenis;
@@ -29,9 +29,21 @@ const update = () => {
     lerp: 0.1,
     wheelMultiplier: 0.85,
     overscroll: false,
-    virtualScroll({ event, deltaY }) {
+    virtualScroll(data) {
+      const { event, deltaY } = data;
       // Deliberate scrolling can interrupt an Information/Work animation too.
-      if (event.type === 'wheel' && !event.ctrlKey && deltaY) finishNavigation?.();
+      if (event.type === 'wheel' && !event.ctrlKey && deltaY) {
+        finishNavigation?.();
+        // Work is the upper scroll boundary until Information is explicitly opened.
+        const minimum = window.kspfHomeMinimumScroll?.() ?? 0;
+        if (deltaY < 0) data.deltaY = Math.max(deltaY, minimum-lenis.targetScroll);
+        // Lenis ignores zero movement before preventing the native wheel event.
+        // Consume blocked input here so the browser cannot overshoot the boundary.
+        if (data.deltaY === 0) {
+          event.preventDefault();
+          return false;
+        }
+      }
     },
   });
   root.classList.add('has-home-scroll');
@@ -44,6 +56,14 @@ const update = () => {
 };
 
 window.kspfHomeScroll = {
+  setPosition(position) {
+    if (!lenis) return false;
+    // Resynchronise after native input before Lenis compares its target.
+    lenis.stop();
+    lenis.start();
+    lenis.scrollTo(position, { immediate: true });
+    return true;
+  },
   navigate(target, animate, onComplete) {
     if (!lenis) return false;
     navigationTarget = target;

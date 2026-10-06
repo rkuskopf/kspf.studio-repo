@@ -108,6 +108,21 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   wheel(-400);advance(16);
   assert.ok(y<beforeReverse,'reversal responds on the next frame');
   advance(1000);assert.ok(Math.abs(y-300)<1);
+  browser.kspfHomeMinimumScroll = () => 300;
+  assert.ok(wheel(-800), 'upward input at the boundary must be consumed before native scrolling');advance(1000);
+  assert.ok(Math.abs(y-300)<1, 'upward wheel input stops at Work without entering Information');
+  for (let i=0; i<20; i++) {
+    assert.ok(wheel(-1000), 'continued strong upward packets cannot escape into native scrolling');
+    advance(16);
+  }
+  wheel(100);advance(1000);
+  assert.ok(Math.abs(y-385)<1, 'downward free scrolling remains responsive at the boundary');
+  wheel(-800);advance(1000);
+  assert.ok(Math.abs(y-300)<1, 'a strong upward gesture from projects ends at Work');
+  browser.scrollTo(0, 0);
+  browser.kspfHomeScroll.setPosition(300);
+  assert.equal(y, 300, 'native input is corrected even when Lenis already targets the Work boundary');
+  browser.kspfHomeMinimumScroll = () => 0;
   let finished=false;
   browser.kspfHomeScroll.navigate(document.getElementById('information'),true,()=>{finished=true;});
   advance(1000);assert.ok(Math.abs(y)<1);assert.ok(finished,'navigation completes');
@@ -126,7 +141,7 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   wheel(400);advance(32);
   browser.dispatchEvent(new browser.KeyboardEvent('keydown',{key:'ArrowDown'}));
   const stopped=y;advance(1000);assert.equal(y,stopped,'keyboard cancels pending wheel animation');
-  const desktop=matchMedia('(min-width: 701px) and (hover: hover) and (pointer: fine)');
+  const desktop=matchMedia('(min-width: 858px) and (hover: hover) and (pointer: fine)');
   desktop.matches=false;desktop.dispatchEvent(new browser.Event('change'));
   assert.equal(wheel(40),false,'mobile uses native input');
 });
