@@ -183,6 +183,15 @@ body[data-page="home"] .projects {
   padding-block: max(0px, calc((100dvh - var(--home-project-row-height)) / 2));
 }
 
+/* Without navigation, let Information lead directly into the first project. */
+body[data-page="home"]:has(.top[hidden]) .home-information {
+  min-height: 0;
+}
+
+body[data-page="home"]:has(.top[hidden]) .projects {
+  padding-top: 0;
+}
+
 body[data-page="home"] .project-block {
   height: var(--home-project-row-height);
   min-height: 0;
