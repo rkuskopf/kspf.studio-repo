@@ -115,3 +115,34 @@ test('native scrolling cannot enter Information until INFO opens it', async (t) 
   page.browser.dispatchEvent(new page.browser.Event('scroll'));
   assert.equal(page.position(), 600, 'returning to Work closes independent Information access again');
 });
+
+test('Information remains scrollable when Storyblok makes it the starting section', async (t) => {
+  const page = await setup(t);
+  page.document.documentElement.dataset.homeInitialSection = 'info';
+  page.info.click();
+  page.scroll(650);
+  page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  assert.equal(page.browser.location.hash, '#work');
+  assert.equal(page.browser.kspfHomeMinimumScroll(), 0, 'desktop wheel scrolling can return to Information');
+  page.scroll(100);
+  page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  assert.equal(page.position(), 100, 'native scrolling can return to Information too');
+});
+
+test('Information remains reachable when navigation or its INFO link is hidden', async (t) => {
+  const page = await setup(t);
+  const navigation = page.document.createElement('header');
+  navigation.className = 'top';
+  page.info.before(navigation);
+  navigation.append(page.info);
+  navigation.hidden = true;
+  assert.equal(page.browser.kspfHomeMinimumScroll(), 0);
+  page.scroll(100);
+  page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  assert.equal(page.position(), 100);
+  navigation.hidden = false;
+  page.info.hidden = true;
+  assert.equal(page.browser.kspfHomeMinimumScroll(), 0);
+  page.info.hidden = false;
+  assert.equal(page.browser.kspfHomeMinimumScroll(), 600, 'Work startup with visible INFO retains the boundary');
+});
