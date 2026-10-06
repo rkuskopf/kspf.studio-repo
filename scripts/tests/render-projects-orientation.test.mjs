@@ -71,3 +71,22 @@ test("project category preserves mapped rich-text line breaks", async () => {
   assert.equal(category.textContent, "Aesop.com –\nThe Athenaeum");
   assert.equal(window.getComputedStyle(category).whiteSpace, "pre-line");
 });
+
+test("numbers visible projects and places the title after media", async () => {
+  const window = new Window();
+  window.document.body.innerHTML = '<div id="projects"></div>';
+  const source = await readFile(new URL("../../render-projects.js", import.meta.url), "utf8");
+  const projects = [
+    { title: "Hidden", showOnHome: false },
+    { title: "First", projectNumber: "007", slides: [] },
+    { title: "Second", projectNumber: "  ", slides: [] },
+  ];
+  vm.runInNewContext(source, {
+    document: window.document, window, console,
+    fetch: async () => ({ ok: true, json: async () => ({ projects }) }),
+  });
+  await new Promise((resolve) => setImmediate(resolve));
+  const blocks = [...window.document.querySelectorAll(".project-block")];
+  assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007", "02"]);
+  assert.deepEqual([...blocks[0].children].map(node => node.className), ["project__number", "hero js-slideshow", "project__name", "project__category"]);
+});

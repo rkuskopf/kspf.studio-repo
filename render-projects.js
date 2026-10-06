@@ -71,8 +71,9 @@
       const block = document.createElement("section");
       block.className = "project-block";
       block.append(
-        createProjectMeta("project__name", project.displayName || project.title),
+        createProjectMeta("project__number", project.projectNumber?.trim() || String(index + 1).padStart(2, "0")),
         createHero(project, index),
+        createProjectMeta("project__name", project.displayName || project.title),
         createProjectMeta("project__category", project.category)
       );
       container.appendChild(block);

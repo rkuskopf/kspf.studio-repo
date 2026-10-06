@@ -3,6 +3,7 @@
     {
       "title": "Product design tracer",
       "displayName": "Product design tracer",
+      "projectNumber": "",
       "category": "Product Design",
       "description": "A minimal schema tracer for the project-page model.",
       "viewUrl": "",
@@ -13,6 +14,7 @@
     {
       "title": "The Athenaeum",
       "displayName": "001",
+      "projectNumber": "",
       "category": "AESOP\n\nThe Athenaeum",
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
@@ -26,6 +28,7 @@
     {
       "title": "Arcteryx",
       "displayName": "002",
+      "projectNumber": "",
       "category": "ARCTERYX\n\nPrint campaign",
       "description": "",
       "viewUrl": "",
@@ -39,6 +42,7 @@
     {
       "title": "Jak Architecture",
       "displayName": "003",
+      "projectNumber": "",
       "category": "JAK ARCHITECTURE\n\nPortfolio site",
       "description": "Portfolio site for Jak Architecture. \nDesigned by Chloe Larkin and built on Cargo with custom interactions",
       "viewUrl": "https://www.jakarchitecture.com",
@@ -53,6 +57,7 @@
     {
       "title": "",
       "displayName": "004",
+      "projectNumber": "",
       "category": "ALT. COSMETICS\n\nIdentity design",
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "viewUrl": "",
@@ -69,6 +74,7 @@
     {
       "title": "ALBUS LUMEN",
       "displayName": "005",
+      "projectNumber": "",
       "category": "ALBUS LUMEN\n\nShopify navigation and blog",
       "description": "",
       "viewUrl": "https://www.albuslumen.com",
@@ -83,6 +89,7 @@
     {
       "title": "AP-REPS",
       "displayName": "006",
+      "projectNumber": "",
       "category": "AP-REPS\n\nPortfolio site",
       "description": "",
       "viewUrl": "https://apreps.com.au",
@@ -96,6 +103,7 @@
     {
       "title": "Christopher Myles Henderson",
       "displayName": "Christopher Myles Henderson",
+      "projectNumber": "",
       "category": "Web",
       "description": "Portfolio website for Chris Henderson – multidisciplinary artist. Utilising overlays and an asymmetrical grid to accompany the depth and eccentricity of his work",
       "viewUrl": "https://christophermyles.com",
