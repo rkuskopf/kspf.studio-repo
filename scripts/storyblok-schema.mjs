@@ -245,6 +245,7 @@ export const STORYBLOK_COMPONENTS = [
       alt: field("text", "Alt text", 6),
       show_on_home: field("boolean", "Show on home", 7, { default_value: "true" }),
       order: field("number", "Order", 8, { decimals: 0, min_value: 0 }),
+      project_number: field("text", "Project number", 16, { description: "Desktop side label, e.g. 01. Blank uses visible homepage position." }),
       ...PROJECT_PAGE_FIELDS,
     },
   },

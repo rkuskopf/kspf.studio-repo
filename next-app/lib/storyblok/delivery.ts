@@ -317,6 +317,7 @@ const mapHomepageProjectStory = (value: unknown) => {
       slug: value.slug,
       title,
       displayName,
+      projectNumber: typeof content.project_number === "string" ? content.project_number.trim() : "",
       category,
       alt: requiredString(content.alt, "project alt text", invalidHomepageProjects),
       order,

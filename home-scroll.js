@@ -1,7 +1,7 @@
 import Lenis from './assets/vendor/lenis-1.3.26/lenis.module.js';
 
 const root = document.documentElement;
-const desktop = matchMedia('(min-width: 701px) and (hover: hover) and (pointer: fine)');
+const desktop = matchMedia('(min-width: 858px) and (hover: hover) and (pointer: fine)');
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 const projects = document.getElementById('projects');
 let lenis;

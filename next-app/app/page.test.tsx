@@ -76,6 +76,15 @@ afterEach(() => {
 });
 
 describe("the Storyblok-backed App Router route", () => {
+  it("renders explicit numbers and falls back to visible feed position", () => {
+    const data = structuredClone(publishedData);
+    data.projects[0].projectNumber = "007";
+    data.projects[1].projectNumber = "  ";
+    const markup = render(data);
+    expect(markup).toContain('class="homepage-project__number">007</p>');
+    expect(markup).toContain('class="homepage-project__number">02</p>');
+    expect(render(publishedData)).toContain('class="homepage-project__number">01</p>');
+  });
   it("renders Information before Work with the current content hierarchy", () => {
     const markup = render(publishedData);
 
@@ -112,8 +121,8 @@ describe("the Storyblok-backed App Router route", () => {
       markup.indexOf('id="homepage-project-arcteryx-title"')
     );
     expect(markup).not.toContain("<footer");
-    expect(markup.indexOf("homepage-project__name")).toBeLessThan(
-      markup.indexOf("homepage-hero")
+    expect(markup.indexOf("homepage-hero")).toBeLessThan(
+      markup.indexOf("homepage-project__name")
     );
     expect(markup.indexOf("homepage-hero")).toBeLessThan(
       markup.indexOf("homepage-project__category")
