@@ -138,7 +138,7 @@ html.is-info-scrolling {
   margin: 0;
 }
 
-@media (max-width: 700px) {
+@media (max-width: 857px) {
   .home-information {
     padding-top: 40px;
     padding-bottom: 55px;
@@ -565,10 +565,8 @@ body[data-page="home"] .nav__link--information {
   --project-meta-gap: 20px;
   --project-meta-width: 140px;
   --hero-intended-width: var(--hero-width);
-  --project-portrait-width: min(var(--portrait-width), var(--hero-frame));
-  --home-project-row-height: calc(var(--project-portrait-width) * 1.25);
   --hero-frame: min(var(--hero-intended-width),
-      max(0px, calc(var(--viewport-w) - 2 * var(--page-pad) - 2 * var(--project-meta-width) - 2 * var(--project-meta-gap))));
+      max(0px, calc(100% - var(--project-meta-width) - var(--project-meta-gap) - var(--project-meta-width) - var(--project-meta-gap))));
   display: grid;
   grid-template-columns: minmax(0, 1fr) var(--hero-frame) minmax(0, 1fr);
   grid-template-areas: "number hero category" "name name name";
@@ -639,10 +637,10 @@ body[data-page="home"] .hero {
   object-fit: contain;
 }
 
-/* Portraits use a 4:5 frame constrained by the available media track. */
+/* A shared 4:5 frame keeps portrait edges aligned with the home navigation. */
 body[data-page="home"] .hero__media.is-portrait {
-  width: var(--project-portrait-width);
-  height: var(--home-project-row-height);
+  width: var(--portrait-width);
+  height: calc(var(--portrait-width) * 1.25);
   max-width: none;
   max-height: none;
   object-fit: cover;
@@ -756,7 +754,7 @@ body[data-page="home"] .hero__media.is-portrait {
 
 body[data-page="home"] .project__name {
   grid-area: name;
-  width: var(--project-portrait-width);
+  width: var(--portrait-width);
   justify-self: center;
   white-space: normal;
   overflow-wrap: anywhere;
@@ -1450,13 +1448,13 @@ body[data-page="home"] .project__category {
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 857px) {
   body[data-page="home"] .projects {
     padding-block: 0;
   }
 
   .project-block {
-    --hero-frame: min(var(--hero-intended-width), calc(var(--viewport-w) - 2 * var(--page-pad)));
+    --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
     grid-template-areas:
       "hero"
@@ -1482,10 +1480,7 @@ body[data-page="home"] .project__category {
   }
 
   body[data-page="home"] .hero.has-portrait {
-    aspect-ratio: auto;
-    height: max(var(--home-project-row-height), min(75dvh,
-      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
-    min-height: var(--home-project-row-height);
+    min-height: calc(var(--portrait-width) * 1.25);
   }
 
   .project__name {
@@ -1499,7 +1494,7 @@ body[data-page="home"] .project__category {
   }
 }
 
-@media (min-width: 701px) {
+@media (min-width: 858px) {
   body[data-page="home"] .hero,
   body[data-page="home"] .hero__media:not(.is-portrait) {
     max-height: var(--home-project-row-height);
