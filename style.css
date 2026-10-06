@@ -1480,7 +1480,10 @@ body[data-page="home"] .project__category {
   }
 
   body[data-page="home"] .hero.has-portrait {
-    min-height: calc(var(--portrait-width) * 1.25);
+    aspect-ratio: auto;
+    height: max(var(--home-project-row-height), min(75dvh,
+      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
+    min-height: var(--home-project-row-height);
   }
 
   .project__name {

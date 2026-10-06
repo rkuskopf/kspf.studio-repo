@@ -37,3 +37,7 @@ Alternative: measure portrait bounds to position the caption. This adds load and
 ## Final breakpoint decision
 
 The user requested reverting the follow-up that shrank portraits to fit desktop metadata and resized static portrait-only containers. Those changes are reverted. Preserve the existing portrait sizing and stable slideshow container, and switch the homepage layout and desktop scroll smoothing to mobile behaviour at widths up to 857px. Side numbers and categories appear from 858px.
+
+## Mobile gap correction
+
+Keep the 857px breakpoint and original portrait sizes. Restore only the static mobile container-height correction: portrait-only slideshows use the portrait frame height, while mixed slideshows use the larger required portrait/landscape height across all slides. The container does not follow the current slide. This removes width-dependent empty space below portrait-only media without bringing back desktop portrait shrinking.

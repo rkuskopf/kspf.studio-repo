@@ -48,3 +48,7 @@ The user requested an additional 10px of space and a stable vertical title posit
 ## Final review adjustment
 
 Reverted the responsive follow-up sizing changes at the user's request. Mobile homepage layout now applies through 857px and desktop side labels/smoothing begin at 858px. Keep the 20px gap below the stable slideshow container and the original responsive portrait width.
+
+## Mobile gap correction
+
+The breakpoint rollback also reverted the mobile container correction. Restore that correction independently of desktop sizing: use the portrait height for portrait-only containers and one all-slide height for mixed containers. Keep the breakpoint at 857px, preserve portrait dimensions, and update the static stylesheet revision.
