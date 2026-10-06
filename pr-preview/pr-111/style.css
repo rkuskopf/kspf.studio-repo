@@ -85,7 +85,7 @@ html.is-info-scrolling {
 .home-information {
   min-height: clamp(260px, 35vh, 400px);
   min-height: clamp(260px, 35dvh, 400px);
-  padding: 60px 0 80px;
+  padding: 30px 0 55px;
 }
 
 .home-information__inner {
@@ -139,11 +139,6 @@ html.is-info-scrolling {
 }
 
 @media (max-width: 857px) {
-  .home-information {
-    padding-top: 40px;
-    padding-bottom: 55px;
-  }
-
   .home-information__details {
     column-gap: 16px;
     margin-top: 22px;
@@ -190,6 +185,12 @@ body[data-page="home"]:has(.top[hidden]) .home-information {
 
 body[data-page="home"]:has(.top[hidden]) .projects {
   padding-top: 0;
+}
+
+@media (min-width: 701px) {
+  body[data-page="home"]:has(.top[hidden]) .projects {
+    padding-top: clamp(48px, 9dvh, 80px);
+  }
 }
 
 body[data-page="home"] .project-block {
@@ -1459,7 +1460,7 @@ body[data-page="home"] .project__category {
 
 @media (max-width: 857px) {
   body[data-page="home"] .projects {
-    padding-block: 0;
+    padding-block: clamp(48px, 9dvh, 80px);
   }
 
   .project-block {
@@ -1477,8 +1478,8 @@ body[data-page="home"] .project__category {
     grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
-    padding-top: clamp(48px, 9dvh, 80px);
-    padding-bottom: clamp(48px, 9dvh, 80px);
+    padding-top: 0;
+    padding-bottom: 0;
     scroll-snap-align: start;
   }
 
@@ -1493,6 +1494,11 @@ body[data-page="home"] .project__category {
     height: max(var(--home-project-row-height), min(75dvh,
       calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
     min-height: var(--home-project-row-height);
+  }
+
+  body[data-page="home"]:has(.top[hidden]) .project-block:first-child .hero.has-portrait {
+    aspect-ratio: auto;
+    height: calc(var(--portrait-width) * 1.25);
   }
 
   .project__name {
