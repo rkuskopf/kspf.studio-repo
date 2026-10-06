@@ -141,7 +141,7 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   wheel(400);advance(32);
   browser.dispatchEvent(new browser.KeyboardEvent('keydown',{key:'ArrowDown'}));
   const stopped=y;advance(1000);assert.equal(y,stopped,'keyboard cancels pending wheel animation');
-  const desktop=matchMedia('(min-width: 701px) and (hover: hover) and (pointer: fine)');
+  const desktop=matchMedia('(min-width: 858px) and (hover: hover) and (pointer: fine)');
   desktop.matches=false;desktop.dispatchEvent(new browser.Event('change'));
   assert.equal(wheel(40),false,'mobile uses native input');
 });

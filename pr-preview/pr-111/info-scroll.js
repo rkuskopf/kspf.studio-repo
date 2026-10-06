@@ -24,12 +24,17 @@
     return root.dataset.homeInitialSection === "info" ? information : work;
   };
   const topFor = (target) => target.getBoundingClientRect().top + window.scrollY;
-  window.kspfHomeMinimumScroll = () => informationOpen ? 0 : topFor(work);
+  const informationLink = [...links].find((link) => link.dataset.infoScroll === "information");
+  // A scroll boundary is useful only when the CMS provides a visible way back.
+  const restrictInformation = () => root.dataset.homeInitialSection !== "info" &&
+    Boolean(informationLink) && !informationLink.closest("[hidden]");
+  window.kspfHomeMinimumScroll = () =>
+    restrictInformation() && !informationOpen ? topFor(work) : 0;
 
   const syncWorkSection = () => {
     if (navigating) return;
     const workTop = topFor(work);
-    if (!informationOpen && window.scrollY < workTop - 1) {
+    if (restrictInformation() && !informationOpen && window.scrollY < workTop - 1) {
       if (!window.kspfHomeScroll?.setPosition?.(workTop)) window.scrollTo(0, workTop);
       return;
     }
