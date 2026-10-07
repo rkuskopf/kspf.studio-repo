@@ -95,6 +95,11 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                     <ProjectLabel text={project.category} parts={project.categoryParts} />
                   </p>
                 </div>
+                {project.sideCaption?.trim() ? (
+                  <p className="homepage-project__side-caption">
+                    <ProjectLabel text={project.sideCaption} parts={project.sideCaptionParts} />
+                  </p>
+                ) : null}
               </section>
             );
           })}

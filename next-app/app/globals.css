@@ -257,12 +257,14 @@ body {
   display: contents;
 }
 
-.homepage-project__caption a {
+.homepage-project__caption a,
+.homepage-project__side-caption a {
   color: inherit;
   text-decoration: none;
 }
 
-.homepage-project__caption a:focus-visible {
+.homepage-project__caption a:focus-visible,
+.homepage-project__side-caption a:focus-visible {
   outline: 1px solid currentColor;
   outline-offset: 2px;
 }
@@ -282,11 +284,46 @@ body {
   overflow-wrap: anywhere;
 }
 
-.homepage-project__category {
+.homepage-project__side-caption {
+  z-index: 3;
+  min-width: 0;
+  max-width: 100%;
   grid-column: 3;
   grid-row: 1;
   justify-self: end;
+  text-align: right;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  line-height: 1.2;
+  margin: 0;
 }
+
+.homepage-project__caption {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) fit-content(45%);
+  column-gap: 16px;
+  align-items: start;
+  width: var(--homepage-portrait-width);
+  justify-self: center;
+}
+
+.homepage-project__category {
+  text-align: right;
+}
+
+.homepage-project__caption .homepage-project__name,
+.homepage-project__caption .homepage-project__category {
+  grid-area: auto;
+  display: block;
+  width: auto;
+  justify-self: stretch;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 
 @media (max-width: 1280px) {
   .homepage-projects {
@@ -355,29 +392,10 @@ body {
   }
 
   .homepage-project__number,
-  .homepage-project__category {
+  .homepage-project__side-caption {
     display: none;
   }
 
-  .homepage-project__caption {
-    grid-area: name;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) fit-content(45%);
-    column-gap: 16px;
-    align-items: start;
-    width: var(--homepage-portrait-width);
-    justify-self: center;
-  }
-
-  .homepage-project__caption .homepage-project__name,
-  .homepage-project__caption .homepage-project__category {
-    grid-area: auto;
-    display: block;
-    width: auto;
-    justify-self: stretch;
-    white-space: normal;
-    overflow-wrap: anywhere;
-  }
 
   .homepage-project__category {
     text-align: right;

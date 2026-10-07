@@ -74,6 +74,8 @@ export type HomepageProject = {
   category: string;
   displayNameParts?: ProjectLabelPart[];
   categoryParts?: ProjectLabelPart[];
+  sideCaption?: string;
+  sideCaptionParts?: ProjectLabelPart[];
   alt: string;
   order: number;
   slides: ProjectAsset[];

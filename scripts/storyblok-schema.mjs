@@ -246,6 +246,7 @@ export const STORYBLOK_COMPONENTS = [
       show_on_home: field("boolean", "Show on home", 7, { default_value: "true" }),
       order: field("number", "Order", 8, { decimals: 0, min_value: 0 }),
       project_number: field("text", "Project number", 16, { description: "Desktop side label, e.g. 01. Blank uses visible homepage position." }),
+      side_caption: field("richtext", "Side caption", 17, { allow_target_blank: true, description: "Optional caption beside the image on desktop. Hidden on mobile." }),
       ...PROJECT_PAGE_FIELDS,
     },
   },

@@ -132,7 +132,7 @@ describe("direct Storyblok home delivery", () => {
     ] }] });
     const category = linked("Project", "project-uuid");
     const payload = { stories: [{ ...story, content: { ...story.content,
-      display_name: linked("Aesop", "https://aesop.com"), category: linked("Contact", "mailto:studio@kspf.au"),
+      display_name: linked("Aesop", "https://aesop.com"), category: linked("Contact", "mailto:studio@kspf.au"), side_caption: linked("Visit", "https://example.com"),
     } }] };
     let requestedUrl: URL | undefined;
     const projects = await fetchHomepageProjects({ version: "draft", token: "preview-sentinel",
@@ -140,6 +140,8 @@ describe("direct Storyblok home delivery", () => {
     });
     expect(projects[0].displayNameParts).toEqual([{ text: "Aesop", href: "https://aesop.com" }]);
     expect(projects[0].categoryParts).toEqual([{ text: "Contact", href: "mailto:studio@kspf.au" }]);
+    expect(projects[0].sideCaption).toBe("Visit");
+    expect(projects[0].sideCaptionParts).toEqual([{ text: "Visit", href: "https://example.com" }]);
     expect(requestedUrl?.searchParams.get("resolve_links")).toBe("url");
     const internalProjects = await fetchHomepageProjects({ version: "draft", token: "preview-sentinel",
       fetchImpl: async () => jsonResponse({

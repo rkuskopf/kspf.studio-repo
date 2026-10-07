@@ -103,6 +103,9 @@
         createHero(project, index),
         caption
       );
+      if (project.sideCaption?.trim()) {
+        block.append(createProjectMeta("project__side-caption", project.sideCaption, project.sideCaptionParts));
+      }
       container.appendChild(block);
     });
 
