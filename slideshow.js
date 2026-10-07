@@ -37,9 +37,28 @@
     const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
     const left = homepage ? -rootRect.left : mediaRect.left - rootRect.left;
     const halfWidth = (homepage ? viewportWidth : mediaRect.width) / 2;
+    let hitLeft = homepage ? 0 : mediaRect.left;
+    let hitRight = homepage ? viewportWidth : mediaRect.left + mediaRect.width;
+    let hitBottom = mediaRect.top + mediaRect.height;
+    if (homepage) {
+      const labels = root.closest?.(".project-block")?.querySelectorAll(".project__name, .project__category") ?? [];
+      const mediaRight = mediaRect.left + mediaRect.width;
+      for (const label of labels) {
+        const rect = label.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) continue;
+        if (rect.bottom <= mediaRect.top || rect.top >= hitBottom + 8) continue;
+        if (rect.right <= mediaRect.left) {
+          hitLeft = Math.max(hitLeft, rect.right + 8);
+        } else if (rect.left >= mediaRight) {
+          hitRight = Math.min(hitRight, rect.left - 8);
+        } else if (rect.top > mediaRect.top) {
+          hitBottom = Math.min(hitBottom, rect.top - 8);
+        }
+      }
+    }
     const shared = {
       bottom: "auto",
-      height: `${mediaRect.height}px`,
+      height: `${Math.max(0, hitBottom - mediaRect.top)}px`,
       right: "auto",
       top: `${top}px`,
       width: `${halfWidth}px`,
@@ -48,8 +67,11 @@
     [previous, next].forEach((control) => {
       Object.entries(shared).forEach(([name, value]) => control.style.setProperty(name, value));
     });
-    previous.style.setProperty("left", `${left}px`);
+    const midpoint = rootRect.left + left + halfWidth;
+    previous.style.setProperty("left", `${hitLeft - rootRect.left}px`);
+    previous.style.setProperty("width", `${Math.max(0, midpoint - hitLeft)}px`);
     next.style.setProperty("left", `${left + halfWidth}px`);
+    next.style.setProperty("width", `${Math.max(0, hitRight - midpoint)}px`);
   };
 
   if (typeof module !== "undefined" && module.exports) {
