@@ -228,7 +228,7 @@ export function mapProjectStory(story: unknown): ProjectContent | null {
     storyUuid: story.uuid,
     slug: story.slug,
     title: content.title,
-    displayName: previewString(content.display_name, "display name"),
+    displayName: previewRichText(content.display_name, "display name"),
     category: previewRichText(content.category, "category"),
     description: previewString(content.description, "description"),
     showOnHome: content.show_on_home !== false,

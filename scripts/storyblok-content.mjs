@@ -1,3 +1,5 @@
+import { storyblokLabelParts } from "./storyblok-label-links.mjs";
+
 const firstBlock = (value) => (Array.isArray(value) && value.length ? value[0] : {});
 const blocks = (value) => (Array.isArray(value) ? value.filter(Boolean) : []);
 
@@ -140,13 +142,17 @@ export const mapExperienceStory = (story) => {
   };
 };
 
-export const mapProjectStory = (story) => {
+export const mapProjectStory = (story, links = []) => {
   const content = requireComponent(story, "project");
+  const displayNameParts = storyblokLabelParts(content.display_name, links);
+  const categoryParts = storyblokLabelParts(content.category, links);
   return {
     title: content.title || "",
-    displayName: content.display_name || content.title || story.name || "",
+    displayName: storyblokPlainText(content.display_name) || content.title || story.name || "",
     projectNumber: typeof content.project_number === "string" ? content.project_number.trim() : "",
     category: storyblokPlainText(content.category),
+    ...(displayNameParts ? { displayNameParts } : {}),
+    ...(categoryParts ? { categoryParts } : {}),
     description: content.description || "",
     viewUrl: storyblokLink(content.view_url),
     slides: slideUrls(content.slides),
@@ -194,7 +200,7 @@ const safeCaseFilename = (story) => {
   return `${raw || "case-study"}.json`;
 };
 
-export const buildContentFiles = ({ site, home, experience, projects, caseStudies }) => {
+export const buildContentFiles = ({ site, home, experience, projects, caseStudies, links = [] }) => {
   const sortedProjects = [...projects].sort((a, b) => storyOrder(a) - storyOrder(b));
   if (!sortedProjects.length) {
     throw new Error("Storyblok returned no project stories; refusing to deploy an empty homepage.");
@@ -204,7 +210,7 @@ export const buildContentFiles = ({ site, home, experience, projects, caseStudie
     ["content/site.json", mapSiteStory(site)],
     ["content/home.json", mapHomeStory(home)],
     ["content/experience.json", mapExperienceStory(experience)],
-    ["projects.json", { projects: sortedProjects.map(mapProjectStory) }],
+    ["projects.json", { projects: sortedProjects.map((story) => mapProjectStory(story, links)) }],
   ]);
 
   caseStudies.forEach((story) => {

@@ -129,6 +129,14 @@ const experienceStory = (experience) => ({
   },
 });
 
+const toRichText = (text) => ({
+  type: "doc",
+  content: String(text || "").split("\n").map((line) => ({
+    type: "paragraph",
+    content: line ? [{ type: "text", text: line }] : [],
+  })),
+});
+
 const projectStory = (project, index) => ({
   name: project.displayName || project.title || `Project ${index + 1}`,
   slug: slugify(project.displayName || project.title, `project-${index + 1}`),
@@ -136,7 +144,7 @@ const projectStory = (project, index) => ({
     component: "project",
     _uid: uid(),
     title: project.title || "",
-    display_name: project.displayName || project.title || "",
+    display_name: toRichText(project.displayName || project.title),
     project_number: project.projectNumber || "",
     category: project.category || "",
     description: project.description || "",

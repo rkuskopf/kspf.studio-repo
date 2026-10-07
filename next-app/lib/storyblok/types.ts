@@ -1,3 +1,6 @@
+import type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
+export type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
+
 export type StoryblokVersion = "published" | "draft";
 
 export type StoryblokSearchParams = Record<
@@ -69,6 +72,8 @@ export type HomepageProject = {
   title: string;
   displayName: string;
   category: string;
+  displayNameParts?: ProjectLabelPart[];
+  categoryParts?: ProjectLabelPart[];
   alt: string;
   order: number;
   slides: ProjectAsset[];

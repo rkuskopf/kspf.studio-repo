@@ -237,7 +237,7 @@ export const STORYBLOK_COMPONENTS = [
     preview_field: "display_name",
     schema: {
       title: field("text", "Title", 0),
-      display_name: field("text", "Display name", 1, { required: true }),
+      display_name: field("richtext", "Project title", 1, { required: true }),
       category: field("richtext", "Category", 2),
       description: field("textarea", "Description", 3),
       view_url: field("multilink", "View URL", 4),

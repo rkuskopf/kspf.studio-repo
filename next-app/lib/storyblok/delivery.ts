@@ -1,5 +1,6 @@
 import { StoryblokConfigurationError } from "./preview";
 import { storyblokPlainText } from "./rich-text";
+import { storyblokLabelParts } from "../../../scripts/storyblok-label-links.mjs";
 import type {
   HomeContent,
   HomepageProject,
@@ -266,7 +267,7 @@ const mapHomepageSlide = (value: unknown) => {
   return { url, type: mediaType(url, asset?.content_type) };
 };
 
-const mapHomepageProjectStory = (value: unknown) => {
+const mapHomepageProjectStory = (value: unknown, links: unknown) => {
   if (!isRecord(value) || !isRecord(value.content)) {
     return invalidHomepageProjects("contains an invalid project story");
   }
@@ -299,15 +300,17 @@ const mapHomepageProjectStory = (value: unknown) => {
       ? position
       : 0;
   const title = requiredString(content.title, "project title", invalidHomepageProjects);
-  const displayName = requiredString(
-    content.display_name,
-    "project display name",
-    invalidHomepageProjects
-  );
+  const displayName = storyblokPlainText(content.display_name);
+  if (displayName === null) {
+    return invalidHomepageProjects("has an invalid project display name");
+  }
   const category = storyblokPlainText(content.category);
   if (category === null) {
     return invalidHomepageProjects("has an invalid project category");
   }
+
+  const displayNameParts = storyblokLabelParts(content.display_name, links);
+  const categoryParts = storyblokLabelParts(content.category, links);
 
   return {
     visible,
@@ -319,6 +322,8 @@ const mapHomepageProjectStory = (value: unknown) => {
       displayName,
       projectNumber: typeof content.project_number === "string" ? content.project_number.trim() : "",
       category,
+      ...(displayNameParts ? { displayNameParts } : {}),
+      ...(categoryParts ? { categoryParts } : {}),
       alt: requiredString(content.alt, "project alt text", invalidHomepageProjects),
       order,
       slides: Array.isArray(content.slides) ? content.slides.map(mapHomepageSlide) : [],
@@ -468,6 +473,7 @@ export async function fetchHomepageProjects({
     cacheVersion,
     configureUrl: (url) => {
       url.searchParams.set("starts_with", "projects/");
+      url.searchParams.set("resolve_links", "url");
       url.searchParams.set("per_page", "100");
     },
   });
@@ -483,7 +489,7 @@ export async function fetchHomepageProjects({
           story.content.show_on_home === false
         )
     )
-    .map(mapHomepageProjectStory)
+    .map((story) => mapHomepageProjectStory(story, payload.links))
     .filter(({ visible }) => visible)
     .map(({ project }) => project)
     .sort((a, b) => a.order - b.order);
