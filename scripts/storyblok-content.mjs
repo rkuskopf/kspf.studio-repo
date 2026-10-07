@@ -155,6 +155,7 @@ export const mapProjectStory = (story, links = []) => {
     category: storyblokPlainText(content.category),
     ...(displayNameParts ? { displayNameParts } : {}),
     ...(categoryParts ? { categoryParts } : {}),
+    ...(content.show_slideshow_counter === true ? { showSlideshowCounter: true } : {}),
     ...(sideCaption.trim() ? { sideCaption, ...(sideCaptionParts ? { sideCaptionParts } : {}) } : {}),
     description: content.description || "",
     viewUrl: storyblokLink(content.view_url),

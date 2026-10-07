@@ -327,6 +327,7 @@ const mapHomepageProjectStory = (value: unknown, links: unknown) => {
       category,
       ...(displayNameParts ? { displayNameParts } : {}),
       ...(categoryParts ? { categoryParts } : {}),
+      ...(content.show_slideshow_counter === true ? { showSlideshowCounter: true } : {}),
       ...(sideCaption.trim() ? { sideCaption, ...(sideCaptionParts ? { sideCaptionParts } : {}) } : {}),
       alt: requiredString(content.alt, "project alt text", invalidHomepageProjects),
       order,

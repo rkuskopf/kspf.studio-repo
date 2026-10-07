@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 
 import type { HomepageProject } from "../lib/storyblok/types";
+import ProjectLabel from "./project-label";
 import { useHomepageViewport } from "./use-homepage-viewport";
 
 export function nextSlideIndex(current: number, delta: number, length: number) {
@@ -27,9 +28,11 @@ export function videoMotionAttributes(
 export default function HomepageSlideshow({
   project,
   priority = false,
+  titleId,
 }: {
   project: HomepageProject;
   priority?: boolean;
+  titleId?: string;
 }) {
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
@@ -123,103 +126,127 @@ export default function HomepageSlideshow({
     .join(" ");
 
   return (
-    <figure
-      ref={viewportElement}
-      className="homepage-hero"
-      tabIndex={0}
-      aria-label={`${project.displayName} slideshow`}
-      data-slide-index={index}
-      onKeyDown={(event) => {
-        if (!hasMultipleSlides) return;
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          move(-1);
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault();
-          move(1);
-        }
-      }}
-      onPointerDown={(event) => {
-        if (event.pointerType !== "touch" || !hasMultipleSlides) return;
-        pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
-        event.currentTarget.setPointerCapture?.(event.pointerId);
-      }}
-      onPointerUp={(event) => {
-        const start = pointer.current;
-        if (!start || start.id !== event.pointerId) return;
-        pointer.current = null;
-        const deltaX = event.clientX - start.x;
-        const deltaY = event.clientY - start.y;
-        if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > Math.abs(deltaY)) {
-          move(deltaX > 0 ? -1 : 1);
-        }
-      }}
-      onPointerCancel={() => {
-        pointer.current = null;
-      }}
-    >
-      {hasMultipleSlides ? (
-        <>
-          <button
-            className="homepage-hero__hit homepage-hero__hit--previous"
-            type="button"
-            aria-label={`Previous ${project.displayName} image`}
-            onClick={() => move(-1)}
-          />
-          <button
-            className="homepage-hero__hit homepage-hero__hit--next"
-            type="button"
-            aria-label={`Next ${project.displayName} image`}
-            onClick={() => move(1)}
-          />
-        </>
-      ) : null}
+    <>
+      <figure
+        ref={viewportElement}
+        className="homepage-hero"
+        tabIndex={0}
+        aria-label={`${project.displayName} slideshow`}
+        data-slide-index={index}
+        onKeyDown={(event) => {
+          if (!hasMultipleSlides) return;
+          if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            move(-1);
+          } else if (event.key === "ArrowRight") {
+            event.preventDefault();
+            move(1);
+          }
+        }}
+        onPointerDown={(event) => {
+          if (event.pointerType !== "touch" || !hasMultipleSlides) return;
+          pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY };
+          event.currentTarget.setPointerCapture?.(event.pointerId);
+        }}
+        onPointerUp={(event) => {
+          const start = pointer.current;
+          if (!start || start.id !== event.pointerId) return;
+          pointer.current = null;
+          const deltaX = event.clientX - start.x;
+          const deltaY = event.clientY - start.y;
+          if (Math.abs(deltaX) > 30 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            move(deltaX > 0 ? -1 : 1);
+          }
+        }}
+        onPointerCancel={() => {
+          pointer.current = null;
+        }}
+      >
+        {hasMultipleSlides ? (
+          <>
+            <button
+              className="homepage-hero__hit homepage-hero__hit--previous"
+              type="button"
+              aria-label={`Previous ${project.displayName} image`}
+              onClick={() => move(-1)}
+            />
+            <button
+              className="homepage-hero__hit homepage-hero__hit--next"
+              type="button"
+              aria-label={`Next ${project.displayName} image`}
+              onClick={() => move(1)}
+            />
+          </>
+        ) : null}
 
-      {slide.type === "video" ? (
-        <video
-          ref={videoElement}
-          className={mediaClassName}
-          key={slide.url}
-          src={slide.url}
-          {...videoMotionAttributes(prefersReducedMotion, isVisible)}
-          muted
-          playsInline
-          preload="metadata"
-          aria-label={project.alt || project.displayName}
-          onLoadedMetadata={(event) => {
-            setIsPortrait(
-              isPortraitDimensions(event.currentTarget.videoWidth, event.currentTarget.videoHeight)
-            );
-            setIsClassified(true);
-          }}
-          onError={() => {
-            setIsPortrait(false);
-            setIsClassified(true);
-          }}
-        />
-      ) : (
-        <img
-          ref={imageElement}
-          className={mediaClassName}
-          key={slide.url}
-          src={slide.url}
-          alt={project.alt || project.displayName}
-          loading={priority ? "eager" : "lazy"}
-          onLoad={(event) => {
-            setIsPortrait(
-              isPortraitDimensions(
-                event.currentTarget.naturalWidth,
-                event.currentTarget.naturalHeight
-              )
-            );
-            setIsClassified(true);
-          }}
-          onError={() => {
-            setIsPortrait(false);
-            setIsClassified(true);
-          }}
-        />
-      )}
-    </figure>
+        {slide.type === "video" ? (
+          <video
+            ref={videoElement}
+            className={mediaClassName}
+            key={slide.url}
+            src={slide.url}
+            {...videoMotionAttributes(prefersReducedMotion, isVisible)}
+            muted
+            playsInline
+            preload="metadata"
+            aria-label={project.alt || project.displayName}
+            onLoadedMetadata={(event) => {
+              setIsPortrait(
+                isPortraitDimensions(event.currentTarget.videoWidth, event.currentTarget.videoHeight)
+              );
+              setIsClassified(true);
+            }}
+            onError={() => {
+              setIsPortrait(false);
+              setIsClassified(true);
+            }}
+          />
+        ) : (
+          <img
+            ref={imageElement}
+            className={mediaClassName}
+            key={slide.url}
+            src={slide.url}
+            alt={project.alt || project.displayName}
+            loading={priority ? "eager" : "lazy"}
+            onLoad={(event) => {
+              setIsPortrait(
+                isPortraitDimensions(
+                  event.currentTarget.naturalWidth,
+                  event.currentTarget.naturalHeight
+                )
+              );
+              setIsClassified(true);
+            }}
+            onError={() => {
+              setIsPortrait(false);
+              setIsClassified(true);
+            }}
+          />
+        )}
+      </figure>
+      <div className="homepage-project__caption">
+        <p className="homepage-project__name" id={titleId}>
+          <ProjectLabel text={project.displayName} parts={project.displayNameParts} />
+        </p>
+        <div className="homepage-project__caption-right">
+          {project.category.trim() ? (
+            <p className="homepage-project__category">
+              <ProjectLabel text={project.category} parts={project.categoryParts} />
+            </p>
+          ) : null}
+          {project.showSlideshowCounter ? (
+            <p className="homepage-project__side-caption homepage-project__slide-counter" aria-label={`Slide ${index + 1} of ${project.slides.length}`}>
+              <span className="homepage-project__slide-current" aria-hidden="true">{String(index + 1).padStart(3, "0")}</span>
+              <span aria-hidden="true">{String(project.slides.length).padStart(3, "0")}</span>
+            </p>
+          ) : project.sideCaption?.trim() ? (
+            <p className="homepage-project__side-caption">
+              <ProjectLabel text={project.sideCaption} parts={project.sideCaptionParts} />
+            </p>
+          ) : null}
+        </div>
+      </div>
+    </>
   );
 }

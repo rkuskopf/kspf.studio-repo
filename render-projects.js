@@ -94,18 +94,36 @@
       block.className = "project-block";
       const caption = document.createElement("div");
       caption.className = "project__caption";
+      const captionRight = document.createElement("div");
+      captionRight.className = "project__caption-right";
+      if (project.category?.trim() || project.categoryParts?.some(part => part.text?.trim())) {
+        captionRight.append(createProjectMeta("project__category", project.category, project.categoryParts));
+      }
+      if (project.showSlideshowCounter === true && project.slides?.length) {
+        const counter = document.createElement("p");
+        counter.className = "project__side-caption project__slide-counter";
+        counter.setAttribute("aria-label", `Slide 1 of ${project.slides.length}`);
+        for (const [className, value] of [["project__slide-current", 1], ["project__slide-total", project.slides.length]]) {
+          const span = document.createElement("span");
+          span.className = className;
+          span.textContent = String(value).padStart(3, "0");
+          span.setAttribute("aria-hidden", "true");
+          counter.append(span);
+        }
+        captionRight.append(counter);
+      } else if (project.sideCaption?.trim()) {
+        captionRight.append(createProjectMeta("project__side-caption", project.sideCaption, project.sideCaptionParts));
+      }
       caption.append(
         createProjectMeta("project__name", project.displayName || project.title, project.displayNameParts),
-        createProjectMeta("project__category", project.category, project.categoryParts)
+        captionRight
       );
+      const number = project.projectNumber?.trim() || String(index + 1);
       block.append(
-        createProjectMeta("project__number", project.projectNumber?.trim() || String(index + 1).padStart(2, "0")),
+        createProjectMeta("project__number", /^\d+$/.test(number) ? number.padStart(3, "0") : number),
         createHero(project, index),
         caption
       );
-      if (project.sideCaption?.trim()) {
-        block.append(createProjectMeta("project__side-caption", project.sideCaption, project.sideCaptionParts));
-      }
       container.appendChild(block);
     });
 

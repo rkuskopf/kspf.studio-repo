@@ -13,6 +13,9 @@ test("extends project without changing legacy fields", () => {
   assert.equal(schema.category.type, "richtext");
   assert.equal(schema.side_caption.type, "richtext");
   assert.equal(schema.side_caption.required, undefined);
+  assert.equal(schema.side_caption.display_name, "Image caption");
+  assert.equal(schema.show_slideshow_counter.type, "boolean");
+  assert.equal(schema.show_slideshow_counter.default_value, "false");
   assert.equal(schema.display_name.type, "richtext");
   assert.equal(schema.page_enabled.default_value, "false");
   assert.deepEqual(schema.body.component_whitelist, ["project_header", "text", "media"]);
