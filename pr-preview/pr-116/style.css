@@ -793,7 +793,9 @@ body[data-page="home"] .project__name {
 }
 
 body[data-page="home"] .project__category {
-  display: none;
+  display: block;
+  z-index: 1001;
+  overflow-wrap: anywhere;
 }
 
 body[data-page="home"] .project__caption {
@@ -807,7 +809,7 @@ body[data-page="home"] .project__caption {
 }
 
 body[data-page="home"] .project__caption .project__name,
-body[data-page="home"] .project__caption .project__category {
+body[data-page="home"] .project__caption .project__side-caption {
   grid-area: auto;
   display: block;
   width: auto;
@@ -818,7 +820,7 @@ body[data-page="home"] .project__caption .project__category {
 }
 
 .project__side-caption {
-  display: none;
+  display: block;
   z-index: 1001;
   margin: 0;
   font-family: 'Courier New', Courier, monospace;
@@ -827,6 +829,37 @@ body[data-page="home"] .project__caption .project__category {
   white-space: pre-line;
   overflow-wrap: anywhere;
   text-align: right;
+}
+
+body[data-page="home"] .project__caption-right {
+  display: contents;
+}
+
+body[data-page="home"] .project__caption .project__slide-counter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.project__slide-current {
+  color: #888;
+}
+
+@media (max-width: 857px) {
+  body[data-page="home"] .project__caption-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px;
+    min-width: 0;
+  }
+  body[data-page="home"] .project__caption .project__category {
+    display: block;
+    grid-area: auto;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
 }
 
 .project__text {
@@ -1579,7 +1612,7 @@ body[data-page="home"] .project__caption .project__category {
     text-align: left;
   }
 
-  body[data-page="home"] .project__side-caption {
+  body[data-page="home"] .project__category {
     grid-area: auto;
     position: absolute;
     max-width: calc((var(--viewport-w) - var(--portrait-width)) / 2 - 2 * var(--page-pad));

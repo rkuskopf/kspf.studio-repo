@@ -94,3 +94,19 @@ describe("homepage slideshow presentation", () => {
     expect(markup).not.toContain('aria-label="Next image"');
   });
 });
+
+
+describe("optional slideshow counter", () => {
+  it("counts image and video slides and replaces rich text only when enabled", () => {
+    const markup = render({ ...project, showSlideshowCounter: true, sideCaption: "Hidden caption" });
+    expect(markup).toContain('aria-label="Slide 1 of 2"');
+    expect(markup).toContain('class="homepage-project__slide-current" aria-hidden="true">001</span>');
+    expect(markup).toContain('aria-hidden="true">002</span>');
+    expect(markup).not.toContain("Hidden caption");
+    expect(render({ ...project, showSlideshowCounter: false, sideCaption: "Visible caption" })).toContain("Visible caption");
+    expect(render(project)).not.toContain("homepage-project__slide-counter");
+  });
+  it("keeps a single slide counter visible", () => {
+    expect(render({ ...project, showSlideshowCounter: true, slides: [project.slides[0]] })).toContain('aria-label="Slide 1 of 1"');
+  });
+});

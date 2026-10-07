@@ -2,7 +2,6 @@ import { loadHomePage } from "../lib/storyblok/server";
 import type { HomePageData, StoryblokSearchParams } from "../lib/storyblok/types";
 import HomepageInitialPosition from "./homepage-initial-position";
 import HomepageSlideshow from "./homepage-slideshow";
-import ProjectLabel from "./project-label";
 import StoryblokPreviewBridge from "./storyblok-preview-bridge";
 
 export const dynamic = "force-dynamic";
@@ -76,6 +75,7 @@ export function HomeContentView({ data }: { data: HomePageData }) {
 
         <div className="homepage-projects">
           {data.projects.map((project, index) => {
+            const number = project.projectNumber?.trim() || String(index + 1);
             const titleId = `homepage-project-${project.slug}-title`;
             return (
               <section
@@ -84,22 +84,9 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                 key={project.storyId}
               >
                 <p className="homepage-project__number">
-                  {project.projectNumber?.trim() || String(index + 1).padStart(2, "0")}
+                  {/^\d+$/.test(number) ? number.padStart(3, "0") : number}
                 </p>
-                <HomepageSlideshow project={project} priority={index === 0} />
-                <div className="homepage-project__caption">
-                  <p className="homepage-project__name" id={titleId}>
-                    <ProjectLabel text={project.displayName} parts={project.displayNameParts} />
-                  </p>
-                  <p className="homepage-project__category">
-                    <ProjectLabel text={project.category} parts={project.categoryParts} />
-                  </p>
-                </div>
-                {project.sideCaption?.trim() ? (
-                  <p className="homepage-project__side-caption">
-                    <ProjectLabel text={project.sideCaption} parts={project.sideCaptionParts} />
-                  </p>
-                ) : null}
+                <HomepageSlideshow project={project} priority={index === 0} titleId={titleId} />
               </section>
             );
           })}

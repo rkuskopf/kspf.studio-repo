@@ -544,6 +544,11 @@
 
     const applySlide = (nextIndex, immediate = false) => {
       index = (nextIndex + slides.length) % slides.length;
+      const counter = root.closest(".project-block")?.querySelector(".project__slide-counter");
+      if (counter) {
+        counter.querySelector(".project__slide-current").textContent = String(index + 1).padStart(3, "0");
+        counter.setAttribute("aria-label", `Slide ${index + 1} of ${slides.length}`);
+      }
       const current = slides[index];
       if (isVideo(current)) {
         showVideo(current, immediate);

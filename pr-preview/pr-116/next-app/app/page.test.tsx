@@ -98,8 +98,8 @@ describe("the Storyblok-backed App Router route", () => {
     data.projects[1].projectNumber = "  ";
     const markup = render(data);
     expect(markup).toContain('class="homepage-project__number">007</p>');
-    expect(markup).toContain('class="homepage-project__number">02</p>');
-    expect(render(publishedData)).toContain('class="homepage-project__number">01</p>');
+    expect(markup).toContain('class="homepage-project__number">002</p>');
+    expect(render(publishedData)).toContain('class="homepage-project__number">001</p>');
   });
   it("renders Information before Work with the current content hierarchy", () => {
     const markup = render(publishedData);

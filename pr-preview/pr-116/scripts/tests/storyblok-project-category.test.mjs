@@ -77,3 +77,11 @@ test("missing and blank side captions leave legacy project data unchanged", () =
     assert.equal("sideCaption" in mapProjectStory(story), false);
   }
 });
+
+
+test("slideshow counter is opt-in and independent of caption text", () => {
+  for (const value of [undefined, false, "true", true]) {
+    const project = mapProjectStory({ content: { component: "project", title: "Project", show_slideshow_counter: value } });
+    assert.equal(project.showSlideshowCounter === true, value === true);
+  }
+});
