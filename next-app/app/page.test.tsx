@@ -180,3 +180,15 @@ describe("the Storyblok-backed App Router route", () => {
     expect(markup).not.toContain("preview-render-sentinel");
   });
 });
+
+
+it("exposes global layout and visibility settings while keeping slideshows available", () => {
+  const data = structuredClone(publishedData);
+  data.content.captions = { layout: "flipped", showNumber: false, showTitle: true, showCategory: false, showCaption: true };
+  const markup = render(data);
+  expect(markup).toContain('data-caption-layout="flipped"');
+  expect(markup).toContain('data-hide-project-number="true"');
+  expect(markup).toContain('data-hide-project-category="true"');
+  expect(markup).toContain('data-hide-project-caption="false"');
+  expect(markup).toContain('class="homepage-hero"');
+});

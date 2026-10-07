@@ -182,6 +182,7 @@ describe("direct Storyblok home delivery", () => {
       intro: "Art Direction + Web Development",
       initialSection: "info",
       showNavigation: false,
+      captions: { layout: "current", showNumber: true, showTitle: true, showCategory: true, showCaption: true },
     });
     expect(requestedUrl?.origin).toBe("https://api-ap.storyblok.com");
     expect(requestedUrl?.pathname).toBe("/v2/cdn/stories/home");

@@ -1,3 +1,4 @@
+import { homepageCaptions } from "../../../scripts/homepage-captions.mjs";
 import { StoryblokConfigurationError } from "./preview";
 import { storyblokPlainText } from "./rich-text";
 import { storyblokLabelParts } from "../../../scripts/storyblok-label-links.mjs";
@@ -97,6 +98,7 @@ const mapHomeContent = (payload: unknown): HomeContent => {
     intro: content.intro ?? "",
     initialSection: content.initial_section === "info" ? "info" : "work",
     showNavigation: content.show_navigation !== false,
+    captions: homepageCaptions(content),
   };
 };
 
