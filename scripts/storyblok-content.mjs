@@ -146,6 +146,8 @@ export const mapProjectStory = (story, links = []) => {
   const content = requireComponent(story, "project");
   const displayNameParts = storyblokLabelParts(content.display_name, links);
   const categoryParts = storyblokLabelParts(content.category, links);
+  const sideCaption = storyblokPlainText(content.side_caption);
+  const sideCaptionParts = storyblokLabelParts(content.side_caption, links);
   return {
     title: content.title || "",
     displayName: storyblokPlainText(content.display_name) || content.title || story.name || "",
@@ -153,6 +155,8 @@ export const mapProjectStory = (story, links = []) => {
     category: storyblokPlainText(content.category),
     ...(displayNameParts ? { displayNameParts } : {}),
     ...(categoryParts ? { categoryParts } : {}),
+    ...(content.show_slideshow_counter === true ? { showSlideshowCounter: true } : {}),
+    ...(sideCaption.trim() ? { sideCaption, ...(sideCaptionParts ? { sideCaptionParts } : {}) } : {}),
     description: content.description || "",
     viewUrl: storyblokLink(content.view_url),
     slides: slideUrls(content.slides),

@@ -128,7 +128,65 @@ test("numbers visible projects and places the title after media", async () => {
   });
   await new Promise((resolve) => setImmediate(resolve));
   const blocks = [...window.document.querySelectorAll(".project-block")];
-  assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007", "02"]);
+  assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007", "002"]);
   assert.deepEqual([...blocks[0].children].map(node => node.className), ["project__number", "hero js-slideshow", "project__caption"]);
-  assert.deepEqual([...blocks[0].querySelector(".project__caption").children].map(node => node.className), ["project__name", "project__category"]);
+  assert.deepEqual([...blocks[0].querySelector(".project__caption").children].map(node => node.className), ["project__name", "project__caption-right"]);
+});
+
+
+test("counter replaces the optional caption and pads numeric project labels", async () => {
+  const window = new Window();
+  window.document.body.innerHTML = '<div id="projects"></div>';
+  const source = await readFile(new URL("../../render-projects.js", import.meta.url), "utf8");
+  const projects = [
+    { title: "Counter", projectNumber: "7", showSlideshowCounter: true, sideCaption: "Hidden text", category: "Print", slides: ["/a.jpg", "/b.mp4"] },
+    { title: "Text", projectNumber: "A1", sideCaption: "Visible text", slides: ["/a.jpg"] },
+  ];
+  vm.runInNewContext(source, { document: window.document, window, console,
+    fetch: async () => ({ ok: true, json: async () => ({ projects }) }),
+  });
+  await new Promise(resolve => setImmediate(resolve));
+  const blocks = [...window.document.querySelectorAll(".project-block")];
+  assert.equal(blocks[0].querySelector(".project__number").textContent, "007");
+  assert.equal(blocks[1].querySelector(".project__number").textContent, "A1");
+  assert.equal(blocks[0].querySelector(".project__slide-current").textContent, "001");
+  assert.equal(blocks[0].querySelector(".project__slide-total").textContent, "002");
+  assert.equal(blocks[0].querySelector(".project__slide-counter").getAttribute("aria-label"), "Slide 1 of 2");
+  assert.equal(blocks[0].textContent.includes("Hidden text"), false);
+  assert.equal(blocks[0].querySelector(".project__category").textContent, "Print");
+  assert.equal(blocks[1].querySelector(".project__side-caption").textContent, "Visible text");
+  assert.equal(blocks[1].querySelector(".project__slide-counter"), null);
+});
+
+test("slideshow navigation updates only its own counter and wraps across video slides", async () => {
+  const window = new Window({ url: "https://localhost:8001/" });
+  window.document.body.innerHTML = '<div id="projects"></div>';
+  const context = vm.createContext({ window, document: window.document, console, Image: window.Image,
+    IntersectionObserver: class { observe() {} },
+    fetch: async () => ({ ok: true, json: async () => ({ projects: [
+      { title: "First", showSlideshowCounter: true, slides: ["/a.jpg", "/b.mp4"] },
+      { title: "Second", showSlideshowCounter: true, slides: ["/a.jpg"] },
+    ] }) }),
+  });
+  window.requestAnimationFrame = () => 1;
+  window.setTimeout = () => 1;
+  vm.runInContext(await readFile(new URL("../../slideshow.js", import.meta.url), "utf8"), context);
+  vm.runInContext(await readFile(new URL("../../render-projects.js", import.meta.url), "utf8"), context);
+  await new Promise(resolve => setImmediate(resolve));
+  const blocks = [...window.document.querySelectorAll(".project-block")];
+  const current = index => blocks[index].querySelector(".project__slide-current").textContent;
+  blocks[0].querySelector(".hero__hit--next").click();
+  assert.equal(current(0), "002");
+  assert.equal(current(1), "001");
+  blocks[0].querySelector(".hero__hit--next").click();
+  assert.equal(current(0), "001");
+  blocks[0].querySelector(".hero").dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowLeft" }));
+  assert.equal(current(0), "002");
+  const hero = blocks[0].querySelector(".hero");
+  hero.dispatchEvent(new window.PointerEvent("pointerdown", { pointerType: "touch", pointerId: 1, clientX: 120, clientY: 20 }));
+  hero.dispatchEvent(new window.PointerEvent("pointermove", { pointerType: "touch", pointerId: 1, clientX: 40, clientY: 20, cancelable: true }));
+  assert.equal(current(0), "001");
+  hero.dispatchEvent(new window.KeyboardEvent("keydown", { key: "ArrowLeft" }));
+  assert.equal(blocks[0].querySelector(".project__slide-counter").getAttribute("aria-label"), "Slide 2 of 2");
+  await window.happyDOM.abort();
 });

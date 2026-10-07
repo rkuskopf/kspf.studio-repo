@@ -311,6 +311,9 @@ const mapHomepageProjectStory = (value: unknown, links: unknown) => {
 
   const displayNameParts = storyblokLabelParts(content.display_name, links);
   const categoryParts = storyblokLabelParts(content.category, links);
+  const sideCaption = content.side_caption == null ? "" : storyblokPlainText(content.side_caption);
+  if (sideCaption === null) return invalidHomepageProjects("has an invalid side caption");
+  const sideCaptionParts = storyblokLabelParts(content.side_caption, links);
 
   return {
     visible,
@@ -324,6 +327,8 @@ const mapHomepageProjectStory = (value: unknown, links: unknown) => {
       category,
       ...(displayNameParts ? { displayNameParts } : {}),
       ...(categoryParts ? { categoryParts } : {}),
+      ...(content.show_slideshow_counter === true ? { showSlideshowCounter: true } : {}),
+      ...(sideCaption.trim() ? { sideCaption, ...(sideCaptionParts ? { sideCaptionParts } : {}) } : {}),
       alt: requiredString(content.alt, "project alt text", invalidHomepageProjects),
       order,
       slides: Array.isArray(content.slides) ? content.slides.map(mapHomepageSlide) : [],
