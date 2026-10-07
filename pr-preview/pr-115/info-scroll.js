@@ -1,0 +1,130 @@
+(() => {
+  const root = document.documentElement;
+  const links = document.querySelectorAll("[data-info-scroll]");
+  const work = document.getElementById("work");
+  const information = document.getElementById("information");
+  if (!links.length || !work || !information) {
+    window.kspfMarkHomeReady?.("position");
+    return;
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let animationFrame = 0;
+  let navigating = false;
+  let informationOpen = false;
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  const targetFor = (name) => (name === "information" ? information : work);
+  const initialTarget = () => {
+    if (location.hash === "#information") return information;
+    if (location.hash === "#work") return work;
+    return root.dataset.homeInitialSection === "info" ? information : work;
+  };
+  const topFor = (target) => target.getBoundingClientRect().top + window.scrollY;
+  const informationLink = [...links].find((link) => link.dataset.infoScroll === "information");
+  // A scroll boundary is useful only when the CMS provides a visible way back.
+  const restrictInformation = () => root.dataset.homeInitialSection !== "info" &&
+    Boolean(informationLink) && !informationLink.closest("[hidden]");
+  window.kspfHomeMinimumScroll = () =>
+    restrictInformation() && !informationOpen ? topFor(work) : 0;
+
+  const syncWorkSection = () => {
+    if (navigating) return;
+    const workTop = topFor(work);
+    if (restrictInformation() && !informationOpen && window.scrollY < workTop - 1) {
+      if (!window.kspfHomeScroll?.setPosition?.(workTop)) window.scrollTo(0, workTop);
+      return;
+    }
+    if (window.scrollY < workTop - 1) return;
+    informationOpen = false;
+    root.classList.remove("is-info-scrolling");
+    if (location.hash === "#information") {
+      history.replaceState({ ...history.state, homeSection: "work" }, "", "#work");
+    }
+  };
+  window.addEventListener("scroll", syncWorkSection, { passive: true });
+
+  const finish = (target, markReady) => {
+    navigating = false;
+    if (markReady) window.kspfMarkHomeReady?.("position");
+    if (target === work) {
+      root.classList.remove("is-info-scrolling");
+    }
+    target.focus({ preventScroll: true });
+    syncWorkSection();
+  };
+
+  const scrollToTarget = (target, animate = true, markReady = false) => {
+    if (animationFrame) cancelAnimationFrame(animationFrame);
+    animationFrame = 0;
+    navigating = true;
+    informationOpen = target === information;
+    root.classList.add("is-info-scrolling");
+
+    if (window.kspfHomeScroll?.navigate(target, animate && !reduceMotion.matches,
+      () => finish(target, markReady))) return;
+
+    const start = window.scrollY;
+    const end = topFor(target);
+    const distance = end - start;
+    const duration = animate && !reduceMotion.matches ? 900 : 0;
+
+    if (!duration || Math.abs(distance) < 1) {
+      window.scrollTo(0, end);
+      finish(target, markReady);
+      return;
+    }
+
+    const startedAt = performance.now();
+    const step = (now) => {
+      const progress = Math.min((now - startedAt) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      window.scrollTo(0, start + distance * eased);
+
+      if (progress < 1) {
+        animationFrame = requestAnimationFrame(step);
+        return;
+      }
+
+      animationFrame = 0;
+      finish(target, markReady);
+    };
+
+    animationFrame = requestAnimationFrame(step);
+  };
+
+  links.forEach((link) => {
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const returnToWork = link.dataset.infoScroll === "information" &&
+        window.scrollY < topFor(work) - 1;
+      const name = returnToWork ? "work" : link.dataset.infoScroll;
+      const target = targetFor(name);
+      history.pushState({ homeSection: name }, "", returnToWork ? "#work" : link.getAttribute("href"));
+      scrollToTarget(target);
+    });
+  });
+
+  window.addEventListener("popstate", () => {
+    scrollToTarget(targetFor(location.hash === "#information" ? "information" : "work"));
+  });
+
+  const setInitialPosition = () => {
+    scrollToTarget(initialTarget(), false, true);
+  };
+
+  window.addEventListener("kspf:content-ready", setInitialPosition, { once: true });
+  requestAnimationFrame(() => {
+    scrollToTarget(initialTarget(), false);
+    if (
+      window.kspfHomeReady?.site &&
+      window.kspfHomeReady?.home &&
+      window.kspfHomeReady?.projects
+    ) {
+      setInitialPosition();
+    }
+  });
+})();
