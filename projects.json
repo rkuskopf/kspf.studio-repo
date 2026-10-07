@@ -22,6 +22,7 @@
           "href": "https://aesop.com"
         }
       ],
+      "showSlideshowCounter": true,
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
       "slides": [
@@ -35,7 +36,9 @@
       "title": "Arcteryx",
       "displayName": "Print Campaign",
       "projectNumber": "",
-      "category": "ARCTERYX",
+      "category": "Arcteryx",
+      "showSlideshowCounter": true,
+      "sideCaption": "test",
       "description": "",
       "viewUrl": "",
       "slides": [
@@ -49,7 +52,8 @@
       "title": "Jak Architecture",
       "displayName": "Portfolio Site",
       "projectNumber": "",
-      "category": "JAK ARCHITECTURE",
+      "category": "Jak Architecture",
+      "showSlideshowCounter": true,
       "description": "Portfolio site for Jak Architecture. \nDesigned by Chloe Larkin and built on Cargo with custom interactions",
       "viewUrl": "https://www.jakarchitecture.com",
       "slides": [
@@ -64,7 +68,8 @@
       "title": "",
       "displayName": "Identity",
       "projectNumber": "",
-      "category": "ALT. COSMETICS",
+      "category": "Alt. Cosmetics",
+      "showSlideshowCounter": true,
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "viewUrl": "",
       "slides": [
@@ -81,22 +86,25 @@
       "title": "ALBUS LUMEN",
       "displayName": "Shopify Theme Customisation",
       "projectNumber": "",
-      "category": "ALBUS LUMEN",
+      "category": "Albus Lumen",
+      "showSlideshowCounter": true,
       "description": "",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
         "https://res.cloudinary.com/kw2p64ib/video/upload/v1788243546/Sequence_01_3.mp4",
         "/assets/uploads/albus-04.png",
-        "/assets/uploads/Albus-video-02.mp4"
+        "/assets/uploads/Albus-video-02.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1791354785/Albus_1.mp4"
       ],
       "alt": "Project preview",
       "showOnHome": true
     },
     {
       "title": "AP-REPS",
-      "displayName": "  Portfolio Site",
+      "displayName": "Portfolio Site",
       "projectNumber": "",
       "category": "AP-REPS",
+      "showSlideshowCounter": true,
       "description": "",
       "viewUrl": "https://apreps.com.au",
       "slides": [
