@@ -48,7 +48,7 @@
     el.hidden = !body;
     const html = body
       .split("\n")
-      .map((line) => line.trim())
+      .map((line) => line.trim().replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"))
       .join("<br>");
     el.innerHTML = html;
   };
