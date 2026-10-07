@@ -64,7 +64,10 @@ export const buildProductDesignTracer = (uid = randomUid) => ({
   content: {
     component: "project",
     title: "Product design tracer",
-    display_name: "Product design tracer",
+    display_name: {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Product design tracer" }] }],
+    },
     category: "Product Design",
     description: "A minimal schema tracer for the project-page model.",
     show_on_home: false,

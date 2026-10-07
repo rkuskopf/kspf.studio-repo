@@ -16,7 +16,10 @@ const linkAttributes = (marks, links) => {
     const story = attrs.story || links.find((link) => link?.uuid &&
       (link.uuid === attrs.uuid || link.uuid === attrs.href));
     const slug = story?.url || story?.full_slug;
-    if (typeof slug === "string") href = `/${slug.replace(/^\/+/, "")}`;
+    if (typeof slug === "string") {
+      const path = slug.replace(/^\/+/, "");
+      href = path === "home" ? "/" : `/${path}`;
+    }
   }
   if (attrs.linktype === "email" && typeof href === "string" && !/^mailto:/i.test(href)) {
     href = `mailto:${href}`;
