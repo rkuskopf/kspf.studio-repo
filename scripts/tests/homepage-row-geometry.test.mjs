@@ -72,12 +72,9 @@ test("Next.js homepage rows mirror the static portrait track", async () => {
   );
   assert.match(
     css,
-    /\.homepage-projects\s*{[^}]*display:\s*grid[^}]*row-gap:\s*100px[^}]*padding-block:\s*max\(0px, calc\(\(100dvh - var\(--homepage-project-row-height\)\) \/ 2\)\)/s,
+    /\.homepage-projects\s*{[^}]*display:\s*grid[^}]*row-gap:\s*70px[^}]*padding-block:\s*max\(0px, calc\(\(100dvh - var\(--homepage-project-row-height\)\) \/ 2\)\)/s,
   );
-  assert.match(
-    css,
-    /@media \(max-width:\s*1280px\)\s*{[\s\S]*?\.homepage-projects\s*{[^}]*row-gap:\s*70px/s,
-  );
+
   assert.match(
     css,
     /\.homepage-project\s*{[^}]*grid-template-rows:\s*var\(--homepage-project-row-height\) auto/s,

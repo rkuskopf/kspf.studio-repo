@@ -25,6 +25,11 @@
       }
       document.documentElement.dataset.homeInitialSection =
         data.initialSection === "info" ? "info" : "work";
+      const captions = data.captions || {};
+      document.documentElement.dataset.captionLayout = captions.layout || "current";
+      for (const key of ["Number", "Title", "Category", "Caption"]) {
+        document.documentElement.dataset["hideProject" + key] = String(captions["show" + key] === false);
+      }
       const navigation = document.querySelector(".top");
       if (navigation) navigation.hidden = data.showNavigation === false;
     })

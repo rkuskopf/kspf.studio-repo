@@ -3,5 +3,12 @@
   "metaDescription": "",
   "intro": "",
   "initialSection": "info",
-  "showNavigation": false
+  "showNavigation": false,
+  "captions": {
+    "layout": "flipped",
+    "showNumber": true,
+    "showTitle": true,
+    "showCategory": true,
+    "showCaption": true
+  }
 }

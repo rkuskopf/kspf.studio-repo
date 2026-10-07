@@ -213,6 +213,18 @@ export const STORYBLOK_COMPONENTS = [
       show_navigation: field("boolean", "Show navigation", 4, {
         default_value: "true",
       }),
+      caption_layout: field("option", "Caption layout", 5, {
+        source: "self", default_value: "current", options: [
+          { name: "Current — number left, Category right", value: "current" },
+          { name: "Flipped — Category left, number right", value: "flipped" },
+          { name: "Below image", value: "below" },
+          { name: "Below and flipped — Category left, title right", value: "below-flipped" },
+        ], description: "Desktop caption placement across all homepage projects. Mobile captions stay below the image.",
+      }),
+      show_project_numbers: field("boolean", "Show project numbers", 6, { default_value: "true", description: "Show desktop project numbers across the homepage." }),
+      show_project_titles: field("boolean", "Show project titles", 7, { default_value: "true" }),
+      show_project_categories: field("boolean", "Show Categories", 8, { default_value: "true" }),
+      show_image_captions: field("boolean", "Show image captions / counters", 9, { default_value: "true" }),
     },
   },
   {
