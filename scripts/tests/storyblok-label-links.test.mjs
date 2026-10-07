@@ -36,6 +36,17 @@ test("renders unsafe links as text and keeps safe neighbouring links", () => {
   }
 });
 
+test("routes the Home story to the root and preserves its anchor", () => {
+  for (const slug of ["home", "/home"]) {
+    assert.deepEqual(storyblokLabelParts(document(paragraph(linkedText("Home", {
+      href: "home-uuid", linktype: "story", story: { full_slug: slug },
+    })))), [{ text: "Home", href: "/" }]);
+    assert.deepEqual(storyblokLabelParts(document(paragraph(linkedText("About", {
+      href: "home-uuid", linktype: "story", anchor: "information",
+    }))), [{ uuid: "home-uuid", url: slug }]), [{ text: "About", href: "/#information" }]);
+  }
+});
+
 test("plain text and unlinked documents keep the legacy data shape", () => {
   assert.equal(storyblokLabelParts("Existing title"), undefined);
   assert.equal(storyblokLabelParts(document(paragraph({ type: "text", text: "Existing title" }))), undefined);
