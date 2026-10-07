@@ -52,7 +52,7 @@ test("static homepage rows use the portrait track without moving navigation", as
     "30px",
   );
   assert.doesNotMatch(css, /clamp\(560px, 80dvh, 800px\)/);
-  assert.doesNotMatch(css, /first-child \.hero\s*{/);
+  assert.match(css, /body\[data-page="home"\]:has\(\.top\[hidden\]\) \.project-block:first-child \.hero\s*{[^}]*height:\s*calc\(var\(--portrait-width\) \* 1\.25\)/s, 'the first mobile frame reserves its final height before orientation probes finish');
 });
 
 test("Next.js homepage rows mirror the static portrait track", async () => {

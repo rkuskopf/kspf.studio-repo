@@ -61,11 +61,31 @@ const replaceLink = (source, className, { label, href, hidden }) => {
   });
 };
 
+const replaceElement = (source, tag, className, content, attributes = {}) => {
+  const pattern = new RegExp(
+    `<${tag}\\b(?=[^>]*\\bclass="[^"]*\\b${className}\\b[^"]*")[^>]*>[\\s\\S]*?<\\/${tag}>`,
+    "gi"
+  );
+  return source.replace(pattern, (element) => {
+    let opening = element.slice(0, element.indexOf(">") + 1);
+    for (const [name, value] of Object.entries(attributes)) {
+      opening = setAttribute(opening, name, value);
+    }
+    return `${opening}${content}</${tag}>`;
+  });
+};
+
 let html = readFileSync(htmlPath, "utf8");
 const home = readJson(homePath);
 const site = readJson(sitePath);
 
 if (home) {
+  html = html.replace(/<html\b[^>]*>/i, (opening) =>
+    setAttribute(opening, "data-home-initial-section", home.initialSection === "info" ? "info" : "work")
+  );
+  html = html.replace(/<header\b(?=[^>]*\bclass="[^"]*\btop\b[^"]*")[^>]*>/i,
+    (opening) => setAttribute(opening, "hidden", home.showNavigation === false ? true : null)
+  );
   if (home.title) {
     html = html.replace(
       /<title>[\s\S]*?<\/title>/i,
@@ -94,6 +114,27 @@ if (home) {
         )}\n    ${end}`;
       }
     );
+  }
+}
+
+if (site) {
+  const info = site.informationOverlay || {};
+  for (const [tag, className, value] of [
+    ["h1", "js-home-information-title", site.nav?.homeLabel],
+    ["h2", "js-info-contact-title", info.contactTitle],
+    ["h2", "js-info-services-title", info.servicesTitle],
+  ]) {
+    if (value !== undefined && value !== null) html = replaceElement(html, tag, className, escapeHtml(value));
+  }
+  const body = String(info.contactBody || "").trim();
+  html = replaceElement(html, "p", "js-info-contact-body",
+    body.split("\n").map((line) => escapeHtml(line.trim())).join("<br>"), { hidden: !body });
+  const email = String(info.contactEmail || "").replace(/^mailto:/i, "");
+  html = replaceElement(html, "a", "js-info-contact-email", escapeHtml(email),
+    { hidden: !email, href: email ? `mailto:${email}` : null });
+  if (Array.isArray(info.services)) {
+    html = replaceElement(html, "ul", "js-info-services-list",
+      info.services.filter(Boolean).map((service) => `<li>${escapeHtml(service)}</li>`).join(""));
   }
 }
 
