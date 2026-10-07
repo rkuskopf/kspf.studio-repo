@@ -270,9 +270,9 @@ body {
 }
 
 .homepage-project__number {
-  grid-column: 1;
+  grid-column: 3;
   grid-row: 1;
-  justify-self: start;
+  justify-self: end;
 }
 
 .homepage-project__name {
@@ -288,10 +288,10 @@ body {
   position: absolute;
   z-index: 3;
   top: calc(var(--homepage-project-row-height) / 2);
-  right: var(--homepage-gutter);
+  left: var(--homepage-gutter);
   transform: translateY(-50%);
   max-width: calc((100% - var(--homepage-portrait-width)) / 2 - 2 * var(--homepage-gutter));
-  text-align: right;
+  text-align: left;
   white-space: pre-line;
   overflow-wrap: anywhere;
 }

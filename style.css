@@ -1608,9 +1608,9 @@ body[data-page="home"] .project__caption .project__slide-counter {
     grid-area: auto;
     position: absolute;
     top: calc(var(--home-project-row-height) / 2);
-    left: var(--page-pad);
+    right: var(--page-pad);
     transform: translateY(-50%);
-    text-align: left;
+    text-align: right;
   }
 
   body[data-page="home"] .project__category {
@@ -1618,10 +1618,10 @@ body[data-page="home"] .project__caption .project__slide-counter {
     position: absolute;
     max-width: calc((var(--viewport-w) - var(--portrait-width)) / 2 - 2 * var(--page-pad));
     top: calc(var(--home-project-row-height) / 2);
-    right: var(--page-pad);
+    left: var(--page-pad);
     display: block;
     transform: translateY(-50%);
-    text-align: right;
+    text-align: left;
   }
 }
 
