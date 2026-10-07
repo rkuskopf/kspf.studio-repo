@@ -13,6 +13,11 @@ export function HomeContentView({ data }: { data: HomePageData }) {
   return (
     <main
       className="homepage"
+      data-caption-layout={data.content.captions?.layout || "current"}
+      data-hide-project-number={data.content.captions?.showNumber === false}
+      data-hide-project-title={data.content.captions?.showTitle === false}
+      data-hide-project-category={data.content.captions?.showCategory === false}
+      data-hide-project-caption={data.content.captions?.showCaption === false}
       data-storyblok-content={data.isPreview ? "draft" : "published"}
     >
       <HomepageInitialPosition section={data.content.initialSection} />

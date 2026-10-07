@@ -80,6 +80,14 @@ const home = readJson(homePath);
 const site = readJson(sitePath);
 
 if (home) {
+  const captions = home.captions || {};
+  html = html.replace(/<html\b[^>]*>/i, opening => {
+    let tag = setAttribute(opening, "data-caption-layout", captions.layout || "current");
+    for (const key of ["Number", "Title", "Category", "Caption"]) {
+      tag = setAttribute(tag, "data-hide-project-" + key.toLowerCase(), String(captions["show" + key] === false));
+    }
+    return tag;
+  });
   html = html.replace(/<html\b[^>]*>/i, (opening) =>
     setAttribute(opening, "data-home-initial-section", home.initialSection === "info" ? "info" : "work")
   );

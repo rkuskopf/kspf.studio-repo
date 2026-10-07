@@ -23,6 +23,7 @@ export type HomeContent = {
   intro: string;
   initialSection: "info" | "work";
   showNavigation: boolean;
+  captions?: { layout: "current" | "flipped" | "below" | "below-flipped"; showNumber: boolean; showTitle: boolean; showCategory: boolean; showCaption: boolean };
 };
 
 export type SiteNavigation = {

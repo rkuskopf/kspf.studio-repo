@@ -88,7 +88,7 @@ body {
 
 .homepage-projects {
   display: grid;
-  row-gap: 100px;
+  row-gap: 70px;
   padding-block: max(0px, calc((100dvh - var(--homepage-project-row-height)) / 2));
 }
 
@@ -347,12 +347,6 @@ body {
 }
 
 
-@media (max-width: 1280px) {
-  .homepage-projects {
-    row-gap: 70px;
-  }
-}
-
 @media (max-width: 857px) {
   .homepage-information {
     padding-top: 40px;
@@ -532,4 +526,92 @@ body {
 /* Keep links unadorned across hover and visited states. */
 a:any-link {
   text-decoration: none;
+}
+
+.homepage[data-hide-project-number="true"] .homepage-project__number,
+.homepage[data-hide-project-title="true"] .homepage-project__name,
+.homepage[data-hide-project-category="true"] .homepage-project__category,
+.homepage[data-hide-project-caption="true"] .homepage-project__side-caption {
+  display: none !important;
+}
+.homepage-project__caption .homepage-project__name { grid-column: 1; }
+.homepage-project__caption .homepage-project__side-caption { grid-column: 2; }
+.homepage-project__caption-right { grid-column: 2; }
+
+/* Reserve the mobile Category row before crossing the caption breakpoint. */
+.homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([data-hide-project-category="true"]) .homepage-project__caption:has(.homepage-project__category) {
+  min-height: 32.8px;
+}
+
+@media (min-width: 858px) {
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="below"], [data-caption-layout="below-flipped"]) .homepage-project__number {
+    grid-column: 1;
+    justify-self: start;
+  }
+  .homepage[data-caption-layout="current"] .homepage-project__category {
+    right: var(--homepage-gutter);
+    left: auto;
+    text-align: right;
+  }
+  .homepage[data-caption-layout="flipped"] .homepage-project__number {
+    grid-column: 3;
+    justify-self: end;
+  }
+  .homepage[data-caption-layout="flipped"] .homepage-project__category {
+    left: var(--homepage-gutter);
+    right: auto;
+    text-align: left;
+  }
+  .homepage:is([data-caption-layout="below"], [data-caption-layout="below-flipped"]) .homepage-project__category {
+    position: static;
+    transform: none;
+    max-width: none;
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+  .homepage:is([data-caption-layout="below"], [data-caption-layout="below-flipped"]) .homepage-project__side-caption {
+    grid-row: 2;
+  }
+  .homepage:is([data-caption-layout="below"], [data-caption-layout="below-flipped"]) .homepage-project__caption {
+    row-gap: 4px;
+    min-height: 32.8px;
+  }
+
+  .homepage[data-caption-layout="below-flipped"] .homepage-project__caption {
+    grid-template-columns: fit-content(45%) minmax(0, 1fr);
+  }
+  .homepage[data-caption-layout="below-flipped"] .homepage-project__category {
+    grid-column: 1;
+    justify-self: stretch;
+    text-align: left;
+  }
+  .homepage[data-caption-layout="below-flipped"] .homepage-project__caption .homepage-project__name {
+    grid-column: 2;
+    grid-row: 1;
+    text-align: right;
+  }
+
+}
+
+@media (max-width: 857px) {
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption {
+    row-gap: 4px;
+  }
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption-right {
+    display: contents;
+  }
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption .homepage-project__category {
+    grid-column: 1;
+    grid-row: 1;
+    justify-self: stretch;
+    text-align: left;
+  }
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption .homepage-project__name,
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption .homepage-project__side-caption {
+    grid-row: 1;
+  }
+  .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([data-hide-project-category="true"]) .homepage-project__caption:has(.homepage-project__category) .homepage-project__name {
+    grid-row: 2;
+  }
 }

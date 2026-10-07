@@ -1,3 +1,4 @@
+import { homepageCaptions } from "./homepage-captions.mjs";
 import { storyblokLabelParts } from "./storyblok-label-links.mjs";
 
 const firstBlock = (value) => (Array.isArray(value) && value.length ? value[0] : {});
@@ -120,6 +121,7 @@ export const mapHomeStory = (story) => {
     intro: content.intro || "",
     initialSection: content.initial_section === "info" ? "info" : "work",
     showNavigation: content.show_navigation !== false,
+    captions: homepageCaptions(content),
   };
 };
 
