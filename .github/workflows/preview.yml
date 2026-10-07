@@ -46,3 +46,4 @@ jobs:
         with:
           source-dir: . # If your site is in a subfolder, change this
           pages-base-url: kspf.au
+          wait-for-pages-deployment: true
