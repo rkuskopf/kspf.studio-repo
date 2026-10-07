@@ -1511,7 +1511,8 @@ body[data-page="home"] .project__category {
     min-height: var(--home-project-row-height);
   }
 
-  body[data-page="home"]:has(.top[hidden]) .project-block:first-child .hero.has-portrait {
+  /* Reserve the opening frame before asynchronous slide dimensions arrive. */
+  body[data-page="home"]:has(.top[hidden]) .project-block:first-child .hero {
     aspect-ratio: auto;
     height: calc(var(--portrait-width) * 1.25);
   }
