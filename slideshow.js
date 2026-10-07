@@ -33,8 +33,10 @@
     if (mediaRect.width <= 0 || mediaRect.height <= 0) return;
 
     const top = mediaRect.top - rootRect.top;
-    const left = mediaRect.left - rootRect.left;
-    const halfWidth = mediaRect.width / 2;
+    const homepage = document.body?.dataset.page === "home";
+    const viewportWidth = document.documentElement.clientWidth || window.innerWidth;
+    const left = homepage ? -rootRect.left : mediaRect.left - rootRect.left;
+    const halfWidth = (homepage ? viewportWidth : mediaRect.width) / 2;
     const shared = {
       bottom: "auto",
       height: `${mediaRect.height}px`,
