@@ -110,3 +110,24 @@ test("slideshow controls follow the rendered media width within a wider hero", a
     width: "250px",
   });
 });
+
+test("homepage arrow targets stop before side links and caption text", async () => {
+  const { positionHitArea } = await loadSlideshowExports({ homepage: true });
+  const style = () => ({ values: {}, setProperty(name, value) { this.values[name] = value; } });
+  const previous = { style: style() };
+  const next = { style: style() };
+  const labels = [
+    { getBoundingClientRect: () => ({ left: 1060, right: 1240, top: 380, bottom: 420, width: 180, height: 40 }) },
+    { getBoundingClientRect: () => ({ left: 400, right: 880, top: 730, bottom: 770, width: 480, height: 40 }) },
+  ];
+  const hero = {
+    getBoundingClientRect: () => ({ left: 240, top: 100 }),
+    closest: () => ({ querySelectorAll: () => labels }),
+  };
+  const media = { getBoundingClientRect: () => ({ left: 390, right: 890, top: 120, bottom: 745, width: 500, height: 625 }) };
+  positionHitArea(hero, media, previous, next);
+  assert.equal(next.style.values.left, "392px");
+  assert.equal(next.style.values.width, "420px", "right target ends eight pixels before the side label");
+  assert.equal(previous.style.values.height, "602px", "targets end eight pixels before the lower caption");
+  assert.equal(next.style.values.height, "602px");
+});
