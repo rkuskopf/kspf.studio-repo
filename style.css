@@ -1705,3 +1705,8 @@ body[data-page="home"] .project__category {
   position: relative;
   display: block;
 }
+
+/* Keep links unadorned across the site, including hover and visited states. */
+a:any-link {
+  text-decoration: none;
+}
