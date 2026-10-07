@@ -4,11 +4,12 @@ import test from "node:test";
 import vm from "node:vm";
 import { Window } from "happy-dom";
 
-const loadSlideshowExports = async () => {
+const loadSlideshowExports = async ({ homepage = false, viewportWidth = 1264 } = {}) => {
   const source = await readFile(new URL("../../slideshow.js", import.meta.url), "utf8");
   const module = { exports: {} };
   const document = {
-    documentElement: { dataset: {}, style: { setProperty() {} } },
+    documentElement: { dataset: {}, clientWidth: viewportWidth, style: { setProperty() {} } },
+    body: { dataset: { page: homepage ? "home" : "project" } },
     querySelectorAll() { return []; },
   };
   const window = {
@@ -22,7 +23,7 @@ const loadSlideshowExports = async () => {
   return module.exports;
 };
 
-test("homepage slideshow controls stay inside the hero image frame", async () => {
+test("slideshow controls remain positioned relative to the hero", async () => {
   const window = new Window();
   const css = await readFile(new URL("../../style.css", import.meta.url), "utf8");
 
@@ -44,6 +45,38 @@ test("homepage slideshow controls stay inside the hero image frame", async () =>
   assert.equal(window.getComputedStyle(previous).width, "50%");
   assert.equal(window.getComputedStyle(next).position, "absolute");
   assert.equal(window.getComputedStyle(next).width, "50%");
+});
+
+test("homepage arrows cover both halves of the viewport outside a narrow slide", async () => {
+  const { positionHitArea } = await loadSlideshowExports({ homepage: true });
+  const style = () => ({ values: {}, setProperty(name, value) { this.values[name] = value; } });
+  const previous = { style: style() };
+  const next = { style: style() };
+  const hero = { getBoundingClientRect: () => ({ left: 240, top: 100 }) };
+  const media = { getBoundingClientRect: () => ({ left: 390, top: 120, width: 500, height: 625 }) };
+
+  positionHitArea(hero, media, previous, next);
+
+  assert.equal(previous.style.values.left, "-240px", "left edge reaches the viewport, not the image");
+  assert.equal(previous.style.values.width, "632px", "half the usable browser width excludes its scrollbar");
+  assert.equal(next.style.values.left, "392px", "next begins at the browser midpoint");
+  assert.equal(next.style.values.width, "632px");
+  assert.equal(previous.style.values.top, "20px");
+  assert.equal(previous.style.values.height, "625px", "navigation stays outside the vertical hit area");
+});
+
+test("homepage arrows reach the viewport edges at a mobile width", async () => {
+  const { positionHitArea } = await loadSlideshowExports({ homepage: true, viewportWidth: 390 });
+  const style = () => ({ values: {}, setProperty(name, value) { this.values[name] = value; } });
+  const previous = { style: style() };
+  const next = { style: style() };
+  const hero = { getBoundingClientRect: () => ({ left: 15, top: 25 }) };
+  const media = { getBoundingClientRect: () => ({ left: 15, top: 25, width: 360, height: 450 }) };
+  positionHitArea(hero, media, previous, next);
+  assert.equal(previous.style.values.left, "-15px");
+  assert.equal(previous.style.values.width, "195px");
+  assert.equal(next.style.values.left, "180px");
+  assert.equal(next.style.values.width, "195px");
 });
 
 test("slideshow controls follow the rendered media width within a wider hero", async () => {
