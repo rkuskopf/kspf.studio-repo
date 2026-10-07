@@ -259,8 +259,7 @@ body {
 
 .homepage-project__caption a {
   color: inherit;
-  text-decoration: underline;
-  text-underline-offset: 2px;
+  text-decoration: none;
 }
 
 .homepage-project__caption a:focus-visible {
@@ -478,4 +477,9 @@ body {
   .project-page {
     padding: 1.25rem;
   }
+}
+
+/* Keep links unadorned across hover and visited states. */
+a:any-link {
+  text-decoration: none;
 }
