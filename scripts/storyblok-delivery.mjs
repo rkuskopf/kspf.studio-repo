@@ -51,12 +51,15 @@ export const fetchStoryblokContent = async ({
     return data.story;
   };
 
+  const links = [];
   const getStories = async (startsWith, contentType) => {
     const data = await request("stories", {
       starts_with: startsWith,
       content_type: contentType,
+      resolve_links: "url",
       per_page: 100,
     });
+    if (Array.isArray(data.links)) links.push(...data.links);
     return Array.isArray(data.stories) ? data.stories : [];
   };
 
@@ -74,6 +77,7 @@ export const fetchStoryblokContent = async ({
     experience,
     projects,
     caseStudies,
-    files: buildContentFiles({ site, home, experience, projects, caseStudies }),
+    links,
+    files: buildContentFiles({ site, home, experience, projects, caseStudies, links }),
   };
 };

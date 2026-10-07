@@ -755,6 +755,21 @@ body[data-page="home"] .hero__media.is-portrait {
   text-align: left;
 }
 
+.project__caption {
+  display: contents;
+}
+
+.project__caption a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.project__caption a:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
 .project__category {
   grid-area: category;
   justify-self: end;
@@ -766,7 +781,7 @@ body[data-page="home"] .project__name {
   grid-area: name;
   width: var(--portrait-width);
   justify-self: center;
-  white-space: normal;
+  white-space: pre-line;
   overflow-wrap: anywhere;
 }
 
@@ -1509,6 +1524,27 @@ body[data-page="home"] .project__category {
   .project__number,
   .project__category {
     display: none;
+  }
+
+  body[data-page="home"] .project__caption {
+    grid-area: name;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) fit-content(45%);
+    column-gap: 16px;
+    align-items: start;
+    width: var(--portrait-width);
+    justify-self: center;
+  }
+
+  body[data-page="home"] .project__caption .project__name,
+  body[data-page="home"] .project__caption .project__category {
+    grid-area: auto;
+    display: block;
+    width: auto;
+    min-width: 0;
+    justify-self: stretch;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
   }
 }
 

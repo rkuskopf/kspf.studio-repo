@@ -76,6 +76,22 @@ afterEach(() => {
 });
 
 describe("the Storyblok-backed App Router route", () => {
+  it("renders links in both captions, preserves breaks, and escapes their text", () => {
+    const data = structuredClone(publishedData);
+    data.projects[0].displayNameParts = [{ text: "Aesop <archive>", href: "https://aesop.com", target: "_blank" }];
+    data.projects[0].categoryParts = [{ text: "Print\n" }, { text: "Contact", href: "mailto:studio@kspf.au" }];
+    const markup = render(data);
+    expect(markup).toContain('<a href="https://aesop.com" target="_blank" rel="noopener noreferrer">Aesop &lt;archive&gt;</a>');
+    expect(markup).toContain('<a href="mailto:studio@kspf.au">Contact</a>');
+    expect(markup).toContain("<br/>");
+  });
+  it("preserves editorial title line breaks beside the category", () => {
+    const data = structuredClone(publishedData);
+    data.projects[0].displayName = "Aesop\nAthenaeum";
+    const markup = render(data);
+    expect(markup).toContain('class="homepage-project__caption"');
+    expect(markup).toContain('<span>Aesop</span><span><br/>Athenaeum</span>');
+  });
   it("renders explicit numbers and falls back to visible feed position", () => {
     const data = structuredClone(publishedData);
     data.projects[0].projectNumber = "007";

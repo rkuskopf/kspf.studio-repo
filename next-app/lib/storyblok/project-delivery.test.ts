@@ -19,7 +19,10 @@ const projectStory = () => ({
     _uid: "project-content-uid",
     component: "project",
     title: "Product design tracer",
-    display_name: "Product design tracer",
+    display_name: {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "Product design tracer" }] }],
+    },
     category: {
       type: "doc",
       content: [

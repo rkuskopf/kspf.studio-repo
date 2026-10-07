@@ -92,7 +92,10 @@ const projectStory = ({
     _uid: `${slug}-content-uid`,
     component: "project",
     title: slug.toUpperCase(),
-    display_name: slug === "arcteryx" ? "ARCTERYX" : "Second project",
+    display_name: slug === "arcteryx" ? {
+      type: "doc",
+      content: [{ type: "paragraph", content: [{ type: "text", text: "ARCTERYX" }] }],
+    } : "Second project",
     category: slug === "arcteryx" ? {
       type: "doc",
       content: [
@@ -120,6 +123,36 @@ const jsonResponse = (body: unknown, status = 200) =>
   });
 
 describe("direct Storyblok home delivery", () => {
+  it("preserves title and category link marks through homepage delivery", async () => {
+    const story = projectStory({ id: 11, slug: "arcteryx", position: 1, slides: [{
+      component: "media_slide", legacy_url: "https://example.com/image.jpg",
+    }] });
+    const linked = (text: string, href: string) => ({ type: "doc", content: [{ type: "paragraph", content: [
+      { type: "text", text, marks: [{ type: "link", attrs: { href } }] },
+    ] }] });
+    const category = linked("Project", "project-uuid");
+    const payload = { stories: [{ ...story, content: { ...story.content,
+      display_name: linked("Aesop", "https://aesop.com"), category: linked("Contact", "mailto:studio@kspf.au"),
+    } }] };
+    let requestedUrl: URL | undefined;
+    const projects = await fetchHomepageProjects({ version: "draft", token: "preview-sentinel",
+      fetchImpl: async (input) => { requestedUrl = new URL(String(input)); return jsonResponse(payload); },
+    });
+    expect(projects[0].displayNameParts).toEqual([{ text: "Aesop", href: "https://aesop.com" }]);
+    expect(projects[0].categoryParts).toEqual([{ text: "Contact", href: "mailto:studio@kspf.au" }]);
+    expect(requestedUrl?.searchParams.get("resolve_links")).toBe("url");
+    const internalProjects = await fetchHomepageProjects({ version: "draft", token: "preview-sentinel",
+      fetchImpl: async () => jsonResponse({
+        stories: [{ ...story, content: { ...story.content,
+          category: { ...category, content: [{ type: "paragraph", content: [{ type: "text", text: "Project",
+            marks: [{ type: "link", attrs: { href: "project-uuid", linktype: "story" } }],
+          }] }] },
+        } }],
+        links: [{ uuid: "project-uuid", url: "projects/example" }],
+      }),
+    });
+    expect(internalProjects[0].categoryParts).toEqual([{ text: "Project", href: "/projects/example" }]);
+  });
   it("fetches and maps the published AP home story", async () => {
     let requestedUrl: URL | undefined;
     let requestedInit: RequestInit | undefined;

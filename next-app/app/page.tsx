@@ -2,6 +2,7 @@ import { loadHomePage } from "../lib/storyblok/server";
 import type { HomePageData, StoryblokSearchParams } from "../lib/storyblok/types";
 import HomepageInitialPosition from "./homepage-initial-position";
 import HomepageSlideshow from "./homepage-slideshow";
+import ProjectLabel from "./project-label";
 import StoryblokPreviewBridge from "./storyblok-preview-bridge";
 
 export const dynamic = "force-dynamic";
@@ -76,7 +77,6 @@ export function HomeContentView({ data }: { data: HomePageData }) {
         <div className="homepage-projects">
           {data.projects.map((project, index) => {
             const titleId = `homepage-project-${project.slug}-title`;
-            const categoryLines = project.category.split("\n");
             return (
               <section
                 className="homepage-project"
@@ -87,17 +87,14 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                   {project.projectNumber?.trim() || String(index + 1).padStart(2, "0")}
                 </p>
                 <HomepageSlideshow project={project} priority={index === 0} />
-                <p className="homepage-project__name" id={titleId}>
-                  {project.displayName}
-                </p>
-                <p className="homepage-project__category">
-                  {categoryLines.map((line, lineIndex) => (
-                    <span key={`${line}-${lineIndex}`}>
-                      {lineIndex > 0 ? <br /> : null}
-                      {line}
-                    </span>
-                  ))}
-                </p>
+                <div className="homepage-project__caption">
+                  <p className="homepage-project__name" id={titleId}>
+                    <ProjectLabel text={project.displayName} parts={project.displayNameParts} />
+                  </p>
+                  <p className="homepage-project__category">
+                    <ProjectLabel text={project.category} parts={project.categoryParts} />
+                  </p>
+                </div>
               </section>
             );
           })}

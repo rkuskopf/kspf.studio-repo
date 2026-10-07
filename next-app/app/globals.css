@@ -253,6 +253,21 @@ body {
   white-space: nowrap;
 }
 
+.homepage-project__caption {
+  display: contents;
+}
+
+.homepage-project__caption a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.homepage-project__caption a:focus-visible {
+  outline: 1px solid currentColor;
+  outline-offset: 2px;
+}
+
 .homepage-project__number {
   grid-column: 1;
   grid-row: 1;
@@ -343,6 +358,30 @@ body {
   .homepage-project__number,
   .homepage-project__category {
     display: none;
+  }
+
+  .homepage-project__caption {
+    grid-area: name;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) fit-content(45%);
+    column-gap: 16px;
+    align-items: start;
+    width: var(--homepage-portrait-width);
+    justify-self: center;
+  }
+
+  .homepage-project__caption .homepage-project__name,
+  .homepage-project__caption .homepage-project__category {
+    grid-area: auto;
+    display: block;
+    width: auto;
+    justify-self: stretch;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .homepage-project__category {
+    text-align: right;
   }
 }
 
