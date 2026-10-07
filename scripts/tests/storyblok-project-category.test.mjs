@@ -40,6 +40,17 @@ test("keeps legacy plain-text project categories working", () => {
   assert.equal(mapProjectStory(projectStory("Web Development")).category, "Web Development");
 });
 
+test("maps rich-text project titles without losing paragraph or hard breaks", () => {
+  const story = projectStory("Web");
+  story.content.display_name = {
+    type: "doc", content: [
+      { type: "paragraph", content: [{ type: "text", text: "Aesop" }, { type: "hard_break" }, { type: "text", text: "Athenaeum" }] },
+      { type: "paragraph", content: [{ type: "text", text: "2026" }] },
+    ],
+  };
+  assert.equal(mapProjectStory(story).displayName, "Aesop\nAthenaeum\n2026");
+});
+
 test("maps an editorial project number without losing leading zeroes", () => {
   const story = projectStory("Print");
   story.content.project_number = "007";

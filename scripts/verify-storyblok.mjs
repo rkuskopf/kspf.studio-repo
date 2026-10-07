@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import assert from "node:assert/strict";
-import { buildContentFiles } from "./storyblok-content.mjs";
+import { buildContentFiles, storyblokPlainText } from "./storyblok-content.mjs";
 import { STORYBLOK_COMPONENTS } from "./storyblok-schema.mjs";
 import { buildSeedPlan } from "./storyblok-seed.mjs";
 
@@ -49,7 +49,7 @@ assert.equal(
 );
 projectData.projects.forEach((project, index) => {
   const seed = projectSeeds[index].content;
-  assert.equal(project.displayName, seed.display_name, "Project order should be stable");
+  assert.equal(project.displayName, storyblokPlainText(seed.display_name), "Project order should be stable");
   assert.equal(project.slides.length, seed.slides.length, "Project media should survive the import");
 });
 assert.equal(

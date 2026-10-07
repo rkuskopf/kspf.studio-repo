@@ -30,10 +30,13 @@ test("fetches EU draft stories and returns mapped files in memory", async () => 
       {
         stories: [
           story("projects/the-athenaeum", "project", {
-            display_name: "The Athenaeum",
+            display_name: { type: "doc", content: [{ type: "paragraph", content: [
+              { type: "text", text: "The Athenaeum", marks: [{ type: "link", attrs: { href: "project-uuid", linktype: "story" } }] },
+            ] }] },
             slides: [],
           }),
         ],
+        links: [{ uuid: "project-uuid", url: "projects/the-athenaeum" }],
       },
     ],
     [
@@ -72,6 +75,10 @@ test("fetches EU draft stories and returns mapped files in memory", async () => 
 
   assert.equal(result.files.get("content/home.json").title, "Draft home");
   assert.equal(result.files.get("projects.json").projects[0].displayName, "The Athenaeum");
+  assert.deepEqual(result.files.get("projects.json").projects[0].displayNameParts, [
+    { text: "The Athenaeum", href: "/projects/the-athenaeum" },
+  ]);
+  assert.equal(requests.find((request) => request.searchParams.get("starts_with") === "projects/").searchParams.get("resolve_links"), "url");
   assert.equal(requests.length, 5);
   requests.forEach((request) => {
     assert.equal(request.origin, "https://api.storyblok.com");

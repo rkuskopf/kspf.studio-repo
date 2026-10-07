@@ -52,10 +52,32 @@
     return figure;
   };
 
-  const createProjectMeta = (className, text) => {
+  const createProjectMeta = (className, text, parts) => {
     const meta = document.createElement("p");
     meta.className = className;
-    meta.textContent = text || "";
+    if (!Array.isArray(parts)) {
+      meta.textContent = text || "";
+      return meta;
+    }
+    for (const part of parts) {
+      if (!part || typeof part.text !== "string") continue;
+      // Also validate links in locally edited JSON before making them clickable.
+      const href = typeof part.href === "string" ? part.href.trim() : "";
+      const safe = /^(?:https?:\/\/|mailto:|tel:|\/(?!\/)|#)/i.test(href) &&
+        !/[\u0000-\u001f\u007f\\]/.test(href);
+      if (!safe) {
+        meta.appendChild(document.createTextNode(part.text));
+        continue;
+      }
+      const link = document.createElement("a");
+      link.href = href;
+      link.textContent = part.text;
+      if (part.target === "_blank") {
+        link.target = "_blank";
+        link.rel = "noopener noreferrer";
+      }
+      meta.appendChild(link);
+    }
     return meta;
   };
 
@@ -70,11 +92,16 @@
     visibleProjects.forEach((project, index) => {
       const block = document.createElement("section");
       block.className = "project-block";
+      const caption = document.createElement("div");
+      caption.className = "project__caption";
+      caption.append(
+        createProjectMeta("project__name", project.displayName || project.title, project.displayNameParts),
+        createProjectMeta("project__category", project.category, project.categoryParts)
+      );
       block.append(
         createProjectMeta("project__number", project.projectNumber?.trim() || String(index + 1).padStart(2, "0")),
         createHero(project, index),
-        createProjectMeta("project__name", project.displayName || project.title),
-        createProjectMeta("project__category", project.category)
+        caption
       );
       container.appendChild(block);
     });
