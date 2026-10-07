@@ -363,7 +363,7 @@ body {
   .homepage-project__caption {
     grid-area: name;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) fit-content(45%);
     column-gap: 16px;
     align-items: start;
     width: var(--homepage-portrait-width);
