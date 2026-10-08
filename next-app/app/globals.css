@@ -88,7 +88,7 @@ body {
 
 .homepage-projects {
   display: grid;
-  row-gap: 70px;
+  row-gap: 50px;
   padding-block: max(0px, calc((100dvh - var(--homepage-project-row-height)) / 2));
 }
 
