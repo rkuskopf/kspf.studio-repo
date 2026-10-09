@@ -679,3 +679,11 @@ a:any-link {
   letter-spacing: var(--type-heading-tracking, normal);
   text-transform: var(--type-heading-transform, none);
 }
+
+/* Standalone Navigation has a real flow position when blocks are reordered. */
+.homepage-navigation-block:not([hidden]) {
+  padding: 30px var(--homepage-gutter);
+}
+.homepage-navigation-block .homepage-top {
+  position: static;
+}

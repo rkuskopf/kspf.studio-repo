@@ -16,7 +16,13 @@ export type StoryblokEnvironment = {
   STORYBLOK_REGION?: string;
 };
 
+export type HomeBlock =
+  | { _uid: string; component: "information"; site: string }
+  | { _uid: string; component: "navigation"; site: string }
+  | { _uid: string; component: "project_feed"; collection: "projects/" };
+
 export type HomeContent = {
+  body?: HomeBlock[];
   storyId: number;
   storyUuid: string;
   title: string;
@@ -56,6 +62,7 @@ export type SiteContent = {
 };
 
 export type HomePageData = {
+  sites?: Record<string, SiteContent>;
   content: HomeContent;
   site: SiteContent;
   projects: HomepageProject[];

@@ -1,3 +1,4 @@
+import { mapHomeBlocks } from "./homepage-blocks";
 import { homepageCaptions } from "../../../scripts/homepage-captions.mjs";
 import { mapTypography, mapFontWeight } from "../typography/settings";
 import { StoryblokConfigurationError } from "./preview";
@@ -100,6 +101,7 @@ const mapHomeContent = (payload: unknown): HomeContent => {
     initialSection: content.initial_section === "info" ? "info" : "work",
     showNavigation: content.show_navigation !== false,
     captions: homepageCaptions(content),
+    ...(Object.hasOwn(content, "body") ? { body: mapHomeBlocks(content.body) } : {}),
   };
 };
 
@@ -436,21 +438,24 @@ export async function fetchHomeContent({
 }
 
 export async function fetchSiteContent({
+  storyUuid,
   version,
   token,
   region = "eu",
   fetchImpl = fetch,
   cacheVersion = Date.now(),
 }: {
+  storyUuid?: string;
   version: StoryblokVersion;
   token?: string;
   region?: string;
   fetchImpl?: typeof fetch;
   cacheVersion?: number;
 }): Promise<SiteContent> {
-  return mapSiteContent(
+  const site = mapSiteContent(
     await fetchDeliveryJson({
-      path: "stories/site",
+      path: storyUuid ? `stories/${encodeURIComponent(storyUuid)}` : "stories/site",
+      configureUrl: storyUuid ? (url) => url.searchParams.set("find_by", "uuid") : undefined,
       label: '"site"',
       version,
       token,
@@ -459,6 +464,8 @@ export async function fetchSiteContent({
       cacheVersion,
     })
   );
+  if (storyUuid && site.storyUuid !== storyUuid) return invalidSiteStory("does not match the requested reference");
+  return site;
 }
 
 export async function fetchHomepageProjects({

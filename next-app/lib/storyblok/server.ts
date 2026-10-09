@@ -40,14 +40,19 @@ export async function loadHomePage({
     fetchImpl,
     cacheVersion: now,
   };
-  const [content, site, projects] = await Promise.all([
-    fetchHomeContent(deliveryOptions),
-    fetchSiteContent(deliveryOptions),
+  const content = await fetchHomeContent(deliveryOptions);
+  const references = content.body
+    ? [...new Set(content.body.flatMap(block => block.component === "project_feed" ? [] : [block.site]))]
+    : [undefined];
+  const [resolvedSites, projects] = await Promise.all([
+    Promise.all(references.map(storyUuid => fetchSiteContent({ ...deliveryOptions, storyUuid }))),
     fetchHomepageProjects(deliveryOptions),
   ]);
+  const sites = Object.fromEntries(resolvedSites.map(site => [site.storyUuid, site]));
+  const site = resolvedSites[0];
   if (projects.length === 0) {
     throw new Error("Storyblok homepage has no visible projects.");
   }
 
-  return { content, site, projects, isPreview: version === "draft" };
+  return { content, site, sites, projects, isPreview: version === "draft" };
 }
