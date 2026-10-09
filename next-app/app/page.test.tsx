@@ -1,3 +1,4 @@
+import { legacyHomeBlocks } from "../lib/storyblok/homepage-blocks";
 import { mapTypography } from "../lib/typography/settings";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
@@ -204,4 +205,26 @@ it("renders global navigation tokens and a weight-only per-link override", () =>
   expect(markup).toContain("--type-navigation-family:Helvetica, Arial, sans-serif");
   expect(markup).toContain('class="homepage-nav__home" style="font-weight:400"');
   expect(markup).toContain('class="homepage-nav__information" href="#information"');
+});
+
+it.each([[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])("renders saved block order %j", (...order) => {
+  const data = structuredClone(publishedData);
+  const blocks = legacyHomeBlocks(data.site.storyUuid);
+  data.content.body = order.map(index => blocks[index]);
+  const markup = render(data);
+  const positions = { information: markup.indexOf('id="information"'), navigation: markup.indexOf('<header'), project_feed: markup.indexOf('class="homepage-projects"') };
+  const offsets = data.content.body.map(block => positions[block.component]);
+  expect(offsets[0]).toBeLessThan(offsets[1]);
+  expect(offsets[1]).toBeLessThan(offsets[2]);
+  expect(markup.match(/id="work"/g)).toHaveLength(1);
+  expect(markup.match(/id="information"/g)).toHaveLength(1);
+});
+it('does not render hidden standalone navigation content', () => {
+  const data = structuredClone(publishedData);
+  const blocks = legacyHomeBlocks(data.site.storyUuid);
+  data.content.body = [blocks[1], blocks[0], blocks[2]];
+  data.content.showNavigation = false;
+  const markup = render(data);
+  expect(markup).not.toContain('<header');
+  expect(markup).toContain('class="homepage-navigation-block" hidden=""');
 });
