@@ -47,8 +47,12 @@ body {
 .homepage-information__inner {
   width: var(--homepage-portrait-width);
   margin: 0 auto;
-  font-size: 12px;
-  line-height: 1.35;
+  font-family: var(--type-body-family, "Courier New", Courier, monospace);
+  font-size: var(--type-body-size, 12px);
+  font-weight: var(--type-body-weight, 400);
+  line-height: var(--type-body-leading, 1.35);
+  letter-spacing: var(--type-body-tracking, normal);
+  text-transform: var(--type-body-transform, none);
 }
 
 .homepage-information h1,
@@ -125,9 +129,12 @@ body {
 .homepage-nav a {
   color: inherit;
   text-decoration: none;
-  font-family: "akzidenz-grotesk-next-pro", Helvetica, Arial, sans-serif;
-  font-weight: 500;
-  text-transform: uppercase;
+  font-family: var(--type-navigation-family, "akzidenz-grotesk-next-pro", Helvetica, Arial, sans-serif);
+  font-size: var(--type-navigation-size, 12px);
+  font-weight: var(--type-navigation-weight, 500);
+  line-height: var(--type-navigation-leading, 1);
+  letter-spacing: var(--type-navigation-tracking, normal);
+  text-transform: var(--type-navigation-transform, uppercase);
 }
 
 .homepage-nav__home,
@@ -146,6 +153,12 @@ body {
   max-width: var(--homepage-portrait-width);
   margin-top: 0;
   margin-bottom: 0;
+  font-family: var(--type-body-family, "Courier New", Courier, monospace);
+  font-size: var(--type-body-size, 12px);
+  font-weight: var(--type-body-weight, 400);
+  line-height: var(--type-body-leading, 1);
+  letter-spacing: var(--type-body-tracking, normal);
+  text-transform: var(--type-body-transform, none);
 }
 
 .homepage-nav__information {
@@ -251,8 +264,12 @@ body {
   min-width: 0;
   margin: 0;
   transform: none;
-  font-size: 12px;
-  line-height: 1.2;
+  font-family: var(--type-metadata-family, "Courier New", Courier, monospace);
+  font-size: var(--type-metadata-size, 12px);
+  font-weight: var(--type-metadata-weight, 400);
+  line-height: var(--type-metadata-leading, 1.2);
+  letter-spacing: var(--type-metadata-tracking, normal);
+  text-transform: var(--type-metadata-transform, none);
   white-space: nowrap;
 }
 
@@ -305,8 +322,12 @@ body {
   text-align: right;
   white-space: pre-line;
   overflow-wrap: anywhere;
-  font-size: 12px;
-  line-height: 1.2;
+  font-family: var(--type-metadata-family, "Courier New", Courier, monospace);
+  font-size: var(--type-metadata-size, 12px);
+  font-weight: var(--type-metadata-weight, 400);
+  line-height: var(--type-metadata-leading, 1.2);
+  letter-spacing: var(--type-metadata-tracking, normal);
+  text-transform: var(--type-metadata-transform, none);
 }
 
 .homepage-project__caption-right {
@@ -456,10 +477,12 @@ body {
 
 .project-page__header h1 {
   margin: 0;
-  font-size: clamp(2.5rem, 8vw, 7rem);
-  font-weight: 400;
-  letter-spacing: -0.04em;
-  line-height: 0.95;
+  font-family: var(--type-display-family, "Courier New", Courier, monospace);
+  font-size: var(--type-display-size, clamp(2.5rem, 8vw, 7rem));
+  font-weight: var(--type-display-weight, 400);
+  line-height: var(--type-display-leading, 0.95);
+  letter-spacing: var(--type-display-tracking, -0.04em);
+  text-transform: var(--type-display-transform, none);
 }
 
 .project-page__metadata {
@@ -475,7 +498,7 @@ body {
 }
 
 .project-page__metadata dt {
-  font-weight: 700;
+  font-weight: var(--type-metadata-weight, 700);
 }
 
 .project-page__tags {
@@ -488,8 +511,12 @@ body {
 }
 
 .project-page__text {
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.5;
+  font-family: var(--type-body-family, "Courier New", Courier, monospace);
+  font-size: var(--type-body-size, clamp(1rem, 2vw, 1.25rem));
+  font-weight: var(--type-body-weight, 400);
+  line-height: var(--type-body-leading, 1.5);
+  letter-spacing: var(--type-body-tracking, normal);
+  text-transform: var(--type-body-transform, none);
 }
 
 .project-page__text > :first-child,
@@ -516,8 +543,12 @@ body {
 
 .project-page__media figcaption {
   margin-top: 0.75rem;
-  font-size: 0.875rem;
-  line-height: 1.4;
+  font-family: var(--type-caption-family, "Courier New", Courier, monospace);
+  font-size: var(--type-caption-size, 0.875rem);
+  font-weight: var(--type-caption-weight, 400);
+  line-height: var(--type-caption-leading, 1.4);
+  letter-spacing: var(--type-caption-tracking, normal);
+  text-transform: var(--type-caption-transform, none);
 }
 
 @media (max-width: 40rem) {
@@ -617,4 +648,34 @@ a:any-link {
   .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([data-hide-project-category="true"]) .homepage-project__caption:has(.homepage-project__category) .homepage-project__name {
     grid-row: 2;
   }
+}
+
+/* Reusable roles retain the previous local defaults when CMS fields are blank. */
+.homepage-information h1,
+.homepage-information h2 {
+  font-family: var(--type-heading-family, "Courier New", Courier, monospace);
+  font-size: var(--type-heading-size, 12px);
+  font-weight: var(--type-heading-weight, 400);
+  line-height: var(--type-heading-leading, 1.35);
+  letter-spacing: var(--type-heading-tracking, normal);
+  text-transform: var(--type-heading-transform, none);
+}
+
+.project-page__metadata,
+.project-page__tags {
+  font-family: var(--type-metadata-family, "Courier New", Courier, monospace);
+  font-size: var(--type-metadata-size, 15px);
+  font-weight: var(--type-metadata-weight, 400);
+  line-height: var(--type-metadata-leading, 1.2);
+  letter-spacing: var(--type-metadata-tracking, normal);
+  text-transform: var(--type-metadata-transform, none);
+}
+
+.project-page__text :is(h1, h2, h3, h4, h5, h6) {
+  font-family: var(--type-heading-family, "Courier New", Courier, monospace);
+  font-size: var(--type-heading-size, revert);
+  font-weight: var(--type-heading-weight, bold);
+  line-height: var(--type-heading-leading, inherit);
+  letter-spacing: var(--type-heading-tracking, normal);
+  text-transform: var(--type-heading-transform, none);
 }

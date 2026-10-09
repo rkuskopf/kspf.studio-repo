@@ -1,3 +1,4 @@
+import type { FontWeight, TypographySettings } from "../typography/settings";
 import type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
 export type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
 
@@ -27,6 +28,8 @@ export type HomeContent = {
 };
 
 export type SiteNavigation = {
+  homeFontWeight?: FontWeight | null;
+  informationFontWeight?: FontWeight | null;
   homeLabel: string;
   homeHref: string;
   informationLabel: string;
@@ -45,6 +48,7 @@ export type SiteInformation = {
 };
 
 export type SiteContent = {
+  typography: TypographySettings;
   storyId: number;
   storyUuid: string;
   nav: SiteNavigation;
@@ -129,6 +133,7 @@ export type ProjectContent = {
 };
 
 export type ProjectPageData = {
+  site: SiteContent;
   content: ProjectContent;
   isPreview: boolean;
 };

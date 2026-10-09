@@ -1,3 +1,4 @@
+import { siteFixture } from "../../../lib/storyblok/site-fixture";
 import {
   createElement,
   isValidElement,
@@ -38,6 +39,7 @@ const data: ProjectPageData = {
     metadata: { tags: [] },
     body: [{ _uid: "header-1", component: "project_header" }],
   },
+  site: siteFixture,
   isPreview: false,
 };
 

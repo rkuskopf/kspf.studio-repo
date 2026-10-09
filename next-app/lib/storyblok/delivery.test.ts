@@ -1,3 +1,4 @@
+import { mapTypography } from "../typography/settings";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -352,7 +353,10 @@ describe("homepage aggregate delivery records", () => {
     expect(content).toEqual({
       storyId: 7,
       storyUuid: "site-uuid",
+      typography: mapTypography(undefined),
       nav: {
+        homeFontWeight: null,
+        informationFontWeight: null,
         homeLabel: "KSPF",
         homeHref: "/",
         informationLabel: "INFO",
@@ -475,4 +479,24 @@ it("delivers project numbers independently of sort order", async () => {
   (first.content as Record<string, unknown>).project_number = "007";
   const projects = await fetchHomepageProjects({ version: "published", token: "test", fetchImpl: async () => jsonResponse({ stories: [first, second] }) });
   expect(projects.map(project => project.projectNumber)).toEqual(["", "007"]);
+});
+
+it("reads newly saved draft typography and nav weights without caching", async () => {
+  const payload: { story: { content: Record<string, unknown> } } = structuredClone(siteResponse);
+  const requests: { url: URL; cache: RequestCache | undefined }[] = [];
+  const fetchImpl: typeof fetch = async (input, init) => {
+    requests.push({ url: new URL(String(input)), cache: init?.cache });
+    return jsonResponse(payload);
+  };
+  const before = await fetchSiteContent({ version: "draft", token: "preview-sentinel", fetchImpl, cacheVersion: 1 });
+  payload.story.content.typography = [{ component: "typography_settings", body: [{ component: "typography_style", desktop_size: 22, font_family: "serif" }] }];
+  payload.story.content.nav = [{ ...(siteResponse.story.content.nav[0]), home_font_weight: "400", information_font_weight: "inherit" }];
+  const after = await fetchSiteContent({ version: "draft", token: "preview-sentinel", fetchImpl, cacheVersion: 2 });
+  expect(before.typography.body.desktopSize).toBeNull();
+  expect(after.typography.body.desktopSize).toBe(22);
+  expect(after.typography.body.fontFamily).toBe("serif");
+  expect(after.nav.homeFontWeight).toBe(400);
+  expect(after.nav.informationFontWeight).toBeNull();
+  expect(requests.map(({ url }) => url.searchParams.get("cv"))).toEqual(["1", "2"]);
+  expect(requests.every(({ cache, url }) => cache === "no-store" && url.searchParams.get("version") === "draft")).toBe(true);
 });

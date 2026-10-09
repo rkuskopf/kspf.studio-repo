@@ -1,3 +1,4 @@
+import { mapTypography } from "../lib/typography/settings";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -18,6 +19,7 @@ const publishedData: HomePageData = {
     showNavigation: true,
   },
   site: {
+    typography: mapTypography(undefined),
     storyId: 7,
     storyUuid: "site-uuid",
     nav: {
@@ -191,4 +193,15 @@ it("exposes global layout and visibility settings while keeping slideshows avail
   expect(markup).toContain('data-hide-project-category="true"');
   expect(markup).toContain('data-hide-project-caption="false"');
   expect(markup).toContain('class="homepage-hero"');
+});
+
+it("renders global navigation tokens and a weight-only per-link override", () => {
+  const data = structuredClone(publishedData);
+  data.site.typography.navigation = { ...data.site.typography.navigation, fontFamily: "sans", fontWeight: 700, desktopSize: 20, mobileSize: 16 };
+  data.site.nav.homeFontWeight = 400;
+  const markup = renderToStaticMarkup(createElement(HomeContentView, { data }));
+  expect(markup).toContain("--type-navigation-weight:700");
+  expect(markup).toContain("--type-navigation-family:Helvetica, Arial, sans-serif");
+  expect(markup).toContain('class="homepage-nav__home" style="font-weight:400"');
+  expect(markup).toContain('class="homepage-nav__information" href="#information"');
 });
