@@ -1,4 +1,5 @@
 import { homepageCaptions } from "../../../scripts/homepage-captions.mjs";
+import { mapTypography, mapFontWeight } from "../typography/settings";
 import { StoryblokConfigurationError } from "./preview";
 import { storyblokPlainText } from "./rich-text";
 import { storyblokLabelParts } from "../../../scripts/storyblok-label-links.mjs";
@@ -185,7 +186,10 @@ const mapSiteContent = (payload: unknown): SiteContent => {
   return {
     storyId: story.id as number,
     storyUuid: story.uuid,
+    typography: mapTypography(story.content.typography),
     nav: {
+      homeFontWeight: mapFontWeight(nav.home_font_weight),
+      informationFontWeight: mapFontWeight(nav.information_font_weight),
       homeLabel,
       homeHref: mapLink(nav.home_href, "home link"),
       informationLabel: requiredString(

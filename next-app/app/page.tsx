@@ -1,3 +1,4 @@
+import { typographyTokens } from "../lib/typography/settings";
 import { loadHomePage } from "../lib/storyblok/server";
 import type { HomePageData, StoryblokSearchParams } from "../lib/storyblok/types";
 import HomepageInitialPosition from "./homepage-initial-position";
@@ -18,6 +19,7 @@ export function HomeContentView({ data }: { data: HomePageData }) {
       data-hide-project-title={data.content.captions?.showTitle === false}
       data-hide-project-category={data.content.captions?.showCategory === false}
       data-hide-project-caption={data.content.captions?.showCaption === false}
+      style={typographyTokens(data.site.typography)}
       data-storyblok-content={data.isPreview ? "draft" : "published"}
     >
       <HomepageInitialPosition section={data.content.initialSection} />
@@ -64,7 +66,11 @@ export function HomeContentView({ data }: { data: HomePageData }) {
       <div className="homepage-stage" id="work" tabIndex={-1}>
         <header className="homepage-top" hidden={!data.content.showNavigation}>
           <nav className="homepage-nav" aria-label="Primary">
-            <a className="homepage-nav__home" href="#work">
+            <a
+              className="homepage-nav__home"
+              style={{ fontWeight: nav.homeFontWeight ?? undefined }}
+              href="#work"
+            >
               {nav.homeLabel}
             </a>
             {data.content.intro.trim() ? (
@@ -72,7 +78,11 @@ export function HomeContentView({ data }: { data: HomePageData }) {
                 {data.content.intro}
               </p>
             ) : null}
-            <a className="homepage-nav__information" href="#information">
+            <a
+              className="homepage-nav__information"
+              style={{ fontWeight: nav.informationFontWeight ?? undefined }}
+              href="#information"
+            >
               {nav.informationLabel}
             </a>
           </nav>

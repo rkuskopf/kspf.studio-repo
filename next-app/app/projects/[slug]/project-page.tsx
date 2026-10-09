@@ -1,3 +1,4 @@
+import { typographyTokens } from "../../../lib/typography/settings";
 import { StoryblokServerRichText } from "@storyblok/react/rsc";
 import { Fragment } from "react";
 
@@ -109,6 +110,7 @@ export function ProjectPageView({ data }: { data: ProjectPageData }) {
   return (
     <main
       className="project-page"
+      style={typographyTokens(data.site.typography)}
       data-storyblok-content={data.isPreview ? "draft" : "published"}
     >
       {data.content.body.map((block) => (
