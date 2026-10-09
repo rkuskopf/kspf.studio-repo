@@ -22,7 +22,9 @@ Set:
 - `STORYBLOK_PUBLIC_TOKEN` to a Public Content Delivery API token for normal
   published rendering.
 - `STORYBLOK_PREVIEW_TOKEN` to a Preview Content Delivery API token for signed,
-  local Visual Editor requests.
+  local Visual Editor requests. This must match the existing preview token
+  Storyblok uses to sign the Visual Editor URL. A different valid delivery
+  token can fetch drafts but fail editor signature validation.
 - `STORYBLOK_REGION` to the space region: `eu`, `us`, `ca`, `ap`, or `cn`.
 
 Do not use `NEXT_PUBLIC_` variables for either token. The Next.js server reads
@@ -61,6 +63,13 @@ and an enabled project page. Arbitrary, partial, invalid, expired, or repeated
 parameters render published content instead. Every non-development runtime also
 renders published content, even if a request contains otherwise valid Visual
 Editor parameters.
+
+If the editor displays old content, inspect the iframe's `main` element:
+`data-storyblok-content="published"` means draft authentication was not accepted.
+Confirm that the server's preview token matches the token used to generate the
+editor signature; do not disable validation. A locally generated signed link
+alone does not verify the built-in editor connection. See [Storyblok's preview
+verification guide](https://www.storyblok.com/faq/how-to-verify-the-preview-query-parameters-of-the-visual-editor).
 
 Select **Save** after editing the story. The Storyblok Bridge reloads the iframe
 and the server fetches the latest saved draft without using generated JSON or

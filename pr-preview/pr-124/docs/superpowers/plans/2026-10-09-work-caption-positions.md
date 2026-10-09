@@ -54,3 +54,10 @@ Execute inline using executing-plans; leave all changes uncommitted for local re
 - Added Hidden to all four saved Storyblok dropdown schemas through the internal browser. Existing defaults and Home draft values are preserved.
 - Verified a temporary saved Hidden title selection removes title fields from all six draft projects, then restored the exact Home content. Delivery comparison confirms restoration and unchanged publication time.
 - 169 Vitest and 127 Node tests pass; TypeScript, production build and diff checks pass. Screenshot proof is `work-hidden-option.png` in the task visualization directory. Changes remain uncommitted and unpublished.
+
+## Embedded editor preview correction (2026-10-09)
+
+- Rowan reported the dropdowns did not affect the embedded preview. Reproduced the editor loading published content because its signature used a different existing Preview token from `next-app/.env.local`.
+- Aligned the ignored local delivery environment with the existing editor signing token, retaining a local backup. No Storyblok token was created, rotated or deleted. Root static-preview configuration is unchanged.
+- Verified the real editor iframe reports draft content and all six projects use Rowan's saved positions. Saving Hidden for titles automatically refreshed the iframe with zero title fields; restored title bottom-left afterward. Current category left, caption right and number bottom-right selections were preserved. Numbers remain hidden by the existing Home visibility toggle.
+- This was a local environment correction; added setup and troubleshooting documentation. No renderer code or production configuration changed.
