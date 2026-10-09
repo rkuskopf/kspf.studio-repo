@@ -1,3 +1,4 @@
+import { siteStoryFixture } from "./site-fixture";
 import { createHash } from "node:crypto";
 import { describe, expect, it, vi } from "vitest";
 
@@ -52,7 +53,7 @@ const requestRecorder = (story: unknown = projectStory()) => {
   const requests: URL[] = [];
   const fetchImpl: typeof fetch = async (input) => {
     requests.push(new URL(String(input)));
-    return jsonResponse({ story });
+    return jsonResponse({ story: String(input).includes("/stories/site") ? siteStoryFixture : story });
   };
   return { requests, fetchImpl };
 };
@@ -79,6 +80,11 @@ describe("the server-only project page boundary", () => {
       isPreview: false,
       content: { slug: SLUG },
     });
+    expect(requests).toHaveLength(2);
+    expect(data?.site.typography.navigation.fontFamily).toBe("akzidenz");
+    expect(requests[1].searchParams.get("version")).toBe(requests[0].searchParams.get("version"));
+    expect(requests[1].searchParams.get("token")).toBe(requests[0].searchParams.get("token"));
+    expect(requests[1].searchParams.get("cv")).toBe(requests[0].searchParams.get("cv"));
     expect(requests[0].searchParams.get("version")).toBe("published");
     expect(requests[0].searchParams.get("token")).toBe("public-sentinel");
     expect(requests[0].searchParams.has("cv")).toBe(false);
@@ -99,6 +105,11 @@ describe("the server-only project page boundary", () => {
       isPreview: true,
       content: { slug: SLUG },
     });
+    expect(requests).toHaveLength(2);
+    expect(data?.site.typography.navigation.fontFamily).toBe("akzidenz");
+    expect(requests[1].searchParams.get("version")).toBe(requests[0].searchParams.get("version"));
+    expect(requests[1].searchParams.get("token")).toBe(requests[0].searchParams.get("token"));
+    expect(requests[1].searchParams.get("cv")).toBe(requests[0].searchParams.get("cv"));
     expect(requests[0].searchParams.get("version")).toBe("draft");
     expect(requests[0].searchParams.get("token")).toBe(PREVIEW_TOKEN);
     expect(requests[0].searchParams.get("cv")).toBe(String(NOW));
@@ -119,6 +130,11 @@ describe("the server-only project page boundary", () => {
       isPreview: false,
       content: { slug: SLUG },
     });
+    expect(requests).toHaveLength(2);
+    expect(data?.site.typography.navigation.fontFamily).toBe("akzidenz");
+    expect(requests[1].searchParams.get("version")).toBe(requests[0].searchParams.get("version"));
+    expect(requests[1].searchParams.get("token")).toBe(requests[0].searchParams.get("token"));
+    expect(requests[1].searchParams.get("cv")).toBe(requests[0].searchParams.get("cv"));
     expect(requests[0].searchParams.get("version")).toBe("published");
     expect(requests[0].searchParams.get("token")).toBe("public-sentinel");
   });

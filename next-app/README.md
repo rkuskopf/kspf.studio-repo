@@ -126,3 +126,59 @@ For live verification with `next-app/.env.local` populated:
 3. Save a draft change and confirm the iframe reloads with the saved value.
 4. Remove or corrupt one `_storyblok_tk[...]` value and confirm the same URL
    renders published content.
+
+## Global typography (issue #105)
+
+The single `site` story owns `site_settings.typography`, a `typography_settings`
+block with Display, Heading, Body, Navigation, Metadata / UI and Caption roles.
+Each role contains at most one `typography_style`. Font families are controlled
+keys from `scripts/typography-registry.mjs`, shared with the schema and root font
+loader. Courier New, Helvetica/Arial and Times New Roman use system fonts;
+Akzidenz Grotesk uses the site's existing Adobe kit. No CMS string becomes a font
+URL or raw CSS value.
+
+Run the additive schema migration with management credentials in the root `.env`:
+
+```sh
+node --env-file=.env scripts/setup-typography.mjs          # read-only plan
+node --env-file=.env scripts/setup-typography.mjs --apply  # schema only
+```
+
+The migration adds the two nested components, the Typography section and
+Home/Information font-weight selectors. It preserves other schema fields, rejects
+conflicts before writing, is safe to rerun, and never seeds, replaces or publishes
+stories. Add the Typography block and desired role blocks in the Site story;
+leave fields blank to retain the current appearance.
+
+| Role / use | Default font | Weight | Size | Line height | Tracking / transform |
+| --- | --- | --- | --- | --- | --- |
+| Display / project title | Courier New | 400 | `clamp(2.5rem, 8vw, 7rem)` | 0.95 | -0.04em / none |
+| Heading / information headings | Courier New | 400 | 12px | 1.35 | normal / none |
+| Heading / project rich-text headings | Courier New | browser heading default | browser heading default | inherited | normal / none |
+| Body / homepage intro | Courier New | 400 | 12px | 1 | normal / none |
+| Body / information copy | Courier New | 400 | 12px | 1.35 | normal / none |
+| Body / project rich text | Courier New | 400 | `clamp(1rem, 2vw, 1.25rem)` | 1.5 | normal / none |
+| Navigation / links | Akzidenz Grotesk | 500 | 12px | 1 | normal / uppercase |
+| Metadata / homepage labels and counters | Courier New | 400 | 12px | 1.2 | normal / none |
+| Metadata / project metadata and tags | Courier New | 400 (labels 700) | 15px | 1.2 | normal / none |
+| Caption / media captions | Courier New | 400 | 0.875rem | 1.4 | normal / none |
+
+A configured property applies to every use of its role. Blank or invalid numeric
+properties resolve to `null` in the typed mapping and omit their CSS token,
+retaining the context defaults above. Unknown fonts and transforms use their role
+defaults. Sizes accept 8–200px, line height 0.5–3, letter spacing -0.2–1em, and
+weights 300/400/500/700. Positive lower bounds are enforced by the frontend
+mapper: Storyblok treats empty optional Number fields as zero when applying
+minimum validation, so their schema omits those minimums. Numeric editor steps
+are 0.01px for size and 0.001 for line height / tracking. With both sizes configured, size interpolates between
+640px (mobile) and 1440px (desktop), bounded by the endpoints. A single configured
+size applies at every width. Home/Information weight overrides default to inherit
+and affect only the individual link's `font-weight`.
+
+Both loaders fetch the same site record using the same delivery version/token as
+the page. Signed local Next.js draft preview fetches saved settings without cache;
+reload the page after saving the separate Site story. The Storyblok Bridge reloads
+on save/publish events from the current editor. Preview the Next.js site with
+`npm run dev` (HTTPS, normally port 3000), not the static-site server on port 8001.
+The token mapper accepts the resolved site's settings; future hostname resolution
+can choose a different record without changing text-role CSS or components.

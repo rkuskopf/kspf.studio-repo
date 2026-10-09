@@ -1,3 +1,4 @@
+import { siteFixture } from "../../../lib/storyblok/site-fixture";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it } from "vitest";
@@ -8,6 +9,7 @@ import { ProjectPageView } from "./project-page";
 const projectData = (
   overrides: Partial<ProjectPageData> = {}
 ): ProjectPageData => ({
+  site: siteFixture,
   content: {
     storyId: 72,
     storyUuid: "project-uuid",
@@ -127,4 +129,13 @@ describe("the mapped project page view", () => {
     expect(markup).not.toContain("public-project-render-sentinel");
     expect(markup).not.toContain("preview-project-render-sentinel");
   });
+});
+
+
+it("applies the resolved site's typography to the project root", () => {
+  const data = projectData({ site: structuredClone(siteFixture) });
+  data.site.typography.display.fontWeight = 700;
+  data.site.typography.body.desktopSize = 18;
+  expect(render(data)).toContain("--type-display-weight:700");
+  expect(render(data)).toContain("--type-body-size:18px");
 });

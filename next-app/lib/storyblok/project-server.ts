@@ -1,5 +1,6 @@
 import "server-only";
 
+import { fetchSiteContent } from "./delivery";
 import { fetchProjectContent } from "./project-delivery";
 import { resolveStoryblokVersion } from "./preview";
 import type {
@@ -40,5 +41,13 @@ export async function loadProjectPage({
     cacheVersion: now,
   });
 
-  return content ? { content, isPreview: version === "draft" } : null;
+  if (!content) return null;
+  const site = await fetchSiteContent({
+    version,
+    token,
+    region: environment.STORYBLOK_REGION,
+    fetchImpl,
+    cacheVersion: now,
+  });
+  return { content, site, isPreview: version === "draft" };
 }
