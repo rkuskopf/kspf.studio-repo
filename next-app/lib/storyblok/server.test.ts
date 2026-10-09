@@ -130,6 +130,20 @@ const requestRecorder = (projectPayload: unknown = projectsResponse, homePayload
   return { requests, fetchImpl };
 };
 
+it('delivers saved Work positions through the signed draft boundary', async () => {
+  const home = structuredClone(homeResponse) as any;
+  home.story.content.body = [
+    {_uid:'info',component:'information',site:'site-uuid'},
+    {_uid:'nav',component:'navigation',site:'site-uuid'},
+    {_uid:'work',component:'project_feed',collection:'projects/',title_position:'right',number_position:'bottom-left',category_position:'left',caption_position:'bottom-right'},
+  ];
+  const {requests, fetchImpl} = requestRecorder(projectsResponse,home);
+  const data = await loadHomePage({searchParams:signedParams(), now:NOW, fetchImpl, environment:{NODE_ENV:'development',STORYBLOK_PREVIEW_TOKEN:PREVIEW_TOKEN,STORYBLOK_PUBLIC_TOKEN:'public-sentinel'}});
+  expect(data.isPreview).toBe(true);
+  expect(data.content.body?.[2]).toMatchObject({positions:{title:'right',number:'bottom-left',category:'left',caption:'bottom-right'}});
+  expect(requests.every(url=>url.searchParams.get('version')==='draft'&&url.searchParams.get('token')===PREVIEW_TOKEN)).toBe(true);
+});
+
 describe("the server-only homepage boundary", () => {
   it("uses the public token and published content for a normal request", async () => {
     const { requests, fetchImpl } = requestRecorder();
