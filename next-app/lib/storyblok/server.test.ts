@@ -112,14 +112,14 @@ const projectsResponse = {
   ],
 };
 
-const requestRecorder = (projectPayload: unknown = projectsResponse) => {
+const requestRecorder = (projectPayload: unknown = projectsResponse, homePayload: unknown = homeResponse) => {
   const requests: URL[] = [];
   const fetchImpl: typeof fetch = async (input) => {
     const url = new URL(String(input));
     requests.push(url);
     const payload = url.pathname.endsWith("/stories/home")
-      ? homeResponse
-      : url.pathname.endsWith("/stories/site")
+      ? homePayload
+      : (url.pathname.endsWith("/stories/site") || url.searchParams.get("find_by") === "uuid")
         ? siteResponse
         : projectPayload;
     return new Response(JSON.stringify(payload), {
@@ -247,4 +247,69 @@ describe("the server-only homepage boundary", () => {
       })
     ).rejects.toThrow("Storyblok homepage has no visible projects.");
   });
+});
+
+it('resolves shared Site references once with matching draft version', async () => {
+  const home = structuredClone(homeResponse) as any;
+  home.story.content.body = [
+    {_uid:'work',component:'project_feed',collection:'projects/'},
+    {_uid:'nav',component:'navigation',site:'site-uuid'},
+    {_uid:'info',component:'information',site:'site-uuid'},
+  ];
+  const {requests,fetchImpl} = requestRecorder(projectsResponse,home);
+  const data = await loadHomePage({searchParams:signedParams(),environment:{NODE_ENV:'development',STORYBLOK_PREVIEW_TOKEN:PREVIEW_TOKEN},fetchImpl,now:NOW});
+  expect(data.content.body?.map(block => block.component)).toEqual(['project_feed','navigation','information']);
+  expect(requests.filter(url => url.searchParams.get('find_by') === 'uuid')).toHaveLength(1);
+  expect(requests.every(url => url.searchParams.get('version') === 'draft')).toBe(true);
+  expect(data.sites?.['site-uuid']).toEqual(data.site);
+});
+it('rejects an explicitly empty body instead of silently falling back', async () => {
+  const home = structuredClone(homeResponse) as any; home.story.content.body=[];
+  const {fetchImpl} = requestRecorder(projectsResponse,home);
+  await expect(loadHomePage({searchParams:{},environment:{STORYBLOK_PUBLIC_TOKEN:'public'},fetchImpl})).rejects.toThrow(/home body/);
+});
+it('rejects a mismatched Site reference', async () => {
+  const home = structuredClone(homeResponse) as any;
+  home.story.content.body = [
+    {_uid:'work',component:'project_feed',collection:'projects/'},
+    {_uid:'nav',component:'navigation',site:'missing-uuid'},
+    {_uid:'info',component:'information',site:'missing-uuid'},
+  ];
+  const {fetchImpl} = requestRecorder(projectsResponse,home);
+  await expect(loadHomePage({searchParams:{},environment:{STORYBLOK_PUBLIC_TOKEN:'public'},fetchImpl})).rejects.toThrow(/requested reference/);
+});
+
+it('resolves two distinct canonical Site stories without fetching the legacy singleton', async () => {
+  const home = structuredClone(homeResponse) as any;
+  home.story.content.body = [
+    {_uid:'info',component:'information',site:'site-uuid'},
+    {_uid:'nav',component:'navigation',site:'other-site'},
+    {_uid:'work',component:'project_feed',collection:'projects/'},
+  ];
+  const requests: URL[]=[];
+  const fetchImpl: typeof fetch=async input => {
+    const url=new URL(String(input));requests.push(url);
+    let payload: unknown=projectsResponse;
+    if(url.pathname.endsWith('/stories/home')) payload=home;
+    else if(url.searchParams.get('find_by')==='uuid') {
+      const site=structuredClone(siteResponse);
+      site.story.uuid=url.pathname.endsWith('/other-site')?'other-site':'site-uuid';
+      payload=site;
+    }
+    return new Response(JSON.stringify(payload),{status:200});
+  };
+  const data=await loadHomePage({searchParams:{},environment:{STORYBLOK_PUBLIC_TOKEN:'public'},fetchImpl});
+  expect(Object.keys(data.sites || {})).toEqual(['site-uuid','other-site']);
+  expect(requests).toHaveLength(4);
+  expect(requests.some(url=>url.pathname.endsWith('/stories/site'))).toBe(false);
+});
+it.each([404,200])('rejects missing or wrong-type Site story (status %s)', async status => {
+  const home=structuredClone(homeResponse) as any;
+  home.story.content.body=[{_uid:'info',component:'information',site:'site-uuid'},{_uid:'nav',component:'navigation',site:'site-uuid'},{_uid:'work',component:'project_feed',collection:'projects/'}];
+  const fetchImpl:typeof fetch=async input=> {
+    const url=new URL(String(input));
+    if(url.searchParams.get('find_by')==='uuid') return new Response(JSON.stringify({story:{id:7,uuid:'site-uuid',content:{component:'project'}}}),{status});
+    return new Response(JSON.stringify(url.pathname.endsWith('/stories/home')?home:projectsResponse));
+  };
+  await expect(loadHomePage({searchParams:{},environment:{STORYBLOK_PUBLIC_TOKEN:'public'},fetchImpl})).rejects.toThrow(status===404?/404/:/site_settings/);
 });

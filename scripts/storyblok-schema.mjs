@@ -1,4 +1,6 @@
 import { TYPOGRAPHY_COMPONENTS, TYPOGRAPHY_FIELD, NAV_WEIGHT_FIELDS } from "./storyblok-typography-schema.mjs";
+
+import { HOMEPAGE_COMPONENTS, HOMEPAGE_BODY_FIELD } from "./storyblok-homepage-schema.mjs";
 import { PROJECT_PAGE_COMPONENTS, PROJECT_PAGE_FIELDS } from "./storyblok-project-page-schema.mjs";
 
 const field = (type, displayName, pos, extra = {}) => ({
@@ -18,6 +20,8 @@ const blocks = (displayName, pos, allowed, extra = {}) =>
 export const STORYBLOK_COMPONENTS = [
   ...PROJECT_PAGE_COMPONENTS,
   ...TYPOGRAPHY_COMPONENTS,
+
+  ...HOMEPAGE_COMPONENTS,
   {
     name: "nav_settings",
     display_name: "Navigation",
@@ -202,6 +206,7 @@ export const STORYBLOK_COMPONENTS = [
     is_root: true,
     is_nestable: false,
     schema: {
+      body: HOMEPAGE_BODY_FIELD,
       title: field("text", "Page title", 0),
       meta_description: field("textarea", "Meta description", 1),
       intro: field("textarea", "Intro", 2),

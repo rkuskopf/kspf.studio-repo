@@ -273,6 +273,10 @@ export const createStoryblokManagementApi = ({
       const data = await request("stories", { method: "POST", body: { publish: false, story } });
       return data.story;
     },
+    async updateStory(id, story) {
+      const data = await request(`stories/${id}`, { method: "PUT", body: { publish: false, story } });
+      return data.story;
+    },
     publishStory: (id) => request(`stories/${id}/publish`),
   };
 };

@@ -182,3 +182,49 @@ on save/publish events from the current editor. Preview the Next.js site with
 `npm run dev` (HTTPS, normally port 3000), not the static-site server on port 8001.
 The token mapper accepts the resolved site's settings; future hostname resolution
 can choose a different record without changing text-role CSS or components.
+
+## Composable Home blocks (issue #59)
+
+Home's **Page blocks** contains one Information, Navigation and Work block in
+any order. Information and Navigation reference the existing Site settings
+story. Work automatically includes canonical `projects/` records marked
+**Show on home**, using their existing order. Adding a project does not require
+adding it to another list. Caption presets and visibility remain shared Home
+controls; individual caption-position controls belong to #120.
+
+Reordering changes the Next homepage DOM order. Adjacent Navigation → Work
+keeps the current navigation overlay; standalone Navigation uses normal flow.
+Starting section still targets Information or Work. Hidden navigation takes
+no space. Stories with no body use the legacy order; an explicitly empty or
+invalid body fails clearly.
+
+Prepare the migration from the root environment (management credentials stay
+outside `next-app`):
+
+```sh
+node --env-file=.env scripts/setup-homepage.mjs
+```
+
+The default is a read-only plan. After reviewing the actions, apply explicitly:
+
+```sh
+node --env-file=.env scripts/setup-homepage.mjs --apply
+```
+
+Apply first saves exact Home, Site and component snapshots in ignored
+`.storyblok-backups/`, adds compatible schema definitions, then saves Home as a
+draft. It preserves legacy fields, translations, caption controls and all
+project/Site content. Conflicting schemas, changed source data or a different
+existing body are preserved and reported. Repeating an equivalent migration
+is a no-op. There is no publish option.
+
+Review the saved draft in the **Next.js** Visual Editor before publication.
+`https://localhost:8001/` is the static preview: it keeps reading legacy fields
+and ignores Page blocks. Publishing/reordering Page blocks therefore affects
+Next only until the separate production cutover.
+
+For rollback, read the selected backup's `home.content`, compare it with the
+current Home draft, and save that backed-up content as a draft using the
+existing Management API `updateStory(home.id, {content})` method. Review before
+publishing. Do not delete shared components or project/Site stories. Removing
+legacy fields and the fallback belongs to cutover cleanup.
