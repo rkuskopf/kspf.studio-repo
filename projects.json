@@ -66,18 +66,18 @@
     },
     {
       "title": "",
-      "displayName": "Identity",
+      "displayName": "Brand Identity",
       "projectNumber": "",
       "category": "Alt. Cosmetics",
       "showSlideshowCounter": true,
       "description": "Brand identity and packaging design for alt. cosmetics, a new beauty brand. The system is built around a tactile, chrome material language: engraved metal artefacts and 3D-led product applications that carry the brand through packaging, point-of-sale and digital surfaces.",
       "viewUrl": "",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218199/logo-over-image-lockup.jpg",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218204/Metal_thing.jpg",
         "https://res.cloudinary.com/kw2p64ib/image/upload/v1791434783/Untitled_-_08_October_2026_at_15.44.37.png",
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788218199/logo-over-image-lockup.jpg",
         "https://res.cloudinary.com/kw2p64ib/image/upload/v1791434382/alt_1.png",
-        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788217787/Artboard_2_1.png"
+        "https://res.cloudinary.com/kw2p64ib/image/upload/v1788217787/Artboard_2_1.png",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1791521881/Comp_1.mp4"
       ],
       "alt": "",
       "showOnHome": true
