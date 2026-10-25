@@ -207,6 +207,10 @@ export const STORYBLOK_COMPONENTS = [
     is_nestable: false,
     schema: {
       body: HOMEPAGE_BODY_FIELD,
+      snap_scrolling: field("boolean", "Snap scrolling between projects", 11, {
+        default_value: "false",
+        description: "Static homepage: settle scrolling onto each project. Off allows free scrolling. Reduced motion uses free scrolling.",
+      }),
       title: field("text", "Page title", 0),
       meta_description: field("textarea", "Meta description", 1),
       intro: field("textarea", "Intro", 2),

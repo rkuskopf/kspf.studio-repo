@@ -156,6 +156,17 @@ html:has(body[data-page="home"]) {
   scroll-behavior: auto;
 }
 
+/* Snap destinations already follow the responsive project geometry below. */
+html[data-home-snap="true"]:has(body[data-page="home"]) {
+  scroll-snap-type: y mandatory;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-home-snap="true"]:has(body[data-page="home"]) {
+    scroll-snap-type: none;
+  }
+}
+
 body[data-page="home"] {
   padding-top: 0;
   padding-bottom: 0;

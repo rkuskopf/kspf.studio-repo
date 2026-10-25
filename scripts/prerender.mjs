@@ -86,7 +86,7 @@ if (home) {
     for (const key of ["Number", "Title", "Category", "Caption"]) {
       tag = setAttribute(tag, "data-hide-project-" + key.toLowerCase(), String(captions["show" + key] === false));
     }
-    return tag;
+    return setAttribute(tag, "data-home-snap", String(home.snapScrolling === true));
   });
   html = html.replace(/<html\b[^>]*>/i, (opening) =>
     setAttribute(opening, "data-home-initial-section", home.initialSection === "info" ? "info" : "work")

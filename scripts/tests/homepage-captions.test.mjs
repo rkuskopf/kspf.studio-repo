@@ -31,3 +31,24 @@ test("saved Home settings hydrate before the home-ready signal", async () => {
   assert.equal(ready, "true");
   assert.equal(window.document.documentElement.dataset.hideProjectCaption, "false");
 });
+
+
+test("snap scrolling is opt-in and hydrates before content is ready", async () => {
+  const { Window } = await import("happy-dom");
+  const { readFile } = await import("node:fs/promises");
+  const vm = await import("node:vm");
+  for (const value of [undefined, false, true, "true"]) {
+    const content = mapHomeStory({content: {component: "home_page", snap_scrolling: value}});
+    assert.equal(content.snapScrolling, value === true);
+    const window = new Window();
+    window.document.head.innerHTML = '<meta name="description">';
+    let ready;
+    window.kspfMarkHomeReady = () => { ready = window.document.documentElement.dataset.homeSnap; };
+    vm.runInNewContext(await readFile(new URL("../../home-content.js", import.meta.url), "utf8"), {
+      window, document: window.document, fetch: async () => ({ok: true, json: async () => content}),
+    });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(ready, String(value === true));
+    await window.happyDOM.abort();
+  }
+});

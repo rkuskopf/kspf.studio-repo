@@ -11,6 +11,13 @@ test('homepage permits free scrolling without native snapping even without JavaS
   const style=browser.getComputedStyle(document.documentElement);
   assert.equal(style.scrollSnapType,'none');
   assert.equal(style.scrollBehavior,'auto','native input must not acquire a second CSS animation');
+  document.documentElement.dataset.homeSnap = 'true';
+  assert.equal(browser.getComputedStyle(document.documentElement).scrollSnapType, 'y mandatory');
+  document.documentElement.classList.add('is-info-scrolling');
+  assert.equal(browser.getComputedStyle(document.documentElement).scrollSnapType, 'none');
+  document.documentElement.classList.remove('is-info-scrolling');
+  document.documentElement.dataset.homeSnap = 'false';
+  assert.equal(browser.getComputedStyle(document.documentElement).scrollSnapType, 'none');
   await browser.happyDOM.abort();
 });
 
@@ -89,6 +96,13 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   catch (error) { if (error.code !== 'ERR_MODULE_NOT_FOUND') throw error; }
   assert.ok(browser.kspfHomeScroll, 'desktop free-scroll controller must be loaded');
   assert.ok(document.documentElement.classList.contains('has-home-scroll'));
+  document.documentElement.dataset.homeSnap = 'true';
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(document.documentElement.classList.contains('has-home-scroll'), false, 'snapping tears down wheel smoothing');
+  assert.equal(wheel(40), false, 'native wheel input owns snap mode');
+  document.documentElement.dataset.homeSnap = 'false';
+  await new Promise(resolve => setImmediate(resolve));
+  assert.ok(document.documentElement.classList.contains('has-home-scroll'), 'free scrolling can resume');
   advance(32);
   assert.ok(wheel(400), 'desktop input is smoothed');
   assert.equal(y,300,'no synchronous native jump');
