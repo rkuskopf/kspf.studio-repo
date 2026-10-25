@@ -16,7 +16,8 @@
   --grid-cols: 12;
   --gutter: 5px;
   --viewport-w: 100vw;
-  --portrait-width: min(52.413793vh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
+  /* Match the 536:800 portrait/landscape scale without a height dependency. */
+  --portrait-width: min(536px, calc((var(--viewport-w) - 2 * var(--page-pad)) * 0.67));
   --home-project-row-height: calc(var(--portrait-width) * 1.25);
   --grid-col-w: calc((var(--viewport-w) - (var(--page-pad) * 2) - (var(--grid-cols) - 1) * var(--gutter)) / var(--grid-cols));
   --grid-step: calc(var(--grid-col-w) + var(--gutter));
@@ -50,12 +51,6 @@
   }
 }
 
-@supports (height: 100dvh) {
-  :root {
-    --portrait-width: min(52.413793dvh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
-  }
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -83,8 +78,7 @@ html.is-info-scrolling {
 }
 
 .home-information {
-  min-height: clamp(260px, 35vh, 400px);
-  min-height: clamp(260px, 35dvh, 400px);
+  min-height: 260px;
   padding: 30px 0 55px;
 }
 
@@ -176,7 +170,7 @@ body[data-page="home"] .top[hidden] {
 body[data-page="home"] .projects {
   margin-top: 0;
   row-gap: var(--project-gap);
-  padding-block: max(0px, calc((100dvh - var(--home-project-row-height)) / 2));
+  padding-block: clamp(110px, calc(var(--portrait-width) * 0.3), 160px);
 }
 
 /* Without navigation, let Information lead directly into the first project. */
@@ -608,9 +602,9 @@ body[data-page="home"] .nav__link--information {
   touch-action: pan-y;
 }
 
-body[data-page="home"] .hero {
-  max-height: 75vh;
-  max-height: 75dvh;
+body[data-page="home"] .hero,
+body[data-page="home"] .hero__media {
+  max-height: var(--home-project-row-height);
 }
 
 
@@ -1537,10 +1531,6 @@ body[data-page="home"] .project__caption .project__slide-counter {
 }
 
 @media (max-width: 857px) {
-  body[data-page="home"] .projects {
-    padding-block: clamp(48px, 9dvh, 80px);
-  }
-
   .project-block {
     --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
@@ -1569,8 +1559,8 @@ body[data-page="home"] .project__caption .project__slide-counter {
 
   body[data-page="home"] .hero.has-portrait {
     aspect-ratio: auto;
-    height: max(var(--home-project-row-height), min(75dvh,
-      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
+    height: max(var(--home-project-row-height),
+      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000)));
     min-height: var(--home-project-row-height);
   }
 

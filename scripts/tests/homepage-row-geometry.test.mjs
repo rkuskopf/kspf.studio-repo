@@ -34,7 +34,7 @@ test("static homepage rows use the portrait track without moving navigation", as
   );
   assert.match(
     css,
-    /body\[data-page="home"\] \.projects\s*{[^}]*padding-block:\s*max\(0px, calc\(\(100dvh - var\(--home-project-row-height\)\) \/ 2\)\)/s,
+    /body\[data-page="home"\] \.projects\s*{[^}]*padding-block:\s*clamp\(110px, calc\(var\(--portrait-width\) \* 0\.3\), 160px\)/s,
   );
   assert.match(css, /\.projects\s*{[^}]*row-gap:\s*var\(--project-gap\)/s);
   assert.doesNotMatch(
