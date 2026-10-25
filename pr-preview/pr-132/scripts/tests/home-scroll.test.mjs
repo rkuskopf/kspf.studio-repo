@@ -159,3 +159,18 @@ test('real Lenis permits arbitrary offsets and rapid input without project snapp
   desktop.matches=false;desktop.dispatchEvent(new browser.Event('change'));
   assert.equal(wheel(40),false,'mobile uses native input');
 });
+
+
+test('snap mode includes Info as the first destination on desktop and mobile', async () => {
+  for (const width of [655, 1280]) {
+    const browser = new Window({url: 'https://localhost:8001/', width, height: 802});
+    const document = browser.document;
+    document.body.dataset.page = 'home';
+    document.documentElement.dataset.homeSnap = 'true';
+    document.body.innerHTML = '<section class="home-information" id="information"></section><section class="project-block"></section>';
+    document.head.innerHTML = '<style>' + await readFile(new URL('../../style.css', import.meta.url), 'utf8') + '</style>';
+    assert.equal(browser.getComputedStyle(document.documentElement).scrollSnapType, 'y mandatory');
+    assert.equal(browser.getComputedStyle(document.getElementById('information')).scrollSnapAlign, 'start', 'scrolling up must have a snap destination above the first project');
+    await browser.happyDOM.abort();
+  }
+});
