@@ -1,0 +1,15 @@
+{
+  "title": "kspf.studio",
+  "metaDescription": "",
+  "intro": "",
+  "initialSection": "info",
+  "showNavigation": false,
+  "snapScrolling": false,
+  "captions": {
+    "layout": "flipped",
+    "showNumber": true,
+    "showTitle": true,
+    "showCategory": true,
+    "showCaption": true
+  }
+}
