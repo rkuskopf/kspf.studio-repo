@@ -25,6 +25,7 @@
       }
       document.documentElement.dataset.homeInitialSection =
         data.initialSection === "info" ? "info" : "work";
+      document.documentElement.dataset.homeSnap = String(data.snapScrolling === true);
       const captions = data.captions || {};
       document.documentElement.dataset.captionLayout = captions.layout || "current";
       for (const key of ["Number", "Title", "Category", "Caption"]) {

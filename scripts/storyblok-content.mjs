@@ -121,6 +121,7 @@ export const mapHomeStory = (story) => {
     intro: content.intro || "",
     initialSection: content.initial_section === "info" ? "info" : "work",
     showNavigation: content.show_navigation !== false,
+    snapScrolling: content.snap_scrolling === true,
     captions: homepageCaptions(content),
   };
 };

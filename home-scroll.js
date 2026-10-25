@@ -10,7 +10,7 @@ let navigationTarget;
 let finishNavigation;
 
 const update = () => {
-  const enabled = desktop.matches && !reducedMotion.matches && projects.children.length > 0;
+  const enabled = root.dataset.homeSnap !== 'true' && desktop.matches && !reducedMotion.matches && projects.children.length > 0;
   if (enabled === Boolean(lenis)) return;
   if (!enabled) {
     cancelAnimationFrame(frame);
@@ -87,6 +87,7 @@ window.kspfHomeScroll = {
 desktop.addEventListener('change', update);
 reducedMotion.addEventListener('change', update);
 new MutationObserver(update).observe(projects, { childList: true });
+new MutationObserver(update).observe(root, { attributes: true, attributeFilter: ['data-home-snap'] });
 // Let native keyboard, touch and scrollbar input take over from wheel gliding.
 const cancelWheel = () => {
   if (lenis) { lenis.stop(); lenis.start(); finishNavigation?.(); }

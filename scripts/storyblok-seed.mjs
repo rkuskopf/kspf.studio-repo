@@ -102,6 +102,7 @@ const homeStory = (home) => ({
     intro: home.intro || "",
     initial_section: home.initialSection === "info" ? "info" : "work",
     show_navigation: home.showNavigation !== false,
+    snap_scrolling: home.snapScrolling === true,
   },
 });
 

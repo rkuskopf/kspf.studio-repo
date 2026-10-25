@@ -83,6 +83,7 @@ html.is-info-scrolling {
 }
 
 .home-information {
+  scroll-snap-align: start;
   min-height: clamp(260px, 35vh, 400px);
   min-height: clamp(260px, 35dvh, 400px);
   padding: 30px 0 55px;
@@ -154,6 +155,17 @@ html:has(body[data-page="home"]) {
   /* Free scrolling on every device; desktop wheel smoothing is separate. */
   scroll-snap-type: none;
   scroll-behavior: auto;
+}
+
+/* Snap destinations already follow the responsive project geometry below. */
+html[data-home-snap="true"]:has(body[data-page="home"]) {
+  scroll-snap-type: y mandatory;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-home-snap="true"]:has(body[data-page="home"]) {
+    scroll-snap-type: none;
+  }
 }
 
 body[data-page="home"] {
