@@ -83,6 +83,7 @@ html.is-info-scrolling {
 }
 
 .home-information {
+  scroll-snap-align: start;
   min-height: clamp(260px, 35vh, 400px);
   min-height: clamp(260px, 35dvh, 400px);
   padding: 30px 0 55px;
