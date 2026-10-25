@@ -339,8 +339,7 @@
     let activeMediaEl = null;
     let activeImageEl = imageSlots[0];
     let activeVideoEl = videoSlots[0];
-    const videoPositions = new Map();
-    const shouldPlay = () => isInView && activeRoot === root;
+    const shouldPlay = () => isInView && activeRoot === root && !document.hidden;
     let wasPlaying = false;
     let playingVideoEl = null;
     let hitAreaRafId = 0;
@@ -368,34 +367,6 @@
       }
     };
 
-    const rememberVideoTime = (el, src) => {
-      if (!el || !src) return;
-      if (Number.isFinite(el.currentTime)) {
-        videoPositions.set(src, el.currentTime);
-      }
-    };
-
-    const restoreVideoTime = (el, src) => {
-      const saved = videoPositions.get(src);
-      if (!Number.isFinite(saved)) return;
-      const apply = () => {
-        try {
-          if (Number.isFinite(el.duration) && el.duration > 0) {
-            el.currentTime = Math.min(saved, Math.max(0, el.duration - 0.05));
-          } else {
-            el.currentTime = Math.max(0, saved);
-          }
-        } catch {
-          /* ignore seek failures */
-        }
-      };
-      if (el.readyState >= 1) {
-        apply();
-      } else {
-        el.addEventListener("loadedmetadata", apply, { once: true });
-      }
-    };
-
     const getVideoSrc = (el) => el.getAttribute("src") || "";
     const ensureVideoSrc = (el, src) => {
       if (getVideoSrc(el) !== src) {
@@ -420,7 +391,8 @@
       if (should) {
         ensureVideoSrc(activeVideoEl, currentSrc);
         if (!wasPlaying || playingVideoEl !== activeVideoEl) {
-          restoreVideoTime(activeVideoEl, currentSrc);
+          // Before metadata loads, this sets the default playback start position.
+          activeVideoEl.currentTime = 0;
           activeVideoEl.play().catch(() => {});
         }
         wasPlaying = true;
@@ -428,7 +400,6 @@
         return;
       }
       if (wasPlaying && playingVideoEl) {
-        rememberVideoTime(playingVideoEl, currentSrc);
         pauseVideo(playingVideoEl);
       }
       wasPlaying = false;
@@ -493,9 +464,6 @@
     };
 
     const showImage = (src, immediate = false) => {
-      if (currentIsVideo && currentSrc && activeVideoEl) {
-        rememberVideoTime(activeVideoEl, currentSrc);
-      }
       currentIsVideo = false;
       currentSrc = null;
       wasPlaying = false;
@@ -512,9 +480,6 @@
     };
 
     const showVideo = (src, immediate = false) => {
-      if (currentIsVideo && currentSrc && currentSrc !== src && activeVideoEl) {
-        rememberVideoTime(activeVideoEl, currentSrc);
-      }
       currentIsVideo = true;
       currentSrc = src;
       wasPlaying = false;
@@ -526,7 +491,7 @@
       updatePortraitFlag(nextVideoEl, src).then(scheduleHitArea);
 
       if (shouldPlay()) {
-        restoreVideoTime(nextVideoEl, src);
+        nextVideoEl.currentTime = 0;
         nextVideoEl.play().catch(() => {});
         wasPlaying = true;
         playingVideoEl = nextVideoEl;
@@ -575,6 +540,20 @@
         root.classList.remove("is-transitioning");
       }, transitionDuration);
     };
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.target !== root) return;
+          isInView = entry.isIntersecting;
+          updatePlayback();
+          schedulePickMostVisible();
+        });
+      },
+      { root: null, threshold: 0.35 }
+    );
+    observer.observe(root);
+    document.addEventListener("visibilitychange", updatePlayback);
 
     show(index);
     if (slides.length <= 1) {
@@ -660,19 +639,6 @@
     root.addEventListener("click", onClickCapture, true);
 
     preload(slides[(index + 1) % slides.length]);
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.target !== root) return;
-          isInView = entry.isIntersecting;
-          updatePlayback();
-          schedulePickMostVisible();
-        });
-      },
-      { root: null, threshold: 0.35 }
-    );
-    observer.observe(root);
   };
 
   const setupSlideshows = (scope = document) => {
