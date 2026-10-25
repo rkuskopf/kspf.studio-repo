@@ -1,6 +1,7 @@
 :root {
   --homepage-gutter: 15px;
-  --homepage-portrait-width: min(52.413793dvh, 536px, calc(100dvw - 30px));
+  /* Preserve the 536:800 portrait/landscape scale and the 536 × 670 cap. */
+  --homepage-portrait-width: min(536px, calc((100dvw - 2 * var(--homepage-gutter)) * 0.67));
   --homepage-project-row-height: calc(var(--homepage-portrait-width) * 1.25);
   color: #000;
   background: #fefefe;
@@ -40,7 +41,7 @@ body {
 }
 
 .homepage-information {
-  min-height: clamp(260px, 35dvh, 400px);
+  min-height: 260px;
   padding: 60px 0 80px;
 }
 
@@ -96,7 +97,7 @@ body {
 .homepage-projects {
   display: grid;
   row-gap: 50px;
-  padding-block: max(0px, calc((100dvh - var(--homepage-project-row-height)) / 2));
+  padding-block: clamp(110px, calc(var(--homepage-portrait-width) * 0.3), 160px);
 }
 
 .homepage-stage {
@@ -173,7 +174,7 @@ body {
   row-gap: 20px;
   min-height: 0;
   display: grid;
-  grid-template-columns: minmax(max-content, 1fr) minmax(0, 800px) minmax(max-content, 1fr);
+  grid-template-columns: minmax(30px, 1fr) minmax(0, 800px) minmax(30px, 1fr);
   column-gap: var(--homepage-gutter);
   align-items: center;
   padding: 0 var(--homepage-gutter);
@@ -380,10 +381,6 @@ body {
   .homepage-information__details {
     column-gap: 16px;
     margin-top: 22px;
-  }
-
-  .homepage-projects {
-    padding-block: clamp(48px, 9dvh, 80px);
   }
 
   .homepage-project {
