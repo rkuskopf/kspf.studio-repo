@@ -372,7 +372,12 @@ body {
 }
 
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
+  :root {
+    /* Keep Information, portraits and captions on the full mobile track. */
+    --homepage-portrait-width: calc(100dvw - 2 * var(--homepage-gutter));
+  }
+
   .homepage-information {
     padding-top: 40px;
     padding-bottom: 55px;
@@ -574,7 +579,7 @@ a:any-link {
   min-height: 32.8px;
 }
 
-@media (min-width: 858px) {
+@media (min-width: 601px) {
   .homepage:is([data-caption-layout="current"], [data-caption-layout="below"], [data-caption-layout="below-flipped"]) .homepage-project__number {
     grid-column: 1;
     justify-self: start;
@@ -625,7 +630,7 @@ a:any-link {
 
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   .homepage:is([data-caption-layout="current"], [data-caption-layout="flipped"]) .homepage-project__caption {
     row-gap: 4px;
   }
