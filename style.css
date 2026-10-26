@@ -132,7 +132,12 @@ html.is-info-scrolling {
   margin: 0;
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
+  :root {
+    /* Mobile uses the available width rather than the desktop portrait scale. */
+    --portrait-width: calc(var(--viewport-w) - 2 * var(--page-pad));
+  }
+
   .home-information__details {
     column-gap: 16px;
     margin-top: 28px;
@@ -561,7 +566,8 @@ body[data-page="home"] .nav__link--information {
 }
 
 .project-block {
-  --project-meta-gap: 20px;
+  /* Account for the label's page inset plus a 15px gap to the image. */
+  --project-meta-gap: calc(var(--page-pad) + 15px);
   --project-meta-width: 140px;
   --hero-intended-width: var(--hero-width);
   --hero-frame: min(var(--hero-intended-width),
@@ -835,7 +841,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
   color: #888;
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   body[data-page="home"] .project__caption-right {
     display: flex;
     flex-direction: column;
@@ -1530,7 +1536,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
   }
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   .project-block {
     --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
@@ -1543,6 +1549,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
   }
 
   body[data-page="home"] .project-block {
+    --hero-frame: calc(100% - 2 * var(--page-pad));
     grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
@@ -1583,7 +1590,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
 
 }
 
-@media (min-width: 858px) {
+@media (min-width: 601px) {
   body[data-page="home"] .hero,
   body[data-page="home"] .hero__media:not(.is-portrait) {
     max-height: var(--home-project-row-height);
@@ -1763,7 +1770,7 @@ html:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([d
   min-height: 32.8px;
 }
 
-@media (min-width: 858px) {
+@media (min-width: 601px) {
   html:is([data-caption-layout="current"], [data-caption-layout="below"], [data-caption-layout="below-flipped"]) body[data-page="home"] .project__number {
     left: var(--page-pad);
     right: auto;
@@ -1816,7 +1823,7 @@ html:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([d
 
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   html:is([data-caption-layout="current"], [data-caption-layout="flipped"]) body[data-page="home"] .project__caption {
     row-gap: 4px;
   }
