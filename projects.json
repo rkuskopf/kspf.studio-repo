@@ -100,21 +100,6 @@
       "showOnHome": true
     },
     {
-      "title": "AP-REPS",
-      "displayName": "Portfolio Site",
-      "projectNumber": "",
-      "category": "AP-REPS",
-      "showSlideshowCounter": true,
-      "description": "",
-      "viewUrl": "https://apreps.com.au",
-      "slides": [
-        "https://a.storyblok.com/f/294596336853918/x/36f9855534/sequence-01_6.mp4",
-        "https://a.storyblok.com/f/294596336853918/x/d3a3cc1b8c/untitled-19-august-2026-at-14-22-00-3.mp4"
-      ],
-      "alt": "Project preview",
-      "showOnHome": true
-    },
-    {
       "title": "Christopher Myles Henderson",
       "displayName": "Christopher Myles Henderson",
       "projectNumber": "",
@@ -130,6 +115,22 @@
       ],
       "alt": "Project preview",
       "showOnHome": false
+    },
+    {
+      "title": "AP-REPS",
+      "displayName": "Portfolio Site",
+      "projectNumber": "",
+      "category": "AP-REPS",
+      "showSlideshowCounter": true,
+      "description": "",
+      "viewUrl": "https://apreps.com.au",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792980128/Final_comp_portrait_3.mp4",
+        "https://a.storyblok.com/f/294596336853918/x/d3a3cc1b8c/untitled-19-august-2026-at-14-22-00-3.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792981325/Pre-comp_2.mp4"
+      ],
+      "alt": "Project preview",
+      "showOnHome": true
     }
   ]
 }
