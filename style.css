@@ -190,7 +190,7 @@ body[data-page="home"]:has(.top[hidden]) .projects {
 body[data-page="home"] .project-block {
   height: auto;
   grid-template-rows: var(--home-project-row-height) auto;
-  row-gap: 20px;
+  row-gap: 10px;
   min-height: 0;
   position: relative;
   scroll-snap-align: center;
@@ -776,6 +776,7 @@ body[data-page="home"] .hero__media.is-portrait {
 
 body[data-page="home"] .project__name {
   grid-area: name;
+  line-height: 1.5;
   width: var(--portrait-width);
   justify-self: center;
   white-space: pre-line;
