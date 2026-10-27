@@ -12,16 +12,10 @@
       "showOnHome": false
     },
     {
-      "title": "The Athenaeum",
-      "displayName": "The Athenaeum – Editorial Archive",
+      "title": "Aesop",
+      "displayName": "AESOP\nThe Athenaeum",
       "projectNumber": "",
-      "category": "Aesop",
-      "categoryParts": [
-        {
-          "text": "Aesop",
-          "href": "https://aesop.com"
-        }
-      ],
+      "category": "aesop.com",
       "showSlideshowCounter": true,
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
@@ -34,7 +28,7 @@
     },
     {
       "title": "Arcteryx",
-      "displayName": "Print Campaign",
+      "displayName": "ARCTERYX\nPrint Campaign",
       "projectNumber": "",
       "category": "Arcteryx",
       "showSlideshowCounter": true,
