@@ -785,6 +785,8 @@ body[data-page="home"] .project__name {
 
 .project__number {
   grid-area: number;
+  display: inline-flex;
+  gap: 5px;
   justify-self: start;
 }
 
@@ -834,11 +836,12 @@ body[data-page="home"] .project__caption-right {
 body[data-page="home"] .project__caption .project__slide-counter {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 5px;
   white-space: nowrap;
 }
 
-.project__slide-current {
+.project__slide-current,
+.project__current {
   color: #888;
 }
 

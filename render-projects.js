@@ -104,6 +104,7 @@
         counter.className = "project__side-caption project__slide-counter";
         counter.setAttribute("aria-label", `Slide 1 of ${project.slides.length}`);
         for (const [className, value] of [["project__slide-current", 1], ["project__slide-total", project.slides.length]]) {
+          if (counter.childNodes.length) counter.append(document.createTextNode(" / "));
           const span = document.createElement("span");
           span.className = className;
           span.textContent = String(value).padStart(3, "0");
@@ -119,8 +120,18 @@
         captionRight
       );
       const number = project.projectNumber?.trim() || String(index + 1);
+      const projectCounter = createProjectMeta("project__number", "");
+      projectCounter.setAttribute("aria-label", `Project ${number} of ${visibleProjects.length}`);
+      for (const [className, value] of [["project__current", number], ["project__total", String(visibleProjects.length)]]) {
+        if (projectCounter.childNodes.length) projectCounter.append(document.createTextNode(" / "));
+        const span = document.createElement("span");
+        span.className = className;
+        span.textContent = /^\d+$/.test(value) ? value.padStart(3, "0") : value;
+        span.setAttribute("aria-hidden", "true");
+        projectCounter.append(span);
+      }
       block.append(
-        createProjectMeta("project__number", /^\d+$/.test(number) ? number.padStart(3, "0") : number),
+        projectCounter,
         createHero(project, index),
         caption
       );
