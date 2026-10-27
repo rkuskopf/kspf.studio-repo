@@ -5,10 +5,10 @@
   "initialSection": "info",
   "showNavigation": false,
   "captions": {
-    "layout": "flipped",
+    "layout": "current",
     "showNumber": true,
     "showTitle": true,
-    "showCategory": true,
+    "showCategory": false,
     "showCaption": true
   }
 }
