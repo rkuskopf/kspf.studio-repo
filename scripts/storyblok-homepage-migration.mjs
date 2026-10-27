@@ -1,6 +1,7 @@
 import { createHash } from 'node:crypto';
 import { isDeepStrictEqual as equal } from 'node:util';
 import { HOMEPAGE_COMPONENTS, HOMEPAGE_BODY_FIELD } from './storyblok-homepage-schema.mjs';
+import { WORK_POSITION_FIELDS } from './work-caption-positions.mjs';
 
 const normalizeField = field => {
   const copy = structuredClone(field); delete copy.id; return copy;
@@ -10,6 +11,8 @@ const assertComponent = (existing, approved) => {
     if (existing[key] !== approved[key]) throw new Error(`Existing ${approved.name} component conflicts with homepage schema.`);
   }
   for (const [name, field] of Object.entries(approved.schema)) {
+    // Added by #120's dedicated migration; their absence is valid before it runs.
+    if (approved.name === 'project_feed' && Object.hasOwn(WORK_POSITION_FIELDS, name) && !Object.hasOwn(existing.schema ?? {}, name)) continue;
     if (!existing.schema?.[name] || !equal(normalizeField(existing.schema[name]), field)) {
       throw new Error(`Existing ${approved.name}.${name} conflicts with homepage schema.`);
     }
@@ -24,7 +27,12 @@ export const homepageBaselineBody = (homeUuid, siteUuid) => [
   { _uid: uidFor(homeUuid,'navigation'), component:'navigation', site:siteUuid },
   { _uid: uidFor(homeUuid,'project_feed'), component:'project_feed', collection:'projects/' },
 ];
-const withoutUids = body => Array.isArray(body) ? body.map(({_uid, _editable, ...block}) => block) : body;
+const withoutUids = body => Array.isArray(body) ? body.map(({_uid, _editable, ...block}) => {
+  if (block.component === 'project_feed') {
+    for (const field of Object.keys(WORK_POSITION_FIELDS)) delete block[field];
+  }
+  return block;
+}) : body;
 
 async function snapshot(api) {
   const [components, homes, sites] = await Promise.all([

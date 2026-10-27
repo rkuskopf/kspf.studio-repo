@@ -1,3 +1,4 @@
+import { WORK_POSITION_FIELDS } from './work-caption-positions.mjs';
 const siteReference = {
   type: 'option', display_name: 'Site settings', pos: 0, required: true,
   source: 'internal_stories', use_uuid: true, filter_content_type: ['site_settings'],
@@ -8,6 +9,7 @@ export const HOMEPAGE_COMPONENTS = [
   { name: 'navigation', display_name: 'Navigation', is_root: false, is_nestable: true, schema: { site: { ...siteReference } } },
   { name: 'project_feed', display_name: 'Work', is_root: false, is_nestable: true, schema: {
     collection: { type: 'option', display_name: 'Project collection', pos: 0, required: true, default_value: 'projects/', options: [{ name: 'Projects — automatic Show on home feed', value: 'projects/' }] },
+    ...WORK_POSITION_FIELDS,
   } },
 ];
 export const HOMEPAGE_BODY_FIELD = {
