@@ -22,6 +22,8 @@
 - [x] 3. URLs: test canonical origin validation, project canonicals, no-index/referrer headers and temporary internal redirects. Implement `lib/deployment.ts`, metadata and Next config changes, then run the focused tests. No cross-domain redirects.
 - [x] 4. Hosting: add the `next-app` workspace manifest, move runtime dependencies to it, update the root lockfile, add the app's Vercel configuration and explicit tracing root for shared scripts. Run root and workspace build commands.
 - [x] 5. Verification: document and add a repeatable HTTP smoke command for a built/hosted deployment. Exercise unsigned published delivery, valid draft delivery, invalid/expired/duplicate signatures, canonical/header/redirect/404 behaviour and token absence. Scan public browser assets for credentials. Run all tests and a clean-copy npm install/build; inspect desktop/mobile via the internal browser.
-- [ ] 6. Handoff: document exact account/environment/editor configuration, rollback, current legacy asset dependency and outstanding hosted checks. Update #74's body and native blocker relationships. Request independent code review, resolve findings, commit/push only this branch and create a separate PR without closing #74.
+- [x] 6. Handoff: document exact account/environment/editor configuration, rollback, current legacy asset dependency and outstanding hosted checks. Update #74's body and native blocker relationships. Request independent code review, resolve findings, commit/push only this branch and create a separate PR without closing #74.
 
 Account connection is an external prerequisite to actual deployment. Continue all repository work while it is unavailable; report hosted status precisely rather than claiming deployment success.
+
+Implementation PR: #139. Vercel build succeeds; authenticated hosted content/editor verification remains pending and #74 remains open.
