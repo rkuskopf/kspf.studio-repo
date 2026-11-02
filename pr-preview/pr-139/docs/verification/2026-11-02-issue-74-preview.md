@@ -76,3 +76,18 @@ Use the branch/app-root/environment instructions in `docs/nextjs-preview.md`.
 The browser checks above cover the deployed application. The scripted checker
 and a real Storyblok editor Save/reload have not run against the hosted URL. Keep
 #74 open until the editor checks pass and the account plan is confirmed suitable.
+
+## Follow-up parity correction — 3 November 2026
+
+Rowan identified tighter project-title leading and missing desktop wheel glide
+in the hosted preview. The live AESOP title computes to 12px type with 18px
+line height; the previous Next.js title computed to 12px with 14.4px line
+height. The Next.js homepage now uses 1.5 leading for project titles. It also
+uses the same Lenis 1.3.26 free wheel interpolation settings as the live
+homepage on fine-pointer desktop, while mobile and reduced-motion users retain
+native scrolling. The existing live static files remain unchanged.
+
+Local Next.js build and all 172 tests pass. In the internal browser, the local
+Next.js title now computes to 18px leading; a wheel gesture adds `lenis-smooth`
+and continues moving after the input, while a 390px viewport disables Lenis
+and has no horizontal overflow. Hosted parity needs checking after deployment.
