@@ -36,17 +36,36 @@ changes, CMS schema/content writes or Storyblok publication performed.
 this initial preview; completed #58/#59 references remain. Cutover requirements
 on #65 are unchanged. #124/#128/#132 remain open.
 
-## Still required on the host
+## Hosted preview verification — 3 November 2026
 
-Vercel subsequently reported a successful deployment of implementation commit
-`c863259be074bdeb8b00775e885c39b91e299679` under account/team `kspf1`, project
+Vercel reports a successful redeployment of commit
+`0469fa4f6b20ade449a6cd859f8f623c4289cce5` under account/team `kspf1`, project
 `kspf.studio-repo-next-app`. Its branch alias is:
 https://kspfstudio-repo-next-app-git-codex-74-nextjs-preview-kspf1.vercel.app
 
-An unauthenticated GET returns HTTP 302 to Vercel SSO; the internal browser
-confirms the Vercel login page. Protection remains enabled. Hosted runtime/content
-and editor checks are therefore pending authenticated access, not proven by the
-successful build. The Vercel plugin is not connected in this work session.
+The user authorised adding the existing Public and Preview Delivery API tokens to
+this Vercel project, scoped only to `codex/74-nextjs-preview`, together with EU
+region, the existing space ID and explicit deployed draft enablement. The values
+are stored as Vercel secrets; no management token was sent. Deployment protection
+remains enabled. The internal browser loaded the branch alias and confirmed:
+
+- Published Home renders six projects and a visible image; the project tracer
+  route renders published content.
+- A fresh, valid Storyblok-signed request for each route renders saved draft
+  content. A forged Home signature and a subsequent clean visit render published
+  content. The signed URL and token values were not recorded.
+- Home has `noindex, nofollow, noarchive`; its canonical points to the immutable
+  deployment origin, with the project path preserved for the tracer.
+- At 390px wide, the homepage has no horizontal document overflow. The hosted
+  ARCTERYX next control changed slide 1 to slide 2 and its image URL.
+- `/home` redirects to `/`; an unknown path shows the 404 page.
+
+Storyblok's current plan allows two extra Visual Editor preview URLs, and both
+are assigned to local Next.js previews (`localhost:3000` and `localhost:3001`).
+The default remains the static `https://localhost:8001/`. A user choice about
+which local URL to replace is pending; no CMS preview setting has been changed.
+The real editor iframe, Save and reload still need verification before closing
+#74. These checks must also confirm deployment-protection compatibility.
 
 The new Next.js Preview Checks GitHub Actions job passed on that commit. Existing
 Cloudflare checks fail without accessible diagnostic logs; their cause is not
@@ -54,8 +73,6 @@ established here. The pre-existing Labeler fails because `.github/labeler.yml` i
 missing. Neither provider configuration nor the labeler was changed by this PR.
 Use the branch/app-root/environment instructions in `docs/nextjs-preview.md`.
 
-Run the checker on the actual deployed URL, review desktop/mobile in the internal
-browser, and verify the real Storyblok iframe and reload after an authorised
-Save. Local signed HTTP requests do not establish hosted editor save/reload or
-Vercel deployment-protection compatibility. Confirm the account plan is suitable.
-Keep #74 open until all hosted acceptance criteria pass.
+The browser checks above cover the deployed application. The scripted checker
+and a real Storyblok editor Save/reload have not run against the hosted URL. Keep
+#74 open until the editor checks pass and the account plan is confirmed suitable.
