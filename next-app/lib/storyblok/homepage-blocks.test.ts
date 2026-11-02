@@ -6,7 +6,7 @@ describe('homepage body', () => {
   it.each(permutations)('preserves saved order %j', (...order) => {
     const blocks = body();
     const value = order.map(index => blocks[index]);
-    expect(mapHomeBlocks(value)).toEqual(value);
+    expect(mapHomeBlocks(value).map(({ positions, ...block }: any) => block)).toEqual(value);
   });
   it.each([undefined, null, [], {}, [body()[0]], [...body(), body()[0]]])('rejects invalid body %j', value => {
     expect(() => mapHomeBlocks(value)).toThrow(/Storyblok home body/);
@@ -23,5 +23,23 @@ describe('homepage body', () => {
       (v: any[]) => v[2].collection = 'archive/',
       (v: any[]) => v[0].site = ' ',
     ]) { const value = body(); edit(value); expect(() => mapHomeBlocks(value)).toThrow(); }
+  });
+  it('preserves Hidden independently for all four controls', () => {
+    const value: any[] = body();
+    for (const field of ['number', 'title', 'category', 'caption']) value[2][`${field}_position`] = 'hidden';
+    expect(mapHomeBlocks(value)[2]).toMatchObject({positions: {number: 'hidden', title: 'hidden', category: 'hidden', caption: 'hidden'}});
+  });
+  it('resolves independent Work defaults and preserves saved positions', () => {
+    const value: any[] = body();
+    value[2].title_position = 'right';
+    value[2].caption_position = 'left';
+    value[2].number_position = 'bottom-right';
+    value[2].category_position = 'invalid';
+    expect(mapHomeBlocks(value)[2]).toMatchObject({ positions: {
+      title: 'right', caption: 'left', number: 'bottom-right', category: 'right',
+    }});
+    expect(mapHomeBlocks(body())[2]).toMatchObject({ positions: {
+      number: 'left', title: 'bottom-left', category: 'right', caption: 'bottom-right',
+    }});
   });
 });

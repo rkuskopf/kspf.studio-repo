@@ -2,8 +2,9 @@
 
 import { useEffect, useRef, useState } from "react";
 
-import type { HomepageProject } from "../lib/storyblok/types";
+import type { HomeContent, HomepageProject, WorkCaptionPositions } from "../lib/storyblok/types";
 import ProjectLabel from "./project-label";
+import HomepageWorkCaptions from './homepage-work-captions';
 import { useHomepageViewport } from "./use-homepage-viewport";
 
 export function nextSlideIndex(current: number, delta: number, length: number) {
@@ -29,14 +30,21 @@ export default function HomepageSlideshow({
   project,
   priority = false,
   titleId,
+  positions,
+  number = '',
+  captions,
 }: {
   project: HomepageProject;
   priority?: boolean;
   titleId?: string;
+  positions?: WorkCaptionPositions;
+  number?: string;
+  captions?: HomeContent['captions'];
 }) {
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [mediaWidth, setMediaWidth] = useState<number>();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
   const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const imageElement = useRef<HTMLImageElement | null>(null);
@@ -48,6 +56,7 @@ export default function HomepageSlideshow({
 
   const move = (delta: number) => {
     setIsClassified(false);
+    setMediaWidth(undefined);
     setIndex((current) => nextSlideIndex(current, delta, project.slides.length));
   };
 
@@ -115,6 +124,21 @@ export default function HomepageSlideshow({
     video.play().catch(() => {});
   }, [isVisible, prefersReducedMotion, slide?.type, slide?.url]);
 
+  useEffect(() => {
+    if (!positions || !isClassified) return;
+    const media = slide?.type === 'video' ? videoElement.current : imageElement.current;
+    if (!media) return;
+    const updateWidth = () => {
+      const width = media.getBoundingClientRect().width;
+      if (width > 0) setMediaWidth(width);
+    };
+    updateWidth();
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(media);
+    return () => observer.disconnect();
+  }, [positions, isClassified, isPortrait, slide?.type, slide?.url]);
+
   if (!slide) return null;
 
   const mediaClassName = [
@@ -130,6 +154,7 @@ export default function HomepageSlideshow({
       <figure
         ref={viewportElement}
         className="homepage-hero"
+        data-portrait={isPortrait}
         tabIndex={0}
         aria-label={`${project.displayName} slideshow`}
         data-slide-index={index}
@@ -225,7 +250,7 @@ export default function HomepageSlideshow({
           />
         )}
       </figure>
-      <div className="homepage-project__caption">
+      {positions ? <HomepageWorkCaptions project={project} number={number} positions={positions} captions={captions} titleId={titleId} index={index} mediaWidth={mediaWidth} /> : <div className="homepage-project__caption">
         <p className="homepage-project__name" id={titleId}>
           <ProjectLabel text={project.displayName} parts={project.displayNameParts} />
         </p>
@@ -246,7 +271,7 @@ export default function HomepageSlideshow({
             </p>
           ) : null}
         </div>
-      </div>
+      </div>}
     </>
   );
 }

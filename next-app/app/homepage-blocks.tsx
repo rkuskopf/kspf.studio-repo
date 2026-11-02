@@ -1,5 +1,6 @@
-import type { HomePageData, HomeContent, HomepageProject, SiteContent } from "../lib/storyblok/types";
+import type { HomePageData, HomeContent, HomepageProject, SiteContent, WorkCaptionPositions } from "../lib/storyblok/types";
 import { legacyHomeBlocks } from "../lib/storyblok/homepage-blocks";
+import { DEFAULT_WORK_POSITIONS } from '../../scripts/work-caption-positions.mjs';
 import HomepageSlideshow from "./homepage-slideshow";
 
 export function HomepageInformation({ site }: { site: SiteContent }) {
@@ -70,7 +71,7 @@ export function HomepageNavigation({ content, site }: { content: HomeContent; si
   );
 }
 
-export function HomepageWork({ projects }: { projects: HomepageProject[] }) {
+export function HomepageWork({ projects, positions, captions }: { projects: HomepageProject[]; positions?: WorkCaptionPositions; captions?: HomeContent['captions'] }) {
   return (
         <div className="homepage-projects">
           {projects.map((project, index) => {
@@ -78,14 +79,15 @@ export function HomepageWork({ projects }: { projects: HomepageProject[] }) {
             const titleId = `homepage-project-${project.slug}-title`;
             return (
               <section
-                className="homepage-project"
-                aria-labelledby={titleId}
+                className={`homepage-project${positions ? ' homepage-project--positioned' : ''}`}
+                aria-labelledby={positions && (positions.title === 'hidden' || captions?.showTitle === false || !project.displayName.trim()) ? undefined : titleId}
+                aria-label={positions && (positions.title === 'hidden' || captions?.showTitle === false || !project.displayName.trim()) ? project.title : undefined}
                 key={project.storyId}
               >
-                <p className="homepage-project__number">
+                {!positions ? <p className="homepage-project__number">
                   {/^\d+$/.test(number) ? number.padStart(3, "0") : number}
-                </p>
-                <HomepageSlideshow project={project} priority={index === 0} titleId={titleId} />
+                </p> : null}
+                <HomepageSlideshow project={project} priority={index === 0} titleId={titleId} positions={positions} captions={captions} number={/^\d+$/.test(number) ? number.padStart(3, "0") : number} />
               </section>
             );
           })}
@@ -104,7 +106,7 @@ export default function HomepageBlocks({ data }: { data: HomePageData }) {
     if (block.component === "navigation" && next?.component === "project_feed") {
       return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
         <HomepageNavigation content={data.content} site={sites[block.site]} />
-        <HomepageWork projects={data.projects} />
+        <HomepageWork projects={data.projects} positions={data.content.body && next.component === 'project_feed' ? next.positions ?? DEFAULT_WORK_POSITIONS : undefined} captions={data.content.captions} />
       </div>;
     }
     if (block.component === "project_feed" && previous?.component === "navigation") return null;
@@ -114,7 +116,7 @@ export default function HomepageBlocks({ data }: { data: HomePageData }) {
         <HomepageNavigation content={data.content} site={sites[block.site]} />
       </div>;
       case "project_feed": return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
-        <HomepageWork projects={data.projects} />
+        <HomepageWork projects={data.projects} positions={data.content.body ? block.positions ?? DEFAULT_WORK_POSITIONS : undefined} captions={data.content.captions} />
       </div>;
     }
   });

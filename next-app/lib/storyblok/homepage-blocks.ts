@@ -1,4 +1,5 @@
 import type { HomeBlock } from './types';
+import { mapWorkCaptionPositions } from '../../../scripts/work-caption-positions.mjs';
 
 export function legacyHomeBlocks(site: string): HomeBlock[] {
   return [
@@ -26,7 +27,7 @@ export function mapHomeBlocks(value: unknown): HomeBlock[] {
     components.add(component);
     if (component === 'project_feed') {
       if (block.collection !== 'projects/') return invalid('Work must use the projects/ collection');
-      return { _uid, component, collection: 'projects/' };
+      return { _uid, component, collection: 'projects/', positions: mapWorkCaptionPositions(block) };
     }
     if (typeof block.site !== 'string' || !block.site.trim()) return invalid('requires a Site story reference');
     return { _uid, component, site: block.site };

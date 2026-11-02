@@ -22,7 +22,9 @@ Set:
 - `STORYBLOK_PUBLIC_TOKEN` to a Public Content Delivery API token for normal
   published rendering.
 - `STORYBLOK_PREVIEW_TOKEN` to a Preview Content Delivery API token for signed,
-  local Visual Editor requests.
+  local Visual Editor requests. This must match the existing preview token
+  Storyblok uses to sign the Visual Editor URL. A different valid delivery
+  token can fetch drafts but fail editor signature validation.
 - `STORYBLOK_REGION` to the space region: `eu`, `us`, `ca`, `ap`, or `cn`.
 
 Do not use `NEXT_PUBLIC_` variables for either token. The Next.js server reads
@@ -61,6 +63,13 @@ and an enabled project page. Arbitrary, partial, invalid, expired, or repeated
 parameters render published content instead. Every non-development runtime also
 renders published content, even if a request contains otherwise valid Visual
 Editor parameters.
+
+If the editor displays old content, inspect the iframe's `main` element:
+`data-storyblok-content="published"` means draft authentication was not accepted.
+Confirm that the server's preview token matches the token used to generate the
+editor signature; do not disable validation. A locally generated signed link
+alone does not verify the built-in editor connection. See [Storyblok's preview
+verification guide](https://www.storyblok.com/faq/how-to-verify-the-preview-query-parameters-of-the-visual-editor).
 
 Select **Save** after editing the story. The Storyblok Bridge reloads the iframe
 and the server fetches the latest saved draft without using generated JSON or
@@ -228,3 +237,42 @@ current Home draft, and save that backed-up content as a draft using the
 existing Management API `updateStory(home.id, {content})` method. Review before
 publishing. Do not delete shared components or project/Site stories. Removing
 legacy fields and the fallback belongs to cutover cleanup.
+
+## Shared Work caption positions (#120)
+
+The composed Next.js Work block owns four position dropdowns: project title,
+category, image caption / slideshow counter, and project number. Each offers
+Left, Right, Bottom left, Bottom right and Hidden. Hidden removes that field
+on desktop and mobile, including the caption or slideshow counter. Without saved positions, number is
+left, category right, title bottom left, and caption/counter bottom right.
+
+At widths below 858px, Left maps to Bottom left and Right to Bottom right.
+Each column stacks fields independently in number → title → category →
+caption/counter order with a 10px gap. Empty/hidden fields leave no gap. Bottom
+captions track the displayed media width, including portrait media and resizing.
+Links and line breaks remain supported. A project's counter toggle replaces
+its caption and follows the caption's position; its current value stays grey,
+with three-digit values and a 10px gap.
+
+Home's existing visibility controls remain effective. The page-level layout
+preset applies only to the legacy renderer; composed Next.js Work uses its
+independent positions. Static production and individual project pages retain
+their existing behavior. No per-project placement controls are added.
+
+Prepare the additive CMS migration using root management credentials:
+
+```bash
+node --env-file=.env scripts/setup-work-captions.mjs          # read-only plan
+node --env-file=.env scripts/setup-work-captions.mjs --apply  # after reviewing the plan
+```
+
+This requires the existing composition from #59. It adds missing option fields
+to the Work component, transfers the current Home preset into missing Work
+positions on the Home draft, and preserves explicit positions, translations,
+unrelated schema/content, and static compatibility fields. It backs up the
+affected Home draft and Work schema under `.storyblok-backups/` before writes,
+rejects conflicting schema/editorial edits and is idempotent. It never publishes
+or updates project stories. Review saved positions in the signed Next.js draft
+preview before publication. To roll back, compare the backup's `home.content`
+with the current Home draft and restore the backed-up draft content; keep the
+additive Work fields rather than deleting shared schema.

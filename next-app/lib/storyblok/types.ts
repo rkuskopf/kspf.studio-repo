@@ -1,4 +1,6 @@
 import type { FontWeight, TypographySettings } from "../typography/settings";
+import type { WorkCaptionPositions } from '../../../scripts/work-caption-positions.mjs';
+export type { CaptionPosition, WorkCaptionPositions } from '../../../scripts/work-caption-positions.mjs';
 import type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
 export type { ProjectLabelPart } from "../../../scripts/storyblok-label-links.mjs";
 
@@ -19,7 +21,7 @@ export type StoryblokEnvironment = {
 export type HomeBlock =
   | { _uid: string; component: "information"; site: string }
   | { _uid: string; component: "navigation"; site: string }
-  | { _uid: string; component: "project_feed"; collection: "projects/" };
+  | { _uid: string; component: "project_feed"; collection: "projects/"; positions?: WorkCaptionPositions };
 
 export type HomeContent = {
   body?: HomeBlock[];

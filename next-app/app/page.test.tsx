@@ -196,6 +196,18 @@ it("exposes global layout and visibility settings while keeping slideshows avail
   expect(markup).toContain('class="homepage-hero"');
 });
 
+it.each([false, true])('applies Work positions to adjacent and standalone feeds (standalone=%s)', standalone => {
+  const data=structuredClone(publishedData);
+  const body=legacyHomeBlocks(data.site.storyUuid);
+  const work=body[2];
+  if(work.component==='project_feed') work.positions={number:'bottom-left',title:'right',category:'left',caption:'bottom-right'};
+  data.content.body=standalone ? [body[2],body[0],body[1]] : body;
+  const markup=render(data);
+  expect(markup.match(/data-caption-slot="right"/g)).toHaveLength(2);
+  expect(markup).toContain('data-caption-field="title"');
+  expect(markup).toContain('homepage-project--positioned');
+});
+
 it("renders global navigation tokens and a weight-only per-link override", () => {
   const data = structuredClone(publishedData);
   data.site.typography.navigation = { ...data.site.typography.navigation, fontFamily: "sans", fontWeight: 700, desktopSize: 20, mobileSize: 16 };
