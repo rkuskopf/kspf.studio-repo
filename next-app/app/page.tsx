@@ -6,6 +6,7 @@ import HomepageBlocks from "./homepage-blocks";
 import StoryblokPreviewBridge from "./storyblok-preview-bridge";
 
 export const dynamic = "force-dynamic";
+export const metadata = { alternates: { canonical: "/" } };
 
 export function HomeContentView({ data }: { data: HomePageData }) {
 
