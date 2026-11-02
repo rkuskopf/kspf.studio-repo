@@ -2,6 +2,7 @@ import { typographyTokens } from "../lib/typography/settings";
 import { loadHomePage } from "../lib/storyblok/server";
 import type { HomePageData, StoryblokSearchParams } from "../lib/storyblok/types";
 import HomepageInitialPosition from "./homepage-initial-position";
+import HomepageWheelScroll from "./homepage-wheel-scroll";
 import HomepageBlocks from "./homepage-blocks";
 import StoryblokPreviewBridge from "./storyblok-preview-bridge";
 
@@ -22,6 +23,7 @@ export function HomeContentView({ data }: { data: HomePageData }) {
       data-storyblok-content={data.isPreview ? "draft" : "published"}
     >
       <HomepageInitialPosition section={data.content.initialSection} />
+      <HomepageWheelScroll />
       <HomepageBlocks data={data} />
       {data.isPreview ? <StoryblokPreviewBridge /> : null}
     </main>
