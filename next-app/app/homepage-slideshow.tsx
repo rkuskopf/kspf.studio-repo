@@ -37,6 +37,7 @@ export default function HomepageSlideshow({
   const [index, setIndex] = useState(0);
   const [isClassified, setIsClassified] = useState(false);
   const [isPortrait, setIsPortrait] = useState(false);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(true);
   const pointer = useRef<{ id: number; x: number; y: number } | null>(null);
   const imageElement = useRef<HTMLImageElement | null>(null);
@@ -50,6 +51,13 @@ export default function HomepageSlideshow({
     setIsClassified(false);
     setIndex((current) => nextSlideIndex(current, delta, project.slides.length));
   };
+
+  useEffect(() => {
+    const updateVisibility = () => setIsDocumentVisible(!document.hidden);
+    updateVisibility();
+    document.addEventListener("visibilitychange", updateVisibility);
+    return () => document.removeEventListener("visibilitychange", updateVisibility);
+  }, []);
 
   useEffect(() => {
     const query = window.matchMedia?.("(prefers-reduced-motion: reduce)");
@@ -108,12 +116,14 @@ export default function HomepageSlideshow({
   useEffect(() => {
     const video = videoElement.current;
     if (slide?.type !== "video" || !video) return;
-    if (prefersReducedMotion || !isVisible) {
+    if (prefersReducedMotion || !isVisible || !isDocumentVisible) {
       video.pause();
       return;
     }
+    video.currentTime = 0;
     video.play().catch(() => {});
-  }, [isVisible, prefersReducedMotion, slide?.type, slide?.url]);
+    return () => video.pause();
+  }, [index, isVisible, isDocumentVisible, prefersReducedMotion, slide?.type, slide?.url]);
 
   if (!slide) return null;
 
@@ -185,7 +195,7 @@ export default function HomepageSlideshow({
             className={mediaClassName}
             key={slide.url}
             src={slide.url}
-            {...videoMotionAttributes(prefersReducedMotion, isVisible)}
+            loop={videoMotionAttributes(prefersReducedMotion, isVisible).loop}
             muted
             playsInline
             preload="metadata"
