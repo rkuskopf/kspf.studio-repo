@@ -110,3 +110,34 @@ describe("Storyblok Visual Editor request authentication", () => {
     ).toBe("published");
   });
 });
+
+const productionPreview = (overrides: Record<string, unknown> = {}) =>
+  resolveStoryblokVersion({
+    nodeEnv: "production", previewEnabled: "true", spaceId: "313862",
+    previewToken: PREVIEW_TOKEN, searchParams: signedParams(), now: NOW,
+    ...overrides,
+  });
+
+describe("explicit deployed Storyblok preview", () => {
+  it("accepts a valid signed request in the configured space", () => {
+    expect(productionPreview()).toBe("draft");
+  });
+  it.each([undefined, "false", "1", "TRUE"])("keeps preview disabled for flag %s", previewEnabled => {
+    expect(productionPreview({previewEnabled})).toBe("published");
+  });
+  it("keeps unsigned, forged, expired and repeated requests published", () => {
+    for (const searchParams of [{}, signedParams(NOW_SECONDS - 3601),
+      signedParams(NOW_SECONDS, {"_storyblok_tk[token]": "0".repeat(40)}),
+      signedParams(NOW_SECONDS, {_storyblok: ["42", "42"]})]) {
+      expect(productionPreview({searchParams})).toBe("published");
+    }
+  });
+  it("rejects a correctly signed request for a different configured space", () => {
+    expect(productionPreview({spaceId: "999"})).toBe("published");
+  });
+  it("requires deployment space configuration for a complete signed request", () => {
+    expect(() => productionPreview({spaceId: undefined})).toThrow(/STORYBLOK_SPACE_ID/);
+    expect(() => productionPreview({spaceId: "not-an-id"})).toThrow(/STORYBLOK_SPACE_ID/);
+    expect(productionPreview({spaceId: undefined,searchParams:{}})).toBe("published");
+  });
+});

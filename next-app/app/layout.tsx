@@ -1,3 +1,4 @@
+import { previewOrigin } from "../lib/deployment";
 import { FONT_REGISTRY } from "../../scripts/typography-registry.mjs";
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
@@ -5,6 +6,8 @@ import type { ReactNode } from "react";
 import "./globals.css";
 
 export const metadata: Metadata = {
+  metadataBase: previewOrigin(),
+  robots: { index: false, follow: false, noarchive: true },
   title: "kspf.studio",
   description: "kspf is a digital practice.",
 };
