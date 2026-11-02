@@ -60,12 +60,16 @@ remains enabled. The internal browser loaded the branch alias and confirmed:
   ARCTERYX next control changed slide 1 to slide 2 and its image URL.
 - `/home` redirects to `/`; an unknown path shows the 404 page.
 
-Storyblok's current plan allows two extra Visual Editor preview URLs, and both
-are assigned to local Next.js previews (`localhost:3000` and `localhost:3001`).
-The default remains the static `https://localhost:8001/`. A user choice about
-which local URL to replace is pending; no CMS preview setting has been changed.
-The real editor iframe, Save and reload still need verification before closing
-#74. These checks must also confirm deployment-protection compatibility.
+Storyblok's current plan allows two extra Visual Editor preview URLs. The more
+specialized `localhost:3001` Next.js composition slot was replaced with the
+hosted branch alias; the default static `https://localhost:8001/` and the
+`localhost:3000` Next.js local slot remain. No story content was changed or
+published. In the real Home editor, the hosted iframe redirects to Vercel
+sign-in and is refused by the frame. The separate signed URL works at top level,
+but that does not establish editor integration. Deployment protection remains
+enabled; a branch-scoped shareable link is under user review because it would
+grant access to published preview pages to anyone holding the link. The iframe,
+Save and reload remain outstanding before closing #74.
 
 The new Next.js Preview Checks GitHub Actions job passed on that commit. Existing
 Cloudflare checks fail without accessible diagnostic logs; their cause is not
@@ -90,4 +94,7 @@ native scrolling. The existing live static files remain unchanged.
 Local Next.js build and all 172 tests pass. In the internal browser, the local
 Next.js title now computes to 18px leading; a wheel gesture adds `lenis-smooth`
 and continues moving after the input, while a 390px viewport disables Lenis
-and has no horizontal overflow. Hosted parity needs checking after deployment.
+and has no horizontal overflow. Vercel reports commit
+`a6a240805f34d4b0de981517a60bf6bf68575dbc` Ready. The hosted branch alias
+now computes 18px title leading and continues moving after a wheel gesture;
+390px hosted layout also disables Lenis and has no horizontal overflow.
