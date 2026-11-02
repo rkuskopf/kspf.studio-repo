@@ -38,10 +38,21 @@ on #65 are unchanged. #124/#128/#132 remain open.
 
 ## Still required on the host
 
-No Vercel deployment is claimed. Rowan has signed up and reached the import
-screen, but the account/project is not connected to this work session. Use the
-implementation branch, app root `next-app`, Next.js preset, outside-root source
-option and delivery environment described in `docs/nextjs-preview.md`.
+Vercel subsequently reported a successful deployment of implementation commit
+`c863259be074bdeb8b00775e885c39b91e299679` under account/team `kspf1`, project
+`kspf.studio-repo-next-app`. Its branch alias is:
+https://kspfstudio-repo-next-app-git-codex-74-nextjs-preview-kspf1.vercel.app
+
+An unauthenticated GET returns HTTP 302 to Vercel SSO; the internal browser
+confirms the Vercel login page. Protection remains enabled. Hosted runtime/content
+and editor checks are therefore pending authenticated access, not proven by the
+successful build. The Vercel plugin is not connected in this work session.
+
+The new Next.js Preview Checks GitHub Actions job passed on that commit. Existing
+Cloudflare checks fail without accessible diagnostic logs; their cause is not
+established here. The pre-existing Labeler fails because `.github/labeler.yml` is
+missing. Neither provider configuration nor the labeler was changed by this PR.
+Use the branch/app-root/environment instructions in `docs/nextjs-preview.md`.
 
 Run the checker on the actual deployed URL, review desktop/mobile in the internal
 browser, and verify the real Storyblok iframe and reload after an authorised
