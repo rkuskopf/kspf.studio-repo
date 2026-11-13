@@ -362,6 +362,8 @@ describe("homepage aggregate delivery records", () => {
         informationLabel: "INFO",
         informationHref: "#information",
         showInformation: true,
+        showEnquire: false,
+        enquireHref: "",
       },
       information: {
         title: "KSPF",
@@ -376,6 +378,15 @@ describe("homepage aggregate delivery records", () => {
     expect(requestedUrl?.pathname).toBe("/v2/cdn/stories/site");
     expect(requestedUrl?.searchParams.get("version")).toBe("published");
     expect(requestedUrl?.searchParams.get("token")).toBe("public-sentinel");
+  });
+
+  it('maps optional enquiry links, including an empty editor link', async () => {
+    for (const [enquire_href, expected] of [[undefined, ''], [{linktype:'story',cached_url:'',url:''}, ''], [{linktype:'url',url:'/enquire'}, '/enquire'], [{linktype:'email',email:'hello@kspf.au'},'mailto:hello@kspf.au'], [{linktype:'story',cached_url:'contact',anchor:'form'},'/contact#form']] as const) {
+      const response = structuredClone(siteResponse);
+      Object.assign(response.story.content.nav[0], {show_enquire:true,enquire_href});
+      const result = await fetchSiteContent({version:'draft',token:'preview-sentinel',region:'eu',fetchImpl:async()=>jsonResponse(response)});
+      expect(result.nav).toMatchObject({showEnquire:true,enquireHref:expected});
+    }
   });
 
   it("returns visible projects in configured order with asset and legacy slides", async () => {

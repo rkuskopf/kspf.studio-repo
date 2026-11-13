@@ -131,10 +131,19 @@ const firstBlock = (
   return value[0];
 };
 
-const mapLink = (value: unknown, label: string) => {
+const mapLink = (value: unknown, label: string, allowEmpty = false) => {
   if (typeof value === "string") return value;
   if (!isRecord(value)) return invalidSiteStory(`has an invalid ${label}`);
-  const candidate = value.url || value.cached_url || value.filename;
+  if (value.linktype === "email") {
+    const email = value.email || value.url || value.cached_url || "";
+    if (typeof email !== "string") return invalidSiteStory(`has an invalid ${label}`);
+    return email ? `mailto:${email.replace(/^mailto:/i, "")}` : "";
+  }
+  if (value.linktype === "story" && typeof value.cached_url === "string" && value.cached_url) {
+    const href = value.cached_url.startsWith("/") ? value.cached_url : `/${value.cached_url}`;
+    return typeof value.anchor === "string" && value.anchor ? `${href}#${value.anchor}` : href;
+  }
+  const candidate = value.url || value.cached_url || value.filename || (allowEmpty ? "" : undefined);
   if (typeof candidate !== "string") {
     return invalidSiteStory(`has an invalid ${label}`);
   }
@@ -201,6 +210,8 @@ const mapSiteContent = (payload: unknown): SiteContent => {
       ),
       informationHref: mapLink(nav.information_href, "information link"),
       showInformation: nav.show_about === true,
+      showEnquire: nav.show_enquire === true,
+      enquireHref: mapLink(nav.enquire_href ?? "", "enquiry link", true),
     },
     information: {
       title: homeLabel,

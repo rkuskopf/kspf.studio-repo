@@ -83,6 +83,8 @@ export const mapSiteStory = (story) => {
       informationLabel: nav.information_label || "",
       informationHref: storyblokLink(nav.information_href),
       showAbout: nav.show_about === true,
+      showEnquire: nav.show_enquire === true,
+      enquireHref: storyblokLink(nav.enquire_href),
       closeLabel: nav.close_label || "",
     },
     informationOverlay: {
@@ -115,7 +117,10 @@ export const mapSiteStory = (story) => {
 
 export const mapHomeStory = (story) => {
   const content = requireComponent(story, "home_page");
+  const navigation = blocks(content.body).filter(block => ["navigation", "navigation_new"].includes(block.component));
+  if (navigation.length > 1) throw new Error('Home must contain only one navigation block.');
   return {
+    navigationLayout: navigation[0]?.component === "navigation_new" ? "new" : "classic",
     title: content.title || "",
     metaDescription: content.meta_description || "",
     intro: content.intro || "",
