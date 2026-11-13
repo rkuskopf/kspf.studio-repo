@@ -59,7 +59,16 @@ export async function runHomepageMigration({ api, mode='plan', backup }) {
     else actions.push({kind:'create-component',name:approved.name});
   }
   if (Object.hasOwn(merged.schema,'body')) {
-    if (!equal(normalizeField(merged.schema.body),HOMEPAGE_BODY_FIELD)) throw new Error('Existing Home body field conflicts with homepage schema.');
+    const previousBodyField = {...HOMEPAGE_BODY_FIELD,
+      component_whitelist:['information','navigation','project_feed'],
+      description:'One Information, Navigation and Work block, in any order. Composition applies to the Next.js homepage.',
+    };
+    if (equal(normalizeField(merged.schema.body),previousBodyField)) {
+      merged.schema.body = {...merged.schema.body,...structuredClone(HOMEPAGE_BODY_FIELD)};
+      actions.push({kind:'extend-home-body-field',id:homeComponent.id});
+    } else if (!equal(normalizeField(merged.schema.body),HOMEPAGE_BODY_FIELD)) {
+      throw new Error('Existing Home body field conflicts with homepage schema.');
+    }
   } else {
     merged.schema.body = structuredClone(HOMEPAGE_BODY_FIELD);
     actions.push({kind:'add-home-body-field',id:homeComponent.id});
@@ -79,7 +88,7 @@ export async function runHomepageMigration({ api, mode='plan', backup }) {
     for (const approved of HOMEPAGE_COMPONENTS) {
       if (!components.some(c => c.name === approved.name)) await api.createComponent(structuredClone(approved));
     }
-    if (actions.some(a => a.kind === 'add-home-body-field')) await api.updateComponent(homeComponent.id,merged);
+    if (actions.some(a => ['add-home-body-field','extend-home-body-field'].includes(a.kind))) await api.updateComponent(homeComponent.id,merged);
     if (actions.some(a => a.kind === 'save-home-draft')) {
       const latestHome = await api.getStory(home.id);
       if (!equal(home,latestHome)) throw new Error('Home changed during schema migration; additive schema saved, Home draft preserved.');

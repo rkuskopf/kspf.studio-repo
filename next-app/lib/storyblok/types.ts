@@ -18,7 +18,7 @@ export type StoryblokEnvironment = {
 
 export type HomeBlock =
   | { _uid: string; component: "information"; site: string }
-  | { _uid: string; component: "navigation"; site: string }
+  | { _uid: string; component: "navigation" | "navigation_new"; site: string }
   | { _uid: string; component: "project_feed"; collection: "projects/" };
 
 export type HomeContent = {
@@ -34,6 +34,8 @@ export type HomeContent = {
 };
 
 export type SiteNavigation = {
+  showEnquire?: boolean;
+  enquireHref?: string;
   homeFontWeight?: FontWeight | null;
   informationFontWeight?: FontWeight | null;
   homeLabel: string;

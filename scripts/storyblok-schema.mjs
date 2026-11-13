@@ -35,6 +35,10 @@ export const STORYBLOK_COMPONENTS = [
       show_about: field("boolean", "Show ABOUT", 4, { default_value: "false" }),
       close_label: field("text", "Close label", 5),
       ...NAV_WEIGHT_FIELDS,
+      show_enquire: field("boolean", "Show ENQUIRE", 8, { default_value: "false" }),
+      enquire_href: field("multilink", "Enquiry link", 9, {
+        description: "Destination for the enquiry form. ENQUIRE stays hidden until a link is set and Show ENQUIRE is enabled.",
+      }),
     },
   },
   {
