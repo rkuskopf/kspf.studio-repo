@@ -128,7 +128,8 @@ test("numbers visible projects and places the title after media", async () => {
   });
   await new Promise((resolve) => setImmediate(resolve));
   const blocks = [...window.document.querySelectorAll(".project-block")];
-  assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007", "002"]);
+  assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007 / 002", "002 / 002"]);
+  assert.equal(blocks[1].querySelector(".project__number").getAttribute("aria-label"), "Project 2 of 2");
   assert.deepEqual([...blocks[0].children].map(node => node.className), ["project__number", "hero js-slideshow", "project__caption"]);
   assert.deepEqual([...blocks[0].querySelector(".project__caption").children].map(node => node.className), ["project__name", "project__caption-right"]);
 });
@@ -147,8 +148,9 @@ test("counter replaces the optional caption and pads numeric project labels", as
   });
   await new Promise(resolve => setImmediate(resolve));
   const blocks = [...window.document.querySelectorAll(".project-block")];
-  assert.equal(blocks[0].querySelector(".project__number").textContent, "007");
-  assert.equal(blocks[1].querySelector(".project__number").textContent, "A1");
+  assert.equal(blocks[0].querySelector(".project__number").textContent, "007 / 002");
+  assert.equal(blocks[1].querySelector(".project__number").textContent, "A1 / 002");
+  assert.equal(blocks[0].querySelector(".project__slide-counter").textContent, "001 / 002");
   assert.equal(blocks[0].querySelector(".project__slide-current").textContent, "001");
   assert.equal(blocks[0].querySelector(".project__slide-total").textContent, "002");
   assert.equal(blocks[0].querySelector(".project__slide-counter").getAttribute("aria-label"), "Slide 1 of 2");

@@ -1,15 +1,17 @@
 {
+  "informationLayout": "three-columns",
+  "navigationLayout": "new",
   "title": "kspf.studio",
   "metaDescription": "",
   "intro": "",
-  "initialSection": "info",
-  "showNavigation": false,
-  "snapScrolling": false,
+  "initialSection": "work",
+  "showNavigation": true,
+  "snapScrolling": true,
   "captions": {
-    "layout": "flipped",
+    "layout": "current",
     "showNumber": true,
     "showTitle": true,
-    "showCategory": true,
+    "showCategory": false,
     "showCaption": true
   }
 }

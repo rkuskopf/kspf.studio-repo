@@ -12,16 +12,10 @@
       "showOnHome": false
     },
     {
-      "title": "The Athenaeum",
-      "displayName": "The Athenaeum – Editorial Archive",
+      "title": "Aesop",
+      "displayName": "AESOP\nThe Athenaeum",
       "projectNumber": "",
-      "category": "Aesop",
-      "categoryParts": [
-        {
-          "text": "Aesop",
-          "href": "https://aesop.com"
-        }
-      ],
+      "category": "aesop.com",
       "showSlideshowCounter": true,
       "description": "UX and UI design for Aesop's Athenaeum, the brand's literary content archive. Restructured an infinite chronological feed into a four-pillar library (Product, Literature & Culture, Wellbeing, Stores & Architecture)",
       "viewUrl": "aesop.com",
@@ -34,7 +28,7 @@
     },
     {
       "title": "Arcteryx",
-      "displayName": "Print Campaign",
+      "displayName": "ARCTERYX\nPrint Campaign",
       "projectNumber": "",
       "category": "Arcteryx",
       "showSlideshowCounter": true,
@@ -50,7 +44,7 @@
     },
     {
       "title": "Jak Architecture",
-      "displayName": "Portfolio Site",
+      "displayName": "JAK ARCHITECTURE\nPortfolio Site",
       "projectNumber": "",
       "category": "Jak Architecture",
       "showSlideshowCounter": true,
@@ -66,7 +60,7 @@
     },
     {
       "title": "",
-      "displayName": "Brand Identity",
+      "displayName": "ALT. COSMETICS\nBrand Identity",
       "projectNumber": "",
       "category": "Alt. Cosmetics",
       "showSlideshowCounter": true,
@@ -84,32 +78,17 @@
     },
     {
       "title": "ALBUS LUMEN",
-      "displayName": "Shopify Theme Customisation",
+      "displayName": "ALBUS LUMEN\nShopify Theme Customisation",
       "projectNumber": "",
       "category": "Albus Lumen",
       "showSlideshowCounter": true,
       "description": "",
       "viewUrl": "https://www.albuslumen.com",
       "slides": [
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1788243546/Sequence_01_3.mp4",
-        "/assets/uploads/albus-04.png",
-        "/assets/uploads/Albus-video-02.mp4",
-        "https://res.cloudinary.com/kw2p64ib/video/upload/v1791354785/Albus_1.mp4"
-      ],
-      "alt": "Project preview",
-      "showOnHome": true
-    },
-    {
-      "title": "AP-REPS",
-      "displayName": "Portfolio Site",
-      "projectNumber": "",
-      "category": "AP-REPS",
-      "showSlideshowCounter": true,
-      "description": "",
-      "viewUrl": "https://apreps.com.au",
-      "slides": [
-        "https://a.storyblok.com/f/294596336853918/x/36f9855534/sequence-01_6.mp4",
-        "https://a.storyblok.com/f/294596336853918/x/d3a3cc1b8c/untitled-19-august-2026-at-14-22-00-3.mp4"
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792996405/Comp_1_1.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792996133/Comp_2_3.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1793060976/bibliotheque_with_background_01.mp4",
+        "/assets/uploads/albus-04.png"
       ],
       "alt": "Project preview",
       "showOnHome": true
@@ -130,6 +109,22 @@
       ],
       "alt": "Project preview",
       "showOnHome": false
+    },
+    {
+      "title": "AP-REPS",
+      "displayName": "AP–REPS\nPortfolio Site",
+      "projectNumber": "",
+      "category": "AP-REPS",
+      "showSlideshowCounter": true,
+      "description": "",
+      "viewUrl": "https://apreps.com.au",
+      "slides": [
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792980128/Final_comp_portrait_3.mp4",
+        "https://a.storyblok.com/f/294596336853918/x/d3a3cc1b8c/untitled-19-august-2026-at-14-22-00-3.mp4",
+        "https://res.cloudinary.com/kw2p64ib/video/upload/v1792981325/Pre-comp_2.mp4"
+      ],
+      "alt": "Project preview",
+      "showOnHome": true
     }
   ]
 }

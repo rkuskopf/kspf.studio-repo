@@ -5,22 +5,24 @@
     "informationLabel": "INFO",
     "informationHref": "#info",
     "showAbout": true,
+    "showEnquire": false,
+    "enquireHref": "",
     "closeLabel": "x"
   },
   "informationOverlay": {
     "contactTitle": "CONTACT",
     "contactBody": "",
-    "contactEmail": "studio@kspf.au",
+    "contactEmail": "hello@kspf.au",
     "servicesTitle": "SERVICES",
     "services": [
-      "Web Development",
-      "Art Direction",
-      "Product Design",
-      "Creative Direction",
-      "Design Research"
+      "IDENTITY",
+      "PRINT",
+      "WEB DEVELOPMENT",
+      "CAMPAIGNS",
+      "ART DIRECTION"
     ]
   },
-  "profile": "Design and digital direction for culturally led organisations and brands.",
+  "profile": "KSPF is a multidisciplinary design practice for culturally led organisations and brands.",
   "footer": {
     "brand": "kspf",
     "profileLabel": "Profile",

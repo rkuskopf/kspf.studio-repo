@@ -151,6 +151,14 @@
       link.hidden = nav.showAbout !== true;
     });
 
+    document.querySelectorAll(".nav__link--enquire").forEach((link) => {
+      const href = typeof nav.enquireHref === "string" ? nav.enquireHref.trim() : "";
+      const visible = nav.showEnquire === true && Boolean(href);
+      link.hidden = !visible;
+      if (visible) link.setAttribute("href", href);
+      else link.removeAttribute("href");
+    });
+
     const profile = data.profile;
     setText(document.querySelector(".js-home-profile"), profile);
 

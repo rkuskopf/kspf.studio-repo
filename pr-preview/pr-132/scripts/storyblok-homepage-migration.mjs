@@ -3,8 +3,21 @@ import { isDeepStrictEqual as equal } from 'node:util';
 import { HOMEPAGE_COMPONENTS, HOMEPAGE_BODY_FIELD } from './storyblok-homepage-schema.mjs';
 
 const normalizeField = field => {
-  const copy = structuredClone(field); delete copy.id; return copy;
+  const copy = structuredClone(field);
+  delete copy.id;
+  copy.component_whitelist?.sort();
+  return copy;
 };
+const previousBodyFields = [
+  {
+    component_whitelist: ['information', 'navigation', 'project_feed'],
+    description: 'One Information, Navigation and Work block, in any order. Composition applies to the Next.js homepage.',
+  },
+  {
+    component_whitelist: ['information', 'navigation', 'navigation_new', 'project_feed'],
+    description: 'One Information, one Navigation (original or left aligned), and one Work block. The navigation choice applies to both previews; block ordering applies to the Next.js homepage.',
+  },
+];
 const assertComponent = (existing, approved) => {
   for (const key of ['name', 'is_root', 'is_nestable']) {
     if (existing[key] !== approved[key]) throw new Error(`Existing ${approved.name} component conflicts with homepage schema.`);
@@ -24,8 +37,6 @@ export const homepageBaselineBody = (homeUuid, siteUuid) => [
   { _uid: uidFor(homeUuid,'navigation'), component:'navigation', site:siteUuid },
   { _uid: uidFor(homeUuid,'project_feed'), component:'project_feed', collection:'projects/' },
 ];
-const withoutUids = body => Array.isArray(body) ? body.map(({_uid, _editable, ...block}) => block) : body;
-
 async function snapshot(api) {
   const [components, homes, sites] = await Promise.all([
     api.listComponents(), api.findStoriesByFullSlug('home'), api.findStoriesByFullSlug('site'),
@@ -59,17 +70,21 @@ export async function runHomepageMigration({ api, mode='plan', backup }) {
     else actions.push({kind:'create-component',name:approved.name});
   }
   if (Object.hasOwn(merged.schema,'body')) {
-    if (!equal(normalizeField(merged.schema.body),HOMEPAGE_BODY_FIELD)) throw new Error('Existing Home body field conflicts with homepage schema.');
+    const existing = normalizeField(merged.schema.body);
+    if (previousBodyFields.some(field => equal(existing, normalizeField({...HOMEPAGE_BODY_FIELD, ...field})))) {
+      merged.schema.body = {...merged.schema.body,...structuredClone(HOMEPAGE_BODY_FIELD)};
+      actions.push({kind:'extend-home-body-field',id:homeComponent.id});
+    } else if (!equal(existing, normalizeField(HOMEPAGE_BODY_FIELD))) {
+      throw new Error('Existing Home body field conflicts with homepage schema.');
+    }
   } else {
     merged.schema.body = structuredClone(HOMEPAGE_BODY_FIELD);
     actions.push({kind:'add-home-body-field',id:homeComponent.id});
   }
   const body = homepageBaselineBody(home.uuid,site.uuid);
-  if (Object.hasOwn(home.content,'body')) {
-    if (!equal(withoutUids(home.content.body),withoutUids(body))) {
-      throw new Error('Home already has a different composition; preserving it for review.');
-    }
-  } else actions.push({kind:'save-home-draft',id:home.id,order:body.map(b => b.component)});
+  if (!Object.hasOwn(home.content,'body')) {
+    actions.push({kind:'save-home-draft',id:home.id,order:body.map(b => b.component)});
+  }
   if (mode === 'apply' && actions.length) {
     if (typeof backup !== 'function') throw new Error('A durable backup writer is required before applying the homepage migration.');
     // Re-read before any write; fail rather than clobber an intervening edit.
@@ -79,7 +94,7 @@ export async function runHomepageMigration({ api, mode='plan', backup }) {
     for (const approved of HOMEPAGE_COMPONENTS) {
       if (!components.some(c => c.name === approved.name)) await api.createComponent(structuredClone(approved));
     }
-    if (actions.some(a => a.kind === 'add-home-body-field')) await api.updateComponent(homeComponent.id,merged);
+    if (actions.some(a => ['add-home-body-field','extend-home-body-field'].includes(a.kind))) await api.updateComponent(homeComponent.id,merged);
     if (actions.some(a => a.kind === 'save-home-draft')) {
       const latestHome = await api.getStory(home.id);
       if (!equal(home,latestHome)) throw new Error('Home changed during schema migration; additive schema saved, Home draft preserved.');
