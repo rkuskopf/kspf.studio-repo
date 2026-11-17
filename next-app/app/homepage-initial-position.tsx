@@ -21,6 +21,27 @@ export default function HomepageInitialPosition({
     });
   }, [section]);
 
+  useEffect(() => {
+    const information = document.querySelector<HTMLElement>("#information.homepage-information--three-columns");
+    const work = document.getElementById("work");
+    const infoLink = document.querySelector<HTMLAnchorElement>(".homepage-nav__information");
+    if (!information || !work || !infoLink) return;
+
+    const handleInfoClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const { top, bottom } = information.getBoundingClientRect();
+      if (top > 1 || bottom <= 1 || Math.abs(work.getBoundingClientRect().top) <= 1) return;
+
+      event.preventDefault();
+      if (window.location.hash !== "#work") history.pushState(history.state, "", "#work");
+      work.focus({ preventScroll: true });
+      work.scrollIntoView({ block: "start" });
+    };
+
+    infoLink.addEventListener("click", handleInfoClick);
+    return () => infoLink.removeEventListener("click", handleInfoClick);
+  }, []);
+
   useLayoutEffect(() => {
     const information = document.querySelector<HTMLElement>("#information[data-before-navigation]");
     const next = information?.nextElementSibling;
@@ -30,7 +51,6 @@ export default function HomepageInitialPosition({
     const measure = () => {
       const hostTop = next.getBoundingClientRect().top;
       const bounds = nav.getBoundingClientRect();
-      information.style.setProperty("--information-nav-top", `${bounds.top - hostTop}px`);
       information.style.setProperty("--information-nav-bottom", `${bounds.bottom - hostTop}px`);
     };
     measure();
