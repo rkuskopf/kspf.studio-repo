@@ -120,6 +120,8 @@ export const mapHomeStory = (story) => {
   const navigation = blocks(content.body).filter(block => ["navigation", "navigation_new"].includes(block.component));
   if (navigation.length > 1) throw new Error('Home must contain only one navigation block.');
   return {
+    informationLayout: blocks(content.body).some(block => block.component === "information_three_columns")
+      ? "three-columns" : "classic",
     navigationLayout: navigation[0]?.component === "navigation_new" ? "new" : "classic",
     title: content.title || "",
     metaDescription: content.meta_description || "",
