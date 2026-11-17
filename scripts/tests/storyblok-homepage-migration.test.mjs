@@ -26,13 +26,13 @@ test('additive schema keeps legacy controls and restricts the core body',()=>{
   const home=STORYBLOK_COMPONENTS.find(c=>c.name==='home_page');
   assert.deepEqual(home.schema.body,HOMEPAGE_BODY_FIELD);
   for(const name of ['title','intro','initial_section','show_navigation','caption_layout','show_project_numbers','show_project_titles','show_project_categories','show_image_captions']) assert.ok(home.schema[name]);
-  assert.deepEqual(HOMEPAGE_BODY_FIELD.component_whitelist,['information','navigation','navigation_new','project_feed']);
+  assert.deepEqual(HOMEPAGE_BODY_FIELD.component_whitelist,['information','information_three_columns','navigation','navigation_new','project_feed']);
   assert.ok(HOMEPAGE_COMPONENTS.every(c=>c.is_nestable&&!c.is_root));
   assert.equal(HOMEPAGE_COMPONENTS[0].schema.site.source,'internal_stories');
 });
 test('plan reports additions and performs zero writes',async()=>{
   const f=fixture(); const result=await runHomepageMigration({api:f.api});
-  assert.equal(result.actions.length,6);assert.deepEqual(f.writes,[]);
+  assert.equal(result.actions.length,7);assert.deepEqual(f.writes,[]);
 });
 test('upgrades the previous block whitelist without editing existing content', async()=>{
   const f=fixture();
@@ -65,9 +65,20 @@ test('detects an intervening story edit before any write',async()=>{
   f.api.getStory=async id=>{if(++reads===3)f.home.content.intro='Changed';return get(id);};
   await assert.rejects(runHomepageMigration({...f,mode:'apply'}),/changed since planning/);assert.deepEqual(f.writes,[]);
 });
-test('preserves existing different composition',async()=>{
-  const f=fixture();f.home.content.body=homepageBaselineBody(f.home.uuid,f.site.uuid).reverse();
-  await assert.rejects(runHomepageMigration({...f,mode:'apply'}),/preserving it/);assert.deepEqual(f.writes,[]);
+test('extends a navigation-era schema without touching the saved block order or variant',async()=>{
+  const f=fixture();
+  f.home.content.body=homepageBaselineBody(f.home.uuid,f.site.uuid).reverse();
+  f.home.content.body[1].component='navigation_new';
+  const body=structuredClone(f.home.content.body);
+  f.components.push(...HOMEPAGE_COMPONENTS.filter(component=>component.name!=='information_three_columns'));
+  f.components[0].schema.body={...structuredClone(HOMEPAGE_BODY_FIELD),
+    component_whitelist:['information','navigation','project_feed','navigation_new'],
+    description:'One Information, one Navigation (original or left aligned), and one Work block. The navigation choice applies to both previews; block ordering applies to the Next.js homepage.'};
+  await runHomepageMigration({...f,mode:'apply'});
+  assert.deepEqual(f.writes,['backup','component','schema']);
+  assert.deepEqual(f.home.content.body,body);
+  assert.deepEqual(f.components[0].schema.body,HOMEPAGE_BODY_FIELD);
+  assert.deepEqual((await runHomepageMigration({...f,mode:'apply'})).actions,[]);
 });
 test('rejects conflicting schema while retaining unrelated fields',async()=>{
   const f=fixture();f.components[0].schema.body={type:'text'};

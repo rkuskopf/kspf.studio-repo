@@ -3,6 +3,12 @@ import { legacyHomeBlocks, mapHomeBlocks } from './homepage-blocks';
 const body = () => legacyHomeBlocks('site-uuid');
 const permutations = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
 describe('homepage body', () => {
+  it('accepts the three-column block and rejects a second Information block', () => {
+    const [information, navigation, work] = body();
+    const threeColumns = { ...information, _uid: 'three-columns', component: 'information_three_columns' };
+    expect(mapHomeBlocks([threeColumns, navigation, work])).toEqual([threeColumns, navigation, work]);
+    expect(() => mapHomeBlocks([information, threeColumns, work])).toThrow(/Storyblok home body/);
+  });
   it('accepts the alternative navigation and rejects two navigation choices', () => {
     const alternative = [body()[0], {...body()[1], component:'navigation_new'}, body()[2]];
     expect(mapHomeBlocks(alternative)).toEqual(alternative);

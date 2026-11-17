@@ -228,12 +228,34 @@ it.each([[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])("renders saved block 
   const blocks = legacyHomeBlocks(data.site.storyUuid);
   data.content.body = order.map(index => blocks[index]);
   const markup = render(data);
-  const positions = { information: markup.indexOf('id="information"'), navigation: markup.indexOf('<header'), navigation_new: markup.indexOf('<header'), project_feed: markup.indexOf('class="homepage-projects"') };
+  const information = markup.indexOf('id="information"');
+  const positions = { information, information_three_columns: information, navigation: markup.indexOf('<header'), navigation_new: markup.indexOf('<header'), project_feed: markup.indexOf('class="homepage-projects"') };
   const offsets = data.content.body.map(block => positions[block.component]);
   expect(offsets[0]).toBeLessThan(offsets[1]);
   expect(offsets[1]).toBeLessThan(offsets[2]);
   expect(markup.match(/id="work"/g)).toHaveLength(1);
   expect(markup.match(/id="information"/g)).toHaveLength(1);
+});
+it('renders the alternative Information role with the shared copy, services and contact in order', () => {
+  const data = structuredClone(publishedData);
+  const [, navigation, work] = legacyHomeBlocks(data.site.storyUuid);
+  const information = { _uid: 'three-columns', component: 'information_three_columns', site: data.site.storyUuid } as const;
+  data.content.body = [information, navigation, work];
+  const markup = render(data);
+  expect(markup).toContain('homepage-information--three-columns');
+  expect(markup).toContain('data-before-navigation="true"');
+  const positions = [data.site.information.profile, 'homepage-information__services', 'homepage-information__contact']
+    .map(text => markup.indexOf(text));
+  expect(positions[0]).toBeGreaterThan(-1);
+  expect(positions[1]).toBeGreaterThan(positions[0]);
+  expect(positions[2]).toBeGreaterThan(positions[1]);
+  expect(markup).toContain('href="#information"');
+
+  data.content.body = [navigation, information, work];
+  expect(render(data)).not.toContain('data-before-navigation');
+  data.content.body = [information, navigation, work];
+  data.content.showNavigation = false;
+  expect(render(data)).not.toContain('data-before-navigation');
 });
 it('does not render hidden standalone navigation content', () => {
   const data = structuredClone(publishedData);
