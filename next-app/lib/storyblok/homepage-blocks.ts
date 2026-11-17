@@ -20,10 +20,13 @@ export function mapHomeBlocks(value: unknown): HomeBlock[] {
     const { _uid, component } = block;
     if (typeof _uid !== 'string' || !_uid.trim() || uids.has(_uid)) return invalid('requires unique nonempty block UIDs');
     uids.add(_uid);
-    if (!['information', 'navigation', 'project_feed'].includes(component) || components.has(component)) {
+    const role = component === 'navigation_new' ? 'navigation'
+      : component === 'information_three_columns' ? 'information'
+      : component;
+    if (!['information', 'information_three_columns', 'navigation', 'navigation_new', 'project_feed'].includes(component) || components.has(role)) {
       return invalid('requires one of each supported core component');
     }
-    components.add(component);
+    components.add(role);
     if (component === 'project_feed') {
       if (block.collection !== 'projects/') return invalid('Work must use the projects/ collection');
       return { _uid, component, collection: 'projects/' };

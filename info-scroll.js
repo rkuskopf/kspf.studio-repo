@@ -8,6 +8,16 @@
     return;
   }
 
+  const navigation = document.querySelector?.(".home-stage > .top");
+  if (navigation && typeof ResizeObserver === "function") {
+    const measureNavigation = () => {
+      const bottom = navigation.getBoundingClientRect().bottom - work.getBoundingClientRect().top;
+      information.style.setProperty("--information-nav-bottom", `${Math.max(0, bottom)}px`);
+    };
+    new ResizeObserver(measureNavigation).observe(navigation);
+    measureNavigation();
+  }
+
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
   let animationFrame = 0;
   let navigating = false;

@@ -16,7 +16,8 @@
   --grid-cols: 12;
   --gutter: 5px;
   --viewport-w: 100vw;
-  --portrait-width: min(52.413793vh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
+  /* Match the 536:800 portrait/landscape scale without a height dependency. */
+  --portrait-width: min(536px, calc((var(--viewport-w) - 2 * var(--page-pad)) * 0.67));
   --home-project-row-height: calc(var(--portrait-width) * 1.25);
   --grid-col-w: calc((var(--viewport-w) - (var(--page-pad) * 2) - (var(--grid-cols) - 1) * var(--gutter)) / var(--grid-cols));
   --grid-step: calc(var(--grid-col-w) + var(--gutter));
@@ -50,12 +51,6 @@
   }
 }
 
-@supports (height: 100dvh) {
-  :root {
-    --portrait-width: min(52.413793dvh, 536px, calc(var(--viewport-w) - 2 * var(--page-pad)));
-  }
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -84,8 +79,7 @@ html.is-info-scrolling {
 
 .home-information {
   scroll-snap-align: start;
-  min-height: clamp(260px, 35vh, 400px);
-  min-height: clamp(260px, 35dvh, 400px);
+  min-height: 260px;
   padding: 30px 0 55px;
 }
 
@@ -139,10 +133,92 @@ html.is-info-scrolling {
   margin: 0;
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
+  :root {
+    /* Mobile uses the available width rather than the desktop portrait scale. */
+    --portrait-width: calc(var(--viewport-w) - 2 * var(--page-pad));
+  }
+
   .home-information__details {
     column-gap: 16px;
     margin-top: 28px;
+  }
+}
+
+html[data-home-information="three-columns"] .home-information {
+  min-height: 0;
+  padding-block: 15px 40px;
+}
+
+html[data-home-information="three-columns"] body:has(.home-stage > .top:not([hidden])) .home-information {
+  --information-nav-space: calc(var(--page-pad) + var(--information-nav-bottom, 72px));
+  display: flex;
+  align-items: center;
+  min-block-size: calc(100dvh - var(--information-nav-space));
+  padding-block: calc(15px + var(--information-nav-space)) 15px;
+}
+
+html[data-home-information="three-columns"] .home-information__inner {
+  --information-services-start: calc((100% - var(--portrait-width)) / 2);
+  --information-contact-start: calc(7 * (100% + var(--gutter)) / 12);
+  display: grid;
+  grid-template-columns: var(--information-services-start)
+    calc(var(--information-contact-start) - var(--information-services-start)) minmax(0, 1fr);
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+html[data-home-information="three-columns"] .home-information h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+html[data-home-information="three-columns"] .home-information__details {
+  display: contents;
+}
+
+html[data-home-information="three-columns"] .home-information__inner > p {
+  grid-column: 1;
+  grid-row: 1;
+  padding-inline-end: var(--page-pad);
+  line-height: 1.2;
+}
+
+html[data-home-information="three-columns"] .home-information__services {
+  grid-column: 2;
+  grid-row: 1;
+  padding-inline-end: var(--page-pad);
+}
+
+html[data-home-information="three-columns"] .home-information__contact {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+html[data-home-information="three-columns"] .home-information h2 {
+  margin-bottom: 8px;
+}
+
+html[data-home-information="three-columns"] .home-information__contact a {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  html[data-home-information="three-columns"] .home-information__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  html[data-home-information="three-columns"] .home-information__services {
+    grid-area: 2 / 1;
+  }
+
+  html[data-home-information="three-columns"] .home-information__contact {
+    grid-area: 3 / 1;
   }
 }
 
@@ -188,7 +264,7 @@ body[data-page="home"] .top[hidden] {
 body[data-page="home"] .projects {
   margin-top: 0;
   row-gap: var(--project-gap);
-  padding-block: max(0px, calc((100dvh - var(--home-project-row-height)) / 2));
+  padding-block: clamp(110px, calc(var(--portrait-width) * 0.3), 160px);
 }
 
 /* Without navigation, let Information lead directly into the first project. */
@@ -203,7 +279,7 @@ body[data-page="home"]:has(.top[hidden]) .projects {
 body[data-page="home"] .project-block {
   height: auto;
   grid-template-rows: var(--home-project-row-height) auto;
-  row-gap: 20px;
+  row-gap: 10px;
   min-height: 0;
   position: relative;
   scroll-snap-align: center;
@@ -328,7 +404,8 @@ body.grid-overlay {
 }
 
 .nav__link--home,
-.nav__link--information {
+.nav__link--information,
+.nav__link--enquire {
   font-family: "akzidenz-grotesk-next-pro", Helvetica, Arial, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
@@ -354,6 +431,7 @@ body.grid-overlay {
 }
 
 body[data-page="home"] .nav {
+  --nav-image-left: calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
@@ -368,13 +446,13 @@ body[data-page="home"] .nav {
 body[data-page="home"] .nav__link--home {
   grid-column: 1 / -1;
   grid-row: 1;
-  margin-left: calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
+  margin-left: var(--nav-image-left);
 }
 
 body[data-page="home"] .nav .nav__intro {
   grid-column: 1 / -1;
   grid-row: 2;
-  margin: 0 0 0 calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
+  margin: 0 0 0 var(--nav-image-left);
   max-width: var(--portrait-width);
   white-space: normal;
 }
@@ -385,6 +463,52 @@ body[data-page="home"] .nav__link--information {
   margin: 0;
 }
 
+html:not([data-home-navigation="new"]) body[data-page="home"] .nav__link--enquire {
+  display: none;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--home {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  margin: 0;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav .nav__intro {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  max-width: min(407px, 100%);
+  white-space: normal;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--information {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0;
+  margin-left: var(--nav-image-left);
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--enquire {
+  grid-column: 10 / -1;
+  grid-row: 1;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--home {
+    grid-column: 1 / 5;
+  }
+
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--information {
+    grid-column: 6 / 9;
+    margin-left: 0;
+  }
+
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--enquire {
+    grid-column: 10 / -1;
+    justify-self: end;
+  }
+}
 
 .nav__link--close {
   display: inline-block;
@@ -579,7 +703,8 @@ body[data-page="home"] .nav__link--information {
 }
 
 .project-block {
-  --project-meta-gap: 20px;
+  /* Account for the label's page inset plus a 15px gap to the image. */
+  --project-meta-gap: calc(var(--page-pad) + 15px);
   --project-meta-width: 140px;
   --hero-intended-width: var(--hero-width);
   --hero-frame: min(var(--hero-intended-width),
@@ -620,9 +745,9 @@ body[data-page="home"] .nav__link--information {
   touch-action: pan-y;
 }
 
-body[data-page="home"] .hero {
-  max-height: 75vh;
-  max-height: 75dvh;
+body[data-page="home"] .hero,
+body[data-page="home"] .hero__media {
+  max-height: var(--home-project-row-height);
 }
 
 
@@ -788,6 +913,7 @@ body[data-page="home"] .hero__media.is-portrait {
 
 body[data-page="home"] .project__name {
   grid-area: name;
+  line-height: 1.5;
   width: var(--portrait-width);
   justify-self: center;
   white-space: pre-line;
@@ -796,6 +922,8 @@ body[data-page="home"] .project__name {
 
 .project__number {
   grid-area: number;
+  display: inline-flex;
+  gap: 5px;
   justify-self: start;
 }
 
@@ -845,15 +973,16 @@ body[data-page="home"] .project__caption-right {
 body[data-page="home"] .project__caption .project__slide-counter {
   display: flex;
   justify-content: flex-end;
-  gap: 10px;
+  gap: 5px;
   white-space: nowrap;
 }
 
-.project__slide-current {
+.project__slide-current,
+.project__current {
   color: #888;
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   body[data-page="home"] .project__caption-right {
     display: flex;
     flex-direction: column;
@@ -1548,11 +1677,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
   }
 }
 
-@media (max-width: 857px) {
-  body[data-page="home"] .projects {
-    padding-block: clamp(48px, 9dvh, 80px);
-  }
-
+@media (max-width: 600px) {
   .project-block {
     --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
@@ -1565,6 +1690,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
   }
 
   body[data-page="home"] .project-block {
+    --hero-frame: calc(100% - 2 * var(--page-pad));
     grid-template-rows: auto auto;
     height: auto;
     min-height: 0;
@@ -1581,8 +1707,8 @@ body[data-page="home"] .project__caption .project__slide-counter {
 
   body[data-page="home"] .hero.has-portrait {
     aspect-ratio: auto;
-    height: max(var(--home-project-row-height), min(75dvh,
-      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000))));
+    height: max(var(--home-project-row-height),
+      calc(var(--hero-frame) / var(--hero-mobile-landscape-aspect, 1000)));
     min-height: var(--home-project-row-height);
   }
 
@@ -1605,7 +1731,7 @@ body[data-page="home"] .project__caption .project__slide-counter {
 
 }
 
-@media (min-width: 858px) {
+@media (min-width: 601px) {
   body[data-page="home"] .hero,
   body[data-page="home"] .hero__media:not(.is-portrait) {
     max-height: var(--home-project-row-height);
@@ -1785,7 +1911,7 @@ html:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([d
   min-height: 32.8px;
 }
 
-@media (min-width: 858px) {
+@media (min-width: 601px) {
   html:is([data-caption-layout="current"], [data-caption-layout="below"], [data-caption-layout="below-flipped"]) body[data-page="home"] .project__number {
     left: var(--page-pad);
     right: auto;
@@ -1838,7 +1964,7 @@ html:is([data-caption-layout="current"], [data-caption-layout="flipped"]):not([d
 
 }
 
-@media (max-width: 857px) {
+@media (max-width: 600px) {
   html:is([data-caption-layout="current"], [data-caption-layout="flipped"]) body[data-page="home"] .project__caption {
     row-gap: 4px;
   }

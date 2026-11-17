@@ -34,7 +34,7 @@ test("static homepage rows use the portrait track without moving navigation", as
   );
   assert.match(
     css,
-    /body\[data-page="home"\] \.projects\s*{[^}]*padding-block:\s*max\(0px, calc\(\(100dvh - var\(--home-project-row-height\)\) \/ 2\)\)/s,
+    /body\[data-page="home"\] \.projects\s*{[^}]*padding-block:\s*clamp\(110px, calc\(var\(--portrait-width\) \* 0\.3\), 160px\)/s,
   );
   assert.match(css, /\.projects\s*{[^}]*row-gap:\s*var\(--project-gap\)/s);
   assert.doesNotMatch(
@@ -55,7 +55,7 @@ test("static homepage rows use the portrait track without moving navigation", as
   assert.match(css, /body\[data-page="home"\]:has\(\.top\[hidden\]\) \.project-block:first-child \.hero\s*{[^}]*height:\s*calc\(var\(--portrait-width\) \* 1\.25\)/s, 'the first mobile frame reserves its final height before orientation probes finish');
 });
 
-test("Next.js homepage rows mirror the static portrait track", async () => {
+test("Next.js homepage rows share a width-derived portrait track", async () => {
   const { style } = await computedStyleFor(
     "../../next-app/app/globals.css",
     '<div class="homepage-projects"><section class="homepage-project"></section></div>',
@@ -72,7 +72,7 @@ test("Next.js homepage rows mirror the static portrait track", async () => {
   );
   assert.match(
     css,
-    /\.homepage-projects\s*{[^}]*display:\s*grid[^}]*row-gap:\s*50px[^}]*padding-block:\s*max\(0px, calc\(\(100dvh - var\(--homepage-project-row-height\)\) \/ 2\)\)/s,
+    /\.homepage-projects\s*{[^}]*display:\s*grid[^}]*row-gap:\s*50px[^}]*padding-block:\s*clamp\(110px, calc\(var\(--homepage-portrait-width\) \* 0\.3\), 160px\)/s,
   );
 
   assert.match(

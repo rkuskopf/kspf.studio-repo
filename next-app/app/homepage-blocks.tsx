@@ -2,57 +2,57 @@ import type { HomePageData, HomeContent, HomepageProject, SiteContent } from "..
 import { legacyHomeBlocks } from "../lib/storyblok/homepage-blocks";
 import HomepageSlideshow from "./homepage-slideshow";
 
-export function HomepageInformation({ site }: { site: SiteContent }) {
+export function HomepageInformation({
+  site, threeColumns = false, beforeNavigation = false,
+}: { site: SiteContent; threeColumns?: boolean; beforeNavigation?: boolean }) {
   const contactLines = site.information.contactBody.split("\n");
+  const contact = (
+    <div className="homepage-information__contact">
+      <h2>{site.information.contactTitle}</h2>
+      {site.information.contactBody ? (
+        <p>{contactLines.map((line, index) => (
+          <span key={index}>{index > 0 ? <br /> : null}{line}</span>
+        ))}</p>
+      ) : null}
+      {site.information.contactEmail ? (
+        <a href={`mailto:${site.information.contactEmail.replace(/^mailto:/i, "")}`}>
+          {site.information.contactEmail.replace(/^mailto:/i, "")}
+        </a>
+      ) : null}
+    </div>
+  );
+  const services = (
+    <div className="homepage-information__services">
+      <h2>{site.information.servicesTitle}</h2>
+      <ul>
+        {site.information.services.map((service) => <li key={service}>{service}</li>)}
+      </ul>
+    </div>
+  );
   return (
-      <section
-        className="homepage-information"
-        id="information"
-        aria-labelledby="information-title"
-        tabIndex={-1}
-      >
-        <div className="homepage-information__inner">
-          <h1 id="information-title">{site.information.title}</h1>
-          <p>{site.information.profile}</p>
-          <div className="homepage-information__details">
-            <div>
-              <h2>{site.information.contactTitle}</h2>
-              {site.information.contactBody ? (
-                <p>
-                  {contactLines.map((line, index) => (
-                    <span key={`${line}-${index}`}>
-                      {index > 0 ? <br /> : null}
-                      {line}
-                    </span>
-                  ))}
-                </p>
-              ) : null}
-              {site.information.contactEmail ? (
-                <a href={`mailto:${site.information.contactEmail.replace(/^mailto:/i, "")}`}>
-                  {site.information.contactEmail.replace(/^mailto:/i, "")}
-                </a>
-              ) : null}
-            </div>
-            <div>
-              <h2>{site.information.servicesTitle}</h2>
-              <ul>
-                {site.information.services.map((service) => (
-                  <li key={service}>{service}</li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
+    <section
+      className={threeColumns ? "homepage-information homepage-information--three-columns" : "homepage-information"}
+      data-before-navigation={beforeNavigation || undefined}
+      id="information"
+      aria-labelledby="information-title"
+      tabIndex={-1}
+    >
+      <div className="homepage-information__inner">
+        <h1 id="information-title">{site.information.title}</h1>
+        <p>{site.information.profile}</p>
+        {threeColumns ? <>{services}{contact}</> : (
+          <div className="homepage-information__details">{contact}{services}</div>
+        )}
+      </div>
+    </section>
   );
 }
 
-export function HomepageNavigation({ content, site }: { content: HomeContent; site: SiteContent }) {
+export function HomepageNavigation({ content, site, layout = "classic" }: { content: HomeContent; site: SiteContent; layout?: "classic" | "new" }) {
   if (!content.showNavigation) return null;
   return (
         <header className="homepage-top">
-          <nav className="homepage-nav" aria-label="Primary">
+          <nav className="homepage-nav" aria-label="Primary" data-navigation-layout={layout}>
             <a className="homepage-nav__home" style={{ fontWeight: site.nav.homeFontWeight ?? undefined }} href="#work">
               {site.nav.homeLabel}
             </a>
@@ -64,6 +64,9 @@ export function HomepageNavigation({ content, site }: { content: HomeContent; si
             <a className="homepage-nav__information" style={{ fontWeight: site.nav.informationFontWeight ?? undefined }} href="#information">
               {site.nav.informationLabel}
             </a>
+            {layout === "new" && site.nav.showEnquire === true && site.nav.enquireHref?.trim() ? (
+              <a className="homepage-nav__enquire" href={site.nav.enquireHref.trim()}>ENQUIRE</a>
+            ) : null}
           </nav>
         </header>
 
@@ -101,17 +104,28 @@ export default function HomepageBlocks({ data }: { data: HomePageData }) {
     // Other orders put Navigation in the flow, in its actual saved DOM position.
     const next = body[index + 1];
     const previous = body[index - 1];
-    if (block.component === "navigation" && next?.component === "project_feed") {
+    const isNavigation = block.component === "navigation" || block.component === "navigation_new";
+    if (isNavigation && next?.component === "project_feed") {
       return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
-        <HomepageNavigation content={data.content} site={sites[block.site]} />
+        <HomepageNavigation content={data.content} site={sites[block.site]} layout={block.component === "navigation_new" ? "new" : "classic"} />
         <HomepageWork projects={data.projects} />
       </div>;
     }
-    if (block.component === "project_feed" && previous?.component === "navigation") return null;
+    if (block.component === "project_feed" && (previous?.component === "navigation" || previous?.component === "navigation_new")) return null;
     switch (block.component) {
       case "information": return <HomepageInformation site={sites[block.site]} key={block._uid} />;
-      case "navigation": return <div className="homepage-navigation-block" key={block._uid} hidden={!data.content.showNavigation}>
-        <HomepageNavigation content={data.content} site={sites[block.site]} />
+      case "information_three_columns": return (
+        <HomepageInformation
+          site={sites[block.site]}
+          key={block._uid}
+          threeColumns
+          beforeNavigation={data.content.showNavigation &&
+            (next?.component === "navigation" || next?.component === "navigation_new")}
+        />
+      );
+      case "navigation":
+      case "navigation_new": return <div className="homepage-navigation-block" key={block._uid} hidden={!data.content.showNavigation}>
+        <HomepageNavigation content={data.content} site={sites[block.site]} layout={block.component === "navigation_new" ? "new" : "classic"} />
       </div>;
       case "project_feed": return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
         <HomepageWork projects={data.projects} />
