@@ -26,13 +26,23 @@ test('additive schema keeps legacy controls and restricts the core body',()=>{
   const home=STORYBLOK_COMPONENTS.find(c=>c.name==='home_page');
   assert.deepEqual(home.schema.body,HOMEPAGE_BODY_FIELD);
   for(const name of ['title','intro','initial_section','show_navigation','caption_layout','show_project_numbers','show_project_titles','show_project_categories','show_image_captions']) assert.ok(home.schema[name]);
-  assert.deepEqual(HOMEPAGE_BODY_FIELD.component_whitelist,['information','navigation','project_feed']);
+  assert.deepEqual(HOMEPAGE_BODY_FIELD.component_whitelist,['information','navigation','navigation_new','project_feed']);
   assert.ok(HOMEPAGE_COMPONENTS.every(c=>c.is_nestable&&!c.is_root));
   assert.equal(HOMEPAGE_COMPONENTS[0].schema.site.source,'internal_stories');
 });
 test('plan reports additions and performs zero writes',async()=>{
   const f=fixture(); const result=await runHomepageMigration({api:f.api});
-  assert.equal(result.actions.length,5);assert.deepEqual(f.writes,[]);
+  assert.equal(result.actions.length,6);assert.deepEqual(f.writes,[]);
+});
+test('upgrades the previous block whitelist without editing existing content', async()=>{
+  const f=fixture();
+  f.home.content.body=homepageBaselineBody(f.home.uuid,f.site.uuid);
+  f.components[0].schema.body={...structuredClone(HOMEPAGE_BODY_FIELD),component_whitelist:['information','navigation','project_feed'],description:'One Information, Navigation and Work block, in any order. Composition applies to the Next.js homepage.'};
+  const content=structuredClone(f.home.content);
+  await runHomepageMigration({...f,mode:'apply'});
+  assert.deepEqual(f.home.content,content);
+  assert.deepEqual(f.components[0].schema.body,HOMEPAGE_BODY_FIELD);
+  assert.ok(!f.writes.includes('draft'));
 });
 test('apply backs up first, retains translations and legacy fields, then is idempotent',async()=>{
   const f=fixture();const content=structuredClone(f.home.content);

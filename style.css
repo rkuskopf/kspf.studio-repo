@@ -315,7 +315,8 @@ body.grid-overlay {
 }
 
 .nav__link--home,
-.nav__link--information {
+.nav__link--information,
+.nav__link--enquire {
   font-family: "akzidenz-grotesk-next-pro", Helvetica, Arial, sans-serif;
   font-weight: 400;
   text-transform: uppercase;
@@ -341,6 +342,7 @@ body.grid-overlay {
 }
 
 body[data-page="home"] .nav {
+  --nav-image-left: calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
   display: grid;
   grid-template-columns: repeat(var(--grid-cols), minmax(0, 1fr));
   column-gap: var(--gutter);
@@ -355,13 +357,13 @@ body[data-page="home"] .nav {
 body[data-page="home"] .nav__link--home {
   grid-column: 1 / -1;
   grid-row: 1;
-  margin-left: calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
+  margin-left: var(--nav-image-left);
 }
 
 body[data-page="home"] .nav .nav__intro {
   grid-column: 1 / -1;
   grid-row: 2;
-  margin: 0 0 0 calc((var(--viewport-w) - 2 * var(--page-pad) - var(--portrait-width)) / 2);
+  margin: 0 0 0 var(--nav-image-left);
   max-width: var(--portrait-width);
   white-space: normal;
 }
@@ -372,6 +374,52 @@ body[data-page="home"] .nav__link--information {
   margin: 0;
 }
 
+html:not([data-home-navigation="new"]) body[data-page="home"] .nav__link--enquire {
+  display: none;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--home {
+  grid-column: 1 / 6;
+  grid-row: 1;
+  margin: 0;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav .nav__intro {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  margin: 0;
+  max-width: min(407px, 100%);
+  white-space: normal;
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--information {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  margin: 0;
+  margin-left: var(--nav-image-left);
+}
+
+html[data-home-navigation="new"] body[data-page="home"] .nav__link--enquire {
+  grid-column: 10 / -1;
+  grid-row: 1;
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--home {
+    grid-column: 1 / 5;
+  }
+
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--information {
+    grid-column: 6 / 9;
+    margin-left: 0;
+  }
+
+  html[data-home-navigation="new"] body[data-page="home"] .nav__link--enquire {
+    grid-column: 10 / -1;
+    justify-self: end;
+  }
+}
 
 .nav__link--close {
   display: inline-block;

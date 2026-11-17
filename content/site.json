@@ -5,6 +5,8 @@
     "informationLabel": "INFO",
     "informationHref": "#info",
     "showAbout": true,
+    "showEnquire": false,
+    "enquireHref": "",
     "closeLabel": "x"
   },
   "informationOverlay": {

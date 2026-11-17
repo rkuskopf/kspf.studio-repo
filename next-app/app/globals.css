@@ -167,6 +167,32 @@ body {
   grid-row: 1;
 }
 
+.homepage-nav[data-navigation-layout="new"] .homepage-nav__home {
+  grid-column: 1 / 6;
+  margin-left: 0;
+}
+
+.homepage-nav[data-navigation-layout="new"] .homepage-nav__intro {
+  margin-left: 0;
+  max-width: min(407px, 100%);
+}
+
+.homepage-nav[data-navigation-layout="new"] .homepage-nav__information {
+  grid-column: 1 / -1;
+  margin-left: calc((100dvw - 30px - var(--homepage-portrait-width)) / 2);
+}
+
+.homepage-nav__enquire {
+  grid-column: 10 / -1;
+  grid-row: 1;
+}
+
+@media (max-width: 600px) {
+  .homepage-nav[data-navigation-layout="new"] .homepage-nav__home { grid-column: 1 / 5; }
+  .homepage-nav[data-navigation-layout="new"] .homepage-nav__information { grid-column: 6 / 9; margin-left: 0; }
+  .homepage-nav__enquire { justify-self: end; }
+}
+
 .homepage-project {
   position: relative;
   height: auto;
