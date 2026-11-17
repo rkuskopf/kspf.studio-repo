@@ -1,10 +1,10 @@
 {
-  "navigationLayout": "classic",
+  "navigationLayout": "new",
   "title": "kspf.studio",
   "metaDescription": "",
   "intro": "",
-  "initialSection": "info",
-  "showNavigation": false,
+  "initialSection": "work",
+  "showNavigation": true,
   "captions": {
     "layout": "current",
     "showNumber": true,
