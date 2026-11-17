@@ -1,10 +1,19 @@
+# Active website implementation
+
+- The static website deployed through GitHub Pages is the sole active production and development target. Storyblok remains its CMS. Apply website requests, including tasks arriving from Notion, to this implementation by default; Rowan should not need to specify the stack.
+- Next.js migration is discontinued. Treat `next-app/` as source material to preserve and evaluate for reuse, not an active implementation. Do not enhance, deploy or resume it without fresh, explicit authorization, and do not implement the same feature in both stacks.
+- If a ticket assumes Next.js, flag the conflict with the current direction before implementation rather than following that assumption silently.
+- Separately authorized archival work and Framer prototypes may read and reuse existing React components, styles and interactions. This does not authorize resuming Next.js development or committing to a Framer migration or launch.
+- Prioritize static preview restoration and mobile diagnosis independently of the full archive audit or Framer evaluation. Preserve existing source and branches; do not merge unmerged Next.js work into `main` merely to archive it.
+- Do not implicitly change Storyblok schemas or preview settings, hosting, DNS or production deployment as part of an unrelated ticket. Obtain explicit authorization for those changes. Verify saved drafts and published/live behavior separately, as applicable.
+
 # Local site review
 
 - Use https://localhost:8001/ for local review of the static KSPF site. Start its Storyblok-connected HTTPS preview with `node --env-file=.env scripts/preview-storyblok.mjs`.
 - Do not start or offer the plain static server on port 8000 unless Rowan explicitly requests it. Its checked-in content can be stale and is not an appropriate default for CMS review.
 - Verify the 8001 preview is serving current saved Storyblok draft content before providing a review link. If it cannot start, report the blocker instead of silently falling back to port 8000.
 - Before finishing work and handing it back to Rowan for review or approval, ensure the Storyblok-connected HTTPS preview is running at https://localhost:8001/. Start it if needed, verify it responds with current saved Storyblok drafts, and include the review link in the handoff. Keep the server running after the agent's turn ends; do not hand back a stopped or unverified preview. If startup or verification fails, report the blocker explicitly.
-- For Next.js-specific work, use the Next.js development server and clearly identify it; the 8001 server previews the static site, not Next.js.
+- Only for freshly authorized Next.js-specific work, use the Next.js development server and clearly identify it; the 8001 server previews the static site, not Next.js.
 - Use a deployed PR preview when Rowan asks to review with published Storyblok content.
 
 # Browser use
