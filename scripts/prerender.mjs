@@ -83,6 +83,7 @@ if (home) {
   const captions = home.captions || {};
   html = html.replace(/<html\b[^>]*>/i, opening => {
     let tag = setAttribute(opening, "data-home-navigation", home.navigationLayout === "new" ? "new" : "classic");
+    tag = setAttribute(tag, "data-home-information", home.informationLayout === "three-columns" ? "three-columns" : "classic");
     tag = setAttribute(tag, "data-caption-layout", captions.layout || "current");
     for (const key of ["Number", "Title", "Category", "Caption"]) {
       tag = setAttribute(tag, "data-hide-project-" + key.toLowerCase(), String(captions["show" + key] === false));

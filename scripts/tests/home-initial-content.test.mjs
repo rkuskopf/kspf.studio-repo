@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import test from 'node:test';
 import vm from 'node:vm';
 import { Window } from 'happy-dom';
+import { mapHomeStory } from '../storyblok-content.mjs';
 
 for (const populated of [true, false]) {
   test(`initial HTML includes CMS Information and navigation state (${populated ? 'populated' : 'empty'})`, async (t) => {
@@ -18,7 +19,13 @@ for (const populated of [true, false]) {
       contactEmail: populated ? 'mailto:studio@kspf.au' : '', servicesTitle: 'SERVICES',
       services: populated ? ['Web Development', 'Art & Direction', '', 'Product Design'] : [],
     };
-    await writeFile(join(dir, 'content/home.json'), JSON.stringify({initialSection: populated ? 'info' : 'work', showNavigation: !populated}));
+    const home = mapHomeStory({ full_slug: 'home', content: {
+      component: 'home_page',
+      initial_section: populated ? 'info' : 'work',
+      show_navigation: !populated,
+      body: [{ component: populated ? 'information_three_columns' : 'information' }],
+    } });
+    await writeFile(join(dir, 'content/home.json'), JSON.stringify(home));
     const site = {nav: {homeLabel:'KSPF'}, profile:'CMS profile', informationOverlay:info};
     await writeFile(join(dir, 'content/site.json'), JSON.stringify(site));
     const prerender = () => execFileSync(process.execPath, [new URL('../prerender.mjs', import.meta.url).pathname, dir]);
@@ -32,6 +39,14 @@ for (const populated of [true, false]) {
     const doc = browser.document;
     assert.equal(doc.documentElement.dataset.homeInitialSection, populated ? 'info' : 'work');
     assert.equal(doc.querySelector('.top').hidden, populated);
+    const layout = populated ? 'three-columns' : 'classic';
+    assert.equal(doc.documentElement.dataset.homeInformation, layout);
+    delete doc.documentElement.dataset.homeInformation;
+    vm.runInNewContext(await readFile(new URL('../../home-content.js', import.meta.url), 'utf8'), {
+      document: doc, window: browser, fetch: async () => ({ ok: true, json: async () => home }),
+    });
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(doc.documentElement.dataset.homeInformation, layout);
     assert.equal(doc.querySelector('.js-home-information-title').textContent, 'KSPF');
     assert.equal(doc.querySelector('.js-info-contact-title').textContent, 'CONTACT');
     assert.equal(doc.querySelector('.js-info-services-title').textContent, 'SERVICES');
