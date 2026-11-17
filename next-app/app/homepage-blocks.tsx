@@ -48,11 +48,11 @@ export function HomepageInformation({ site }: { site: SiteContent }) {
   );
 }
 
-export function HomepageNavigation({ content, site }: { content: HomeContent; site: SiteContent }) {
+export function HomepageNavigation({ content, site, layout = "classic" }: { content: HomeContent; site: SiteContent; layout?: "classic" | "new" }) {
   if (!content.showNavigation) return null;
   return (
         <header className="homepage-top">
-          <nav className="homepage-nav" aria-label="Primary">
+          <nav className="homepage-nav" aria-label="Primary" data-navigation-layout={layout}>
             <a className="homepage-nav__home" style={{ fontWeight: site.nav.homeFontWeight ?? undefined }} href="#work">
               {site.nav.homeLabel}
             </a>
@@ -64,6 +64,9 @@ export function HomepageNavigation({ content, site }: { content: HomeContent; si
             <a className="homepage-nav__information" style={{ fontWeight: site.nav.informationFontWeight ?? undefined }} href="#information">
               {site.nav.informationLabel}
             </a>
+            {layout === "new" && site.nav.showEnquire === true && site.nav.enquireHref?.trim() ? (
+              <a className="homepage-nav__enquire" href={site.nav.enquireHref.trim()}>ENQUIRE</a>
+            ) : null}
           </nav>
         </header>
 
@@ -101,17 +104,19 @@ export default function HomepageBlocks({ data }: { data: HomePageData }) {
     // Other orders put Navigation in the flow, in its actual saved DOM position.
     const next = body[index + 1];
     const previous = body[index - 1];
-    if (block.component === "navigation" && next?.component === "project_feed") {
+    const isNavigation = block.component === "navigation" || block.component === "navigation_new";
+    if (isNavigation && next?.component === "project_feed") {
       return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
-        <HomepageNavigation content={data.content} site={sites[block.site]} />
+        <HomepageNavigation content={data.content} site={sites[block.site]} layout={block.component === "navigation_new" ? "new" : "classic"} />
         <HomepageWork projects={data.projects} />
       </div>;
     }
-    if (block.component === "project_feed" && previous?.component === "navigation") return null;
+    if (block.component === "project_feed" && (previous?.component === "navigation" || previous?.component === "navigation_new")) return null;
     switch (block.component) {
       case "information": return <HomepageInformation site={sites[block.site]} key={block._uid} />;
-      case "navigation": return <div className="homepage-navigation-block" key={block._uid} hidden={!data.content.showNavigation}>
-        <HomepageNavigation content={data.content} site={sites[block.site]} />
+      case "navigation":
+      case "navigation_new": return <div className="homepage-navigation-block" key={block._uid} hidden={!data.content.showNavigation}>
+        <HomepageNavigation content={data.content} site={sites[block.site]} layout={block.component === "navigation_new" ? "new" : "classic"} />
       </div>;
       case "project_feed": return <div className="homepage-stage" id="work" tabIndex={-1} key={block._uid}>
         <HomepageWork projects={data.projects} />

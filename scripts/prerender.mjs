@@ -82,7 +82,8 @@ const site = readJson(sitePath);
 if (home) {
   const captions = home.captions || {};
   html = html.replace(/<html\b[^>]*>/i, opening => {
-    let tag = setAttribute(opening, "data-caption-layout", captions.layout || "current");
+    let tag = setAttribute(opening, "data-home-navigation", home.navigationLayout === "new" ? "new" : "classic");
+    tag = setAttribute(tag, "data-caption-layout", captions.layout || "current");
     for (const key of ["Number", "Title", "Category", "Caption"]) {
       tag = setAttribute(tag, "data-hide-project-" + key.toLowerCase(), String(captions["show" + key] === false));
     }
@@ -163,6 +164,13 @@ if (site?.nav) {
     label: site.nav.informationLabel,
     href: site.nav.informationHref,
     hidden: site.nav.showAbout !== true,
+  });
+  const enquireHref = typeof site.nav.enquireHref === "string" ? site.nav.enquireHref.trim() : "";
+  const showEnquire = site.nav.showEnquire === true && Boolean(enquireHref);
+  html = replaceLink(html, "nav__link--enquire", {
+    label: "ENQUIRE",
+    href: showEnquire ? enquireHref : null,
+    hidden: !showEnquire,
   });
 }
 

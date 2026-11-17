@@ -79,6 +79,22 @@ afterEach(() => {
 });
 
 describe("the Storyblok-backed App Router route", () => {
+  it('renders the saved navigation choice with enquiry only in the new block', () => {
+    const data = structuredClone(publishedData);
+    data.content.body = legacyHomeBlocks('site-uuid');
+    Object.assign(data.site.nav, {showEnquire:true, enquireHref:'/enquire'});
+    expect(render(data)).not.toContain('ENQUIRE');
+    expect(render(data)).toContain('data-navigation-layout="classic"');
+    (data.content.body[1] as any).component = 'navigation_new';
+    const markup = render(data);
+    expect(markup).toContain('data-navigation-layout="new"');
+    expect(markup).toContain('href="/enquire">ENQUIRE</a>');
+    expect(markup.match(/class="homepage-projects"/g)).toHaveLength(1);
+    Object.assign(data.site.nav, {showEnquire:false});
+    expect(render(data)).not.toContain('ENQUIRE');
+    Object.assign(data.site.nav, {showEnquire:true,enquireHref:''});
+    expect(render(data)).not.toContain('ENQUIRE');
+  });
   it("renders links in both captions, preserves breaks, and escapes their text", () => {
     const data = structuredClone(publishedData);
     data.projects[0].displayNameParts = [{ text: "Aesop <archive>", href: "https://aesop.com", target: "_blank" }];
@@ -119,7 +135,7 @@ describe("the Storyblok-backed App Router route", () => {
   it("renders primary navigation and the first project metadata", () => {
     const markup = render(publishedData);
 
-    expect(markup).toContain('<nav class="homepage-nav" aria-label="Primary">');
+    expect(markup).toContain('<nav class="homepage-nav" aria-label="Primary" data-navigation-layout="classic">');
     expect(markup).toContain('href="#work">KSPF</a>');
     expect(markup).toContain("Published introduction");
     expect(markup).toContain('href="#information">INFO</a>');
@@ -212,7 +228,7 @@ it.each([[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]])("renders saved block 
   const blocks = legacyHomeBlocks(data.site.storyUuid);
   data.content.body = order.map(index => blocks[index]);
   const markup = render(data);
-  const positions = { information: markup.indexOf('id="information"'), navigation: markup.indexOf('<header'), project_feed: markup.indexOf('class="homepage-projects"') };
+  const positions = { information: markup.indexOf('id="information"'), navigation: markup.indexOf('<header'), navigation_new: markup.indexOf('<header'), project_feed: markup.indexOf('class="homepage-projects"') };
   const offsets = data.content.body.map(block => positions[block.component]);
   expect(offsets[0]).toBeLessThan(offsets[1]);
   expect(offsets[1]).toBeLessThan(offsets[2]);

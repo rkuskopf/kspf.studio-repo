@@ -13,6 +13,7 @@
     .then((res) => (res.ok ? res.json() : null))
     .then((data) => {
       if (!data) return;
+      document.documentElement.dataset.homeNavigation = data.navigationLayout === "new" ? "new" : "classic";
       if (data.title) document.title = data.title;
       if (data.metaDescription && metaDescription) {
         metaDescription.setAttribute("content", data.metaDescription);

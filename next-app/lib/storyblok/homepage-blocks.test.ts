@@ -3,6 +3,11 @@ import { legacyHomeBlocks, mapHomeBlocks } from './homepage-blocks';
 const body = () => legacyHomeBlocks('site-uuid');
 const permutations = [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]];
 describe('homepage body', () => {
+  it('accepts the alternative navigation and rejects two navigation choices', () => {
+    const alternative = [body()[0], {...body()[1], component:'navigation_new'}, body()[2]];
+    expect(mapHomeBlocks(alternative)).toEqual(alternative);
+    expect(() => mapHomeBlocks([body()[1], {...body()[1], _uid:'new-nav', component:'navigation_new'}, body()[2]])).toThrow(/Storyblok home body/);
+  });
   it.each(permutations)('preserves saved order %j', (...order) => {
     const blocks = body();
     const value = order.map(index => blocks[index]);
