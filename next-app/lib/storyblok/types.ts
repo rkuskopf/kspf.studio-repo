@@ -17,7 +17,7 @@ export type StoryblokEnvironment = {
 };
 
 export type HomeBlock =
-  | { _uid: string; component: "information"; site: string }
+  | { _uid: string; component: "information" | "information_three_columns"; site: string }
   | { _uid: string; component: "navigation" | "navigation_new"; site: string }
   | { _uid: string; component: "project_feed"; collection: "projects/" };
 
