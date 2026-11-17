@@ -144,6 +144,83 @@ html.is-info-scrolling {
   }
 }
 
+html[data-home-information="three-columns"] .home-information {
+  min-height: 0;
+  padding-block: 15px 40px;
+}
+
+html[data-home-information="three-columns"] body:has(.home-stage > .top:not([hidden])) .home-information {
+  --information-nav-space: calc(var(--page-pad) + var(--information-nav-bottom, 72px));
+  display: flex;
+  align-items: center;
+  min-block-size: calc(100dvh - var(--information-nav-space));
+  padding-block: calc(15px + var(--information-nav-space)) 15px;
+}
+
+html[data-home-information="three-columns"] .home-information__inner {
+  --information-services-start: calc((100% - var(--portrait-width)) / 2);
+  --information-contact-start: calc(7 * (100% + var(--gutter)) / 12);
+  display: grid;
+  grid-template-columns: var(--information-services-start)
+    calc(var(--information-contact-start) - var(--information-services-start)) minmax(0, 1fr);
+  width: 100%;
+  overflow-wrap: anywhere;
+}
+
+html[data-home-information="three-columns"] .home-information h1 {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+html[data-home-information="three-columns"] .home-information__details {
+  display: contents;
+}
+
+html[data-home-information="three-columns"] .home-information__inner > p {
+  grid-column: 1;
+  grid-row: 1;
+  padding-inline-end: var(--page-pad);
+  line-height: 1.2;
+}
+
+html[data-home-information="three-columns"] .home-information__services {
+  grid-column: 2;
+  grid-row: 1;
+  padding-inline-end: var(--page-pad);
+}
+
+html[data-home-information="three-columns"] .home-information__contact {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+html[data-home-information="three-columns"] .home-information h2 {
+  margin-bottom: 8px;
+}
+
+html[data-home-information="three-columns"] .home-information__contact a {
+  text-decoration: underline;
+}
+
+@media (max-width: 600px) {
+  html[data-home-information="three-columns"] .home-information__inner {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  html[data-home-information="three-columns"] .home-information__services {
+    grid-area: 2 / 1;
+  }
+
+  html[data-home-information="three-columns"] .home-information__contact {
+    grid-area: 3 / 1;
+  }
+}
+
 .home-stage:focus,
 .home-information:focus {
   outline: none;
