@@ -23,6 +23,7 @@ for (const populated of [true, false]) {
       component: 'home_page',
       initial_section: populated ? 'info' : 'work',
       show_navigation: !populated,
+      snap_scrolling: populated,
       body: [{ component: populated ? 'information_three_columns' : 'information' }],
     } });
     await writeFile(join(dir, 'content/home.json'), JSON.stringify(home));
@@ -39,6 +40,7 @@ for (const populated of [true, false]) {
     const doc = browser.document;
     assert.equal(doc.documentElement.dataset.homeInitialSection, populated ? 'info' : 'work');
     assert.equal(doc.querySelector('.top').hidden, populated);
+    assert.equal(doc.documentElement.dataset.homeSnap, String(populated));
     const layout = populated ? 'three-columns' : 'classic';
     assert.equal(doc.documentElement.dataset.homeInformation, layout);
     delete doc.documentElement.dataset.homeInformation;
