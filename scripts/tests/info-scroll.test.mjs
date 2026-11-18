@@ -4,7 +4,7 @@ import test from 'node:test';
 import vm from 'node:vm';
 import { Window } from 'happy-dom';
 
-async function setup(t, desktop = false) {
+async function setup(t, desktop = false, mobile = false) {
   const browser = new Window({ url: 'https://localhost:8001/#work' });
   t.after(() => browser.happyDOM.abort());
   const document = browser.document;
@@ -13,10 +13,12 @@ async function setup(t, desktop = false) {
     '<section id="information" tabindex="-1"></section><section id="work" tabindex="-1"></section>';
   let y = 600;
   Object.defineProperty(browser, 'scrollY', { get: () => y });
-  browser.scrollTo = (_x, top) => { y = top; };
-  browser.matchMedia = () => ({ matches: !desktop });
+  const calls = [];
+  browser.scrollTo = (_x, top) => { calls.push(top); y = top; };
+  const breakpoint = { matches: mobile, addEventListener(_name, callback) { this.callback = callback; } };
+  browser.matchMedia = query => query.includes('max-width') ? breakpoint : ({ matches: !desktop });
   document.getElementById('information').getBoundingClientRect = () => ({ top: -y });
-  document.getElementById('work').getBoundingClientRect = () => ({ top: 600-y });
+  document.getElementById('work').getBoundingClientRect = () => ({ top: (breakpoint.matches && document.documentElement.classList.contains('is-information-closed') ? 0 : 600)-y });
   if (desktop) browser.kspfHomeScroll = {
     navigate(target, _animate, complete) {
       y = target.id === 'work' ? 600 : 0;
@@ -31,7 +33,8 @@ async function setup(t, desktop = false) {
     cancelAnimationFrame() {}, performance: { now: () => 0 },
   });
   return {
-    browser, document,
+    browser, document, calls,
+    setMobile(value) { breakpoint.matches = value; breakpoint.callback?.(); },
     info: document.querySelector('[data-info-scroll="information"]'),
     work: document.querySelector('[data-info-scroll="work"]'),
     scroll: (position) => { y = position; },
@@ -145,4 +148,52 @@ test('Information remains reachable when navigation or its INFO link is hidden',
   assert.equal(page.browser.kspfHomeMinimumScroll(), 0);
   page.info.hidden = false;
   assert.equal(page.browser.kspfHomeMinimumScroll(), 600, 'Work startup with visible INFO retains the boundary');
+});
+
+
+test('mobile Work uses native zero without correcting upward overscroll', async t => {
+  const page = await setup(t, false, true);
+  assert.equal(page.position(), 0);
+  assert.equal(page.browser.kspfHomeMinimumScroll(), 0);
+  page.calls.length = 0;
+  for (const y of [-30, -10, 0]) {
+    page.scroll(y);
+    page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  }
+  assert.deepEqual(page.calls, [], 'native elastic overscroll must not trigger application corrections');
+});
+
+test('mobile INFO reveal and return preserve the Work-relative position', async t => {
+  const page = await setup(t, false, true);
+  page.info.click();
+  assert.equal(page.position(), 0);
+  assert.equal(page.document.documentElement.classList.contains('is-information-closed'), false);
+  page.work.click();
+  assert.equal(page.position(), 0, 'closed Work is the native document top');
+  assert.equal(page.document.documentElement.classList.contains('is-information-closed'), true);
+  page.info.click();
+  page.scroll(720);
+  page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  assert.equal(page.position(), 120, 'collapsing Information preserves 120px progress into Work');
+  assert.equal(page.browser.location.hash, '#work');
+  assert.equal(page.document.activeElement.id, 'work', 'closed Information must not retain keyboard focus');
+});
+
+test('mobile breakpoint changes preserve the same Work-relative position', async t => {
+  const page = await setup(t, false, true);
+  page.scroll(120);
+  page.setMobile(false);
+  assert.equal(page.position(), 720);
+  page.setMobile(true);
+  assert.equal(page.position(), 120);
+});
+
+test('mobile information-first and hidden navigation stay independently reachable', async t => {
+  const page = await setup(t, false, true);
+  page.document.documentElement.dataset.homeInitialSection = 'info';
+  page.browser.dispatchEvent(new page.browser.Event('kspf:content-ready'));
+  assert.equal(page.document.documentElement.classList.contains('is-information-closed'), false);
+  page.scroll(100);
+  page.browser.dispatchEvent(new page.browser.Event('scroll'));
+  assert.equal(page.position(), 100);
 });
