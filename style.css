@@ -140,7 +140,7 @@ html.is-info-scrolling {
 
   .home-information__details {
     column-gap: 16px;
-    margin-top: 28px;
+    margin-top: 20px;
   }
 }
 
@@ -209,7 +209,7 @@ html[data-home-information="three-columns"] .home-information__contact a {
 @media (max-width: 600px) {
   html[data-home-information="three-columns"] .home-information__inner {
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
+    gap: 20px;
   }
 
   html[data-home-information="three-columns"] .home-information__services {
