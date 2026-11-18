@@ -130,7 +130,7 @@ test("numbers visible projects and places the title after media", async () => {
   const blocks = [...window.document.querySelectorAll(".project-block")];
   assert.deepEqual(blocks.map(block => block.querySelector(".project__number")?.textContent), ["007 / 002", "002 / 002"]);
   assert.equal(blocks[1].querySelector(".project__number").getAttribute("aria-label"), "Project 2 of 2");
-  assert.deepEqual([...blocks[0].children].map(node => node.className), ["project__number", "hero js-slideshow", "project__caption"]);
+  assert.deepEqual([...blocks[0].children].map(node => node.className), ["project__number", "hero js-slideshow has-portrait", "project__caption"]);
   assert.deepEqual([...blocks[0].querySelector(".project__caption").children].map(node => node.className), ["project__name", "project__caption-right"]);
 });
 

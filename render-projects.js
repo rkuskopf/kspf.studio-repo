@@ -15,6 +15,13 @@
     figure.className = "hero js-slideshow";
     figure.tabIndex = 0;
     figure.dataset.slides = JSON.stringify(project.slides || []);
+    const layout = window.kspfMediaLayout;
+    const frame = layout?.frame(project.slides || []) || { desktop: 1.6, hasPortrait: true };
+    figure.dataset.frameReserved = "1";
+    figure.style.setProperty("--hero-aspect", String(frame.desktop));
+    if (frame.mobileLandscape) figure.style.setProperty("--hero-mobile-landscape-aspect", String(frame.mobileLandscape));
+    figure.classList.toggle("has-portrait", frame.hasPortrait);
+    figure.dataset.priority = index === 0 ? "high" : "auto";
 
     const prev = document.createElement("button");
     prev.className = "hero__hit hero__hit--prev";
@@ -29,8 +36,6 @@
     const img = document.createElement("img");
     img.className = "hero__media hero__img is-orientation-pending";
     const slides = project.slides || [];
-    const firstImage = slides.find((src) => src && !isVideoSrc(src)) || "";
-    img.src = firstImage || slides[0] || "";
     img.alt = project.alt || project.title || "Project image";
     img.loading = index === 0 ? "eager" : "lazy";
 
@@ -39,16 +44,30 @@
     video.muted = true;
     video.loop = true;
     video.playsInline = true;
-    video.preload = "metadata";
+    video.preload = "none";
     const firstSlide = slides[0] || "";
     const startsWithVideo = isVideoSrc(firstSlide);
-    if (startsWithVideo) {
-      video.src = firstSlide;
-    }
     img.classList.toggle("is-hidden", startsWithVideo);
     video.classList.toggle("is-hidden", !startsWithVideo);
 
-    figure.append(prev, next, img, video);
+    const poster = document.createElement("img");
+    poster.className = "hero__media hero__poster";
+    poster.alt = "";
+    poster.setAttribute("aria-hidden", "true");
+    poster.loading = index === 0 ? "eager" : "lazy";
+    poster.fetchPriority = index === 0 ? "high" : "low";
+    poster.hidden = true;
+    const posterSrc = startsWithVideo && layout?.poster(firstSlide);
+    if (posterSrc && index === 0) {
+      poster.src = posterSrc;
+      poster.hidden = false;
+      poster.classList.toggle("is-portrait", layout.aspect(firstSlide) < 1);
+    }
+    const status = document.createElement("p");
+    status.className = "hero__status";
+    status.setAttribute("role", "status");
+    status.hidden = true;
+    figure.append(prev, next, img, video, poster, status);
     return figure;
   };
 

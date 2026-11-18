@@ -19,6 +19,7 @@
   }
 
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const mobile = window.matchMedia("(max-width: 600px)");
   let animationFrame = 0;
   let navigating = false;
   let informationOpen = false;
@@ -41,15 +42,32 @@
   window.kspfHomeMinimumScroll = () =>
     restrictInformation() && !informationOpen ? topFor(work) : 0;
 
+  let lastWorkTop = topFor(work);
+  const syncInformationLayout = (preservePosition = true, previousTop = topFor(work)) => {
+    const position = window.scrollY;
+    const closed = mobile.matches && restrictInformation() && !informationOpen;
+    if (closed && information.contains(document.activeElement)) work.focus({ preventScroll: true });
+    root.classList.toggle("is-information-closed", closed);
+    const nextTop = topFor(work);
+    if (preservePosition && nextTop !== previousTop) {
+      window.scrollTo(0, Math.max(0, position + nextTop - previousTop));
+    }
+    lastWorkTop = nextTop;
+  };
+  mobile.addEventListener?.("change", () => {
+    syncInformationLayout(!informationOpen, lastWorkTop);
+  });
+
   const syncWorkSection = () => {
     if (navigating) return;
     const workTop = topFor(work);
-    if (restrictInformation() && !informationOpen && window.scrollY < workTop - 1) {
+    if (workTop > 1 && restrictInformation() && !informationOpen && window.scrollY < workTop - 1) {
       if (!window.kspfHomeScroll?.setPosition?.(workTop)) window.scrollTo(0, workTop);
       return;
     }
     if (window.scrollY < workTop - 1) return;
     informationOpen = false;
+    syncInformationLayout();
     root.classList.remove("is-info-scrolling");
     if (location.hash === "#information") {
       history.replaceState({ ...history.state, homeSection: "work" }, "", "#work");
@@ -71,8 +89,11 @@
     if (animationFrame) cancelAnimationFrame(animationFrame);
     animationFrame = 0;
     navigating = true;
-    informationOpen = target === information;
     root.classList.add("is-info-scrolling");
+    // Keep Information in flow throughout a return animation, then collapse
+    // only after reaching Work. Revealing it preserves the current Work view.
+    if (target === information) informationOpen = true;
+    syncInformationLayout();
 
     if (window.kspfHomeScroll?.navigate(target, animate && !reduceMotion.matches,
       () => finish(target, markReady))) return;
