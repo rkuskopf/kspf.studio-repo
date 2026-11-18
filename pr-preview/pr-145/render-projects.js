@@ -66,7 +66,7 @@
     const status = document.createElement("p");
     status.className = "hero__status";
     status.setAttribute("role", "status");
-    status.textContent = "Loading media…";
+    status.hidden = true;
     figure.append(prev, next, img, video, poster, status);
     return figure;
   };

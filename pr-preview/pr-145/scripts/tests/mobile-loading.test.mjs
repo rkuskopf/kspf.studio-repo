@@ -71,6 +71,7 @@ test('failed current media leaves a readable fallback and usable slideshow contr
   assert.equal(hero.querySelector('.hero__status').hidden, false);
   assert.equal(hero.style.cssText, before, 'failure cannot resize the reserved frame');
   hero.querySelector('.hero__hit--next').click();
+  hero.querySelector('video[data-source]').dispatchEvent(new document.defaultView.Event('playing'));
   assert.ok(hero.querySelector('video.is-active'), 'the next slide remains accessible');
 });
 
@@ -169,6 +170,53 @@ test('autoplay retry paints above active previous and next hit controls', async 
   for (const hit of hero.querySelectorAll('.hero__hit')) {
     assert.ok(retryZ > Number(window.getComputedStyle(hit).zIndex), 'retry must receive the tap instead of advancing the slideshow');
   }
+});
+
+test('video changes retain the current frame until the incoming video plays', async t => {
+  const second = video.replace('opening', 'second');
+  const { document, window } = await setup(t, [{ title: 'Video transitions', slides: [video, second] }]);
+  const hero = document.querySelector('.hero');
+  const outgoing = hero.querySelector('video.is-active');
+  outgoing.dispatchEvent(new window.Event('playing'));
+  const poster = hero.querySelector('.hero__poster');
+  const posterSource = poster.getAttribute('src');
+  hero.querySelector('.hero__hit--next').click();
+  assert.equal(hero.querySelector('video.is-active'), outgoing, 'a loading video cannot replace the visible frame');
+  assert.equal(poster.hidden, true, 'slide changes must not flash a poster between videos');
+  assert.equal(poster.getAttribute('src'), posterSource, 'the first poster is not repurposed for every transition');
+  assert.equal(hero.querySelector('.hero__status').hidden, true, 'loading text must not cover project media');
+  const incoming = [...hero.querySelectorAll('video')].find(media => media.getAttribute('src') === second);
+  assert.ok(incoming);
+  incoming.dispatchEvent(new window.Event('playing'));
+  assert.equal(hero.querySelector('video.is-active'), incoming);
+});
+
+test('deferred projects do not show loading text', async t => {
+  const { document } = await setup(t, [{ title: 'First', slides: [video] }, { title: 'Later', slides: [image] }]);
+  for (const status of document.querySelectorAll('.hero__status')) assert.equal(status.hidden, true);
+});
+
+test('rapid next clicks never overwrite the still-visible image source', async t => {
+  const { document } = await setup(t, [{ title: 'Rapid clicks', slides: [image, image.replace('image.jpg', 'second.jpg'), image.replace('image.jpg', 'third.jpg')] }]);
+  const hero = document.querySelector('.hero');
+  const visible = hero.querySelector('img.is-active');
+  const originalSrc = visible.src;
+  hero.querySelector('.hero__hit--next').click();
+  hero.querySelector('.hero__hit--next').click();
+  assert.equal(visible.src, originalSrc, 'the visible slot stays intact while the newest requested slide loads');
+});
+
+test('late outgoing readiness cannot clear a failed incoming slide', async t => {
+  const second = image.replace('image.jpg', 'second.jpg');
+  const { document, window } = await setup(t, [{ title: 'Late image', slides: [image, second] }]);
+  const hero = document.querySelector('.hero');
+  const outgoing = hero.querySelector('img.is-active');
+  hero.querySelector('.hero__hit--next').click();
+  const incoming = [...hero.querySelectorAll('.hero__img')].find(media => media !== outgoing);
+  incoming.dispatchEvent(new window.Event('error'));
+  outgoing.dispatchEvent(new window.Event('load'));
+  assert.equal(hero.querySelector('.hero__status').hidden, false);
+  assert.match(hero.querySelector('.hero__status').textContent, /unavailable/i);
 });
 
 test('closed mobile Information overrides the CMS three-column display layout', async t => {

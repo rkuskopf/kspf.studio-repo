@@ -795,6 +795,12 @@ body[data-page="home"] .hero__media.is-portrait {
   pointer-events: none;
 }
 
+/* Home slides crossfade decoded frames; do not blur media while it loads. */
+body[data-page="home"] .hero[data-frame-reserved="1"] .hero__media {
+  filter: none;
+  transition: opacity 200ms linear;
+}
+
 .hero__play {
   position: absolute;
   z-index: 1001;
