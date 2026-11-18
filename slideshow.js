@@ -194,6 +194,7 @@
     });
 
   const setHeroAspect = (root, slides, fallbackSrc) => {
+    if (root.dataset.frameReserved === "1") return;
     const sources = (slides && slides.length ? slides : [fallbackSrc]).filter(Boolean);
     if (!sources.length) return;
     const unique = Array.from(new Set(sources));
@@ -329,6 +330,18 @@
 
     const slides = parseSlides(root.dataset.slides).filter(Boolean);
     setHeroAspect(root, slides, img.getAttribute("src"));
+    const reserved = root.dataset.frameReserved === "1";
+    const layout = window.kspfMediaLayout;
+    const poster = root.querySelector(".hero__poster");
+    const status = root.querySelector(".hero__status");
+    const playButton = reserved ? document.createElement("button") : null;
+    if (playButton) {
+      playButton.className = "hero__play";
+      playButton.type = "button";
+      playButton.textContent = "Play video";
+      playButton.hidden = true;
+      root.append(playButton);
+    }
     // Active slideshow is chosen by viewport visibility, not hover/focus.
 
     let index = 0;
@@ -337,12 +350,31 @@
     let currentSrc = null;
     let hasShown = false;
     let activeMediaEl = null;
+    let pendingMediaEl = null;
     let activeImageEl = imageSlots[0];
     let activeVideoEl = videoSlots[0];
     const videoPositions = new Map();
     const shouldPlay = () => isInView && activeRoot === root;
     let wasPlaying = false;
     let playingVideoEl = null;
+    let mediaFailed = false;
+    const setStatus = (text) => {
+      if (!status) return;
+      status.textContent = text;
+      status.hidden = !text;
+    };
+    const playVideo = (el) => {
+      el.play().catch((error) => {
+        // Pausing an offscreen/outgoing video deliberately aborts play().
+        if (error?.name === "AbortError" || !currentIsVideo || el !== activeVideoEl || mediaFailed) return;
+        wasPlaying = false;
+        if (playButton) playButton.hidden = false;
+        setStatus("");
+      });
+    };
+    playButton?.addEventListener("click", () => {
+      if (activeVideoEl) playVideo(activeVideoEl);
+    });
     let hitAreaRafId = 0;
     const updateHitArea = () => {
       hitAreaRafId = 0;
@@ -356,6 +388,40 @@
     allMedia.forEach((media) => {
       media.addEventListener("load", scheduleHitArea);
       media.addEventListener("loadedmetadata", scheduleHitArea);
+      if (!reserved) return;
+      const ready = (event) => {
+        if (pendingMediaEl && media !== pendingMediaEl) return;
+        // Keep the outgoing frame in place until the next image is decoded or
+        // video actually starts. Metadata/data readiness alone can flash black.
+        if (media === pendingMediaEl) {
+          if (media.tagName === "VIDEO" && event.type !== "playing") return;
+          presentMedia(media);
+        }
+        if (media !== activeMediaEl) return;
+        if (media.tagName === "VIDEO" && event.type !== "playing") return;
+        mediaFailed = false;
+        root.classList.remove("is-media-failed");
+        media.classList.remove("is-orientation-pending");
+        setStatus("");
+        if (poster) poster.hidden = true;
+        if (playButton && (media.tagName !== "VIDEO" || event.type === "playing")) playButton.hidden = true;
+      };
+      media.addEventListener(media.tagName === "VIDEO" ? "loadeddata" : "load", ready);
+      media.addEventListener("playing", ready);
+      media.addEventListener("error", () => {
+        if (media !== activeMediaEl && media !== pendingMediaEl) return;
+        mediaFailed = true;
+        root.classList.add("is-media-failed");
+        setStatus("Media unavailable. Try another slide.");
+        if (playButton) playButton.hidden = true;
+      });
+    });
+    poster?.addEventListener("load", () => {
+      if (currentIsVideo && !poster.hidden && !mediaFailed) setStatus("");
+    });
+    poster?.addEventListener("error", () => {
+      poster.hidden = true;
+      if (currentIsVideo && !mediaFailed) setStatus("");
     });
     window.addEventListener("resize", scheduleHitArea);
 
@@ -421,7 +487,7 @@
         ensureVideoSrc(activeVideoEl, currentSrc);
         if (!wasPlaying || playingVideoEl !== activeVideoEl) {
           restoreVideoTime(activeVideoEl, currentSrc);
-          activeVideoEl.play().catch(() => {});
+          playVideo(activeVideoEl);
         }
         wasPlaying = true;
         playingVideoEl = activeVideoEl;
@@ -438,6 +504,24 @@
 
     const updateMediaPortrait = createMediaPortraitUpdater(loadAspect);
     const updatePortraitFlag = (media, src) => {
+      if (reserved) {
+        const known = layout?.aspect(src);
+        setMediaPortraitClass(media, known);
+        // Use the rendered element's metadata, never a second network probe.
+        // Unknown frame geometry stays reserved even after classification.
+        if (!known) {
+          const event = media.tagName === "VIDEO" ? "loadedmetadata" : "load";
+          media.addEventListener(event, () => {
+            if (media.dataset.source !== src) return;
+            const width = media.videoWidth || media.naturalWidth;
+            const height = media.videoHeight || media.naturalHeight;
+            setMediaPortraitClass(media, height ? width / height : null);
+            scheduleHitArea();
+          }, { once: true });
+        }
+        media.dataset.source = src;
+        return Promise.resolve(known);
+      }
       const cachedAspect = aspectCache.get(src);
       if (Number.isFinite(cachedAspect)) {
         setMediaPortraitClass(media, cachedAspect);
@@ -480,6 +564,25 @@
       scheduleHitArea();
     };
 
+    const presentMedia = (el, immediate = false) => {
+      pendingMediaEl = null;
+      if (reserved) {
+        if (poster && activeMediaEl && activeMediaEl !== el) poster.hidden = true;
+        setActiveMedia(el, true);
+      } else setActiveMedia(el, immediate);
+      scheduleVideoCleanup();
+    };
+
+    const stageMedia = (el, immediate) => {
+      if (!reserved || !activeMediaEl || activeMediaEl === el) {
+        presentMedia(el, immediate);
+        return;
+      }
+      pendingMediaEl = el;
+      hideMedia(el);
+      if (el.tagName === "IMG" && el.complete && el.naturalWidth) presentMedia(el, immediate);
+    };
+
     const scheduleVideoCleanup = () => {
       window.setTimeout(() => {
         videoSlots.forEach((vid) => {
@@ -501,13 +604,16 @@
       wasPlaying = false;
       playingVideoEl = null;
 
-      const nextImageEl = activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
+      const nextImageEl = reserved ? imageSlots.find(media => media !== activeMediaEl)
+        : activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
       activeImageEl = nextImageEl;
-      nextImageEl.src = src;
+      nextImageEl.loading = "eager";
+      nextImageEl.fetchPriority = root.dataset.priority || "auto";
+      nextImageEl.src = reserved ? layout?.image(src) || src : src;
       updatePortraitFlag(nextImageEl, src).then(scheduleHitArea);
 
       videoSlots.forEach(pauseVideo);
-      setActiveMedia(nextImageEl, immediate);
+      stageMedia(nextImageEl, immediate);
       scheduleVideoCleanup();
     };
 
@@ -520,14 +626,15 @@
       wasPlaying = false;
       playingVideoEl = null;
 
-      const nextVideoEl = activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
+      const nextVideoEl = reserved ? videoSlots.find(media => media !== activeMediaEl)
+        : activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
       activeVideoEl = nextVideoEl;
       ensureVideoSrc(nextVideoEl, src);
       updatePortraitFlag(nextVideoEl, src).then(scheduleHitArea);
 
       if (shouldPlay()) {
         restoreVideoTime(nextVideoEl, src);
-        nextVideoEl.play().catch(() => {});
+        playVideo(nextVideoEl);
         wasPlaying = true;
         playingVideoEl = nextVideoEl;
       } else {
@@ -538,7 +645,7 @@
         if (vid !== nextVideoEl) pauseVideo(vid);
       });
 
-      setActiveMedia(nextVideoEl, immediate);
+      stageMedia(nextVideoEl, immediate);
       scheduleVideoCleanup();
     };
 
@@ -550,13 +657,30 @@
         counter.setAttribute("aria-label", `Slide ${index + 1} of ${slides.length}`);
       }
       const current = slides[index];
+      if (reserved) {
+        mediaFailed = false;
+        root.classList.remove("is-media-failed");
+        setStatus("");
+        playButton.hidden = true;
+        const posterSrc = isVideo(current) && layout?.poster(current);
+        if (poster && !activeMediaEl) {
+          poster.hidden = !posterSrc;
+          if (posterSrc) {
+            poster.classList.toggle("is-portrait", layout.aspect(current) < 1);
+            if (poster.getAttribute("src") !== posterSrc) poster.src = posterSrc;
+            if (poster.complete && poster.naturalWidth) setStatus("");
+          }
+        }
+      }
       if (isVideo(current)) {
         showVideo(current, immediate);
       } else {
         showImage(current, immediate);
       }
-      preload(slides[(index + 1) % slides.length]);
-      preload(slides[(index - 1 + slides.length) % slides.length]);
+      if (!reserved) {
+        preload(slides[(index + 1) % slides.length]);
+        preload(slides[(index - 1 + slides.length) % slides.length]);
+      }
     };
 
     const showImmediate = (nextIndex) => {
@@ -569,6 +693,10 @@
         showImmediate(nextIndex);
         return;
       }
+      if (reserved) {
+        applySlide(nextIndex);
+        return;
+      }
       root.classList.add("is-transitioning");
       applySlide(nextIndex);
       window.setTimeout(() => {
@@ -576,10 +704,14 @@
       }, transitionDuration);
     };
 
+    if (!slides.length) {
+      root.classList.add("is-single");
+      setStatus("Media unavailable.");
+      return;
+    }
     show(index);
     if (slides.length <= 1) {
       root.classList.add("is-single");
-      return;
     }
 
     prev.addEventListener("click", () => {
@@ -659,7 +791,7 @@
     root.addEventListener("pointercancel", onPointerEnd);
     root.addEventListener("click", onClickCapture, true);
 
-    preload(slides[(index + 1) % slides.length]);
+    if (!reserved) preload(slides[(index + 1) % slides.length]);
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -675,8 +807,21 @@
     observer.observe(root);
   };
 
+  const lazyObserver = typeof IntersectionObserver === "function" ? new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      lazyObserver.unobserve(entry.target);
+      initSlideshow(entry.target);
+      schedulePickMostVisible();
+    }
+  }, { rootMargin: "200px 0px" }) : null;
+
   const setupSlideshows = (scope = document) => {
-    scope.querySelectorAll(".js-slideshow").forEach(initSlideshow);
+    scope.querySelectorAll(".js-slideshow").forEach(root => {
+      if (root.dataset.frameReserved === "1" && root.dataset.priority !== "high" && lazyObserver) {
+        lazyObserver.observe(root);
+      } else initSlideshow(root);
+    });
   };
 
   window.initSlideshows = setupSlideshows;

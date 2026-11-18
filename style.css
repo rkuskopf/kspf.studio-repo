@@ -55,10 +55,6 @@ html {
   scroll-behavior: smooth;
 }
 
-html.home-scroll-pending body[data-page="home"] {
-  visibility: hidden;
-}
-
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -789,6 +785,47 @@ body[data-page="home"] .hero__media.is-portrait {
 
 .hero__media.is-orientation-pending {
   visibility: hidden;
+}
+
+.hero__poster[hidden], .hero__status[hidden], .hero__play[hidden] {
+  display: none;
+}
+
+.hero__poster {
+  pointer-events: none;
+}
+
+/* Switch ready home media directly, with no fade or blur. */
+body[data-page="home"] .hero[data-frame-reserved="1"] .hero__media {
+  filter: none;
+  transition: none;
+}
+
+.hero__play {
+  position: absolute;
+  z-index: 1001;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font: inherit;
+  font-size: 12px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.hero__status {
+  position: absolute;
+  z-index: 3;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  margin: 0;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.hero.is-media-failed .hero__status {
+  background: rgba(255, 255, 255, 0.92);
 }
 
 .hero__media.is-active {
@@ -1670,6 +1707,11 @@ body[data-page="home"] .project__caption .project__slide-counter {
 }
 
 @media (max-width: 600px) {
+  /* Native scrolling owns the Work boundary. INFO reveals this section. */
+  html.is-information-closed:not([data-home-initial-section="info"]) .home-information {
+    display: none !important;
+  }
+
   .project-block {
     --hero-frame: min(var(--hero-intended-width), calc(100% - 2 * var(--page-pad)));
     grid-template-columns: minmax(0, 1fr);
