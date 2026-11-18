@@ -795,10 +795,10 @@ body[data-page="home"] .hero__media.is-portrait {
   pointer-events: none;
 }
 
-/* Home slides crossfade decoded frames; do not blur media while it loads. */
+/* Switch ready home media directly, with no fade or blur. */
 body[data-page="home"] .hero[data-frame-reserved="1"] .hero__media {
   filter: none;
-  transition: opacity 200ms linear;
+  transition: none;
 }
 
 .hero__play {

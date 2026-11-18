@@ -175,6 +175,7 @@ test('autoplay retry paints above active previous and next hit controls', async 
 test('video changes retain the current frame until the incoming video plays', async t => {
   const second = video.replace('opening', 'second');
   const { document, window } = await setup(t, [{ title: 'Video transitions', slides: [video, second] }]);
+  document.head.innerHTML = `<style>${await readFile(new URL('../../style.css', import.meta.url), 'utf8')}</style>`;
   const hero = document.querySelector('.hero');
   const outgoing = hero.querySelector('video.is-active');
   outgoing.dispatchEvent(new window.Event('playing'));
@@ -189,6 +190,9 @@ test('video changes retain the current frame until the incoming video plays', as
   assert.ok(incoming);
   incoming.dispatchEvent(new window.Event('playing'));
   assert.equal(hero.querySelector('video.is-active'), incoming);
+  assert.equal(incoming.classList.contains('is-hidden'), false, 'ready media switches immediately without a blank animation frame');
+  assert.equal(hero.classList.contains('is-transitioning'), false);
+  assert.equal(window.getComputedStyle(incoming).transition, 'none');
 });
 
 test('deferred projects do not show loading text', async t => {
