@@ -158,6 +158,19 @@ test('intentional playback cancellation does not expose an autoplay error', asyn
   assert.doesNotMatch(hero.querySelector('.hero__status').textContent, /Tap Play/);
 });
 
+test('autoplay retry paints above active previous and next hit controls', async t => {
+  const { document, window } = await setup(t, [{ title: 'Retry', slides: [video, image] }]);
+  document.head.innerHTML = `<style>${await readFile(new URL('../../style.css', import.meta.url), 'utf8')}</style>`;
+  const hero = document.querySelector('.hero');
+  hero.classList.add('is-active');
+  const play = hero.querySelector('.hero__play');
+  play.hidden = false;
+  const retryZ = Number(window.getComputedStyle(play).zIndex);
+  for (const hit of hero.querySelectorAll('.hero__hit')) {
+    assert.ok(retryZ > Number(window.getComputedStyle(hit).zIndex), 'retry must receive the tap instead of advancing the slideshow');
+  }
+});
+
 test('closed mobile Information overrides the CMS three-column display layout', async t => {
   const css = await readFile(new URL('../../style.css', import.meta.url), 'utf8');
   for (const closed of [false, true]) {

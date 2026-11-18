@@ -797,7 +797,7 @@ body[data-page="home"] .hero__media.is-portrait {
 
 .hero__play {
   position: absolute;
-  z-index: 30;
+  z-index: 1001;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);

@@ -53,7 +53,7 @@ Files: `info-scroll.js`, `index.html`, `style.css`, `scripts/tests/info-scroll.t
 
 Local verification completed on 18 November 2026 before committing for PR review; no production deployment. Independent review findings about poster/error ordering and autoplay retry were fixed with regression coverage.
 
-- Full static Node suite: 141 passed. Existing module-type warning from the Lenis test remains unchanged.
+- Full static Node suite: 142 passed, including the PR follow-up below. Existing module-type warning from the Lenis test remains unchanged.
 - 390 × 844 in-app Chromium, cache disabled, 1.6 Mbps download / 150 ms latency, same saved-draft project snapshot:
   - Run 1: captions/navigation 1.930 s; poster 2.780 s; video readyState ≥2 at 5.329 s.
   - Run 2: captions/navigation 1.996 s; poster 2.892 s; video readyState ≥2 at 5.342 s.
@@ -64,3 +64,9 @@ Local verification completed on 18 November 2026 before committing for PR review
 - Desktop 1280 × 720 first media rect matches baseline exactly: x=372, y=160, width=536, height=670.
 - Fresh preview projects/home/site JSON each matched a fresh Storyblok draft fetch. HTTPS preview remains at https://localhost:8001/.
 - Remaining release checks: real iPhone, Instagram in-app and external-browser handoff, the original extended white interval, and published production behavior after separately approved release. No real-device elastic overscroll claim follows from Chromium wheel tests. Information-first/hidden-navigation modes have automated coverage; actual CMS settings were not changed for testing.
+
+### PR follow-up
+
+PR #145 review identified that autoplay retry was below the slideshow hit targets (30 versus 1000). A regression test reproduced the stacking conflict. Raised retry to 1001 and bumped the CSS cache key. Browser hit-testing confirmed `hero__play` receives the click; a real locator click called playback once, kept counter `001 / 002`, resumed video and hid retry. Temporary autoplay simulation was discarded by reload.
+
+The 18.345-second recording named in Rowan's PR comment was found locally in Dropbox Screenshots and inspected. The comment does not specify the unintended behavior/timestamp; clarification was requested in chat. Do not mark that report resolved based on the separate retry fix.
