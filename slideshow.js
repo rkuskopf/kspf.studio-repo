@@ -350,6 +350,7 @@
     let currentSrc = null;
     let hasShown = false;
     let activeMediaEl = null;
+    let pendingMediaEl = null;
     let activeImageEl = imageSlots[0];
     let activeVideoEl = videoSlots[0];
     const videoPositions = new Map();
@@ -365,10 +366,10 @@
     const playVideo = (el) => {
       el.play().catch((error) => {
         // Pausing an offscreen/outgoing video deliberately aborts play().
-        if (error?.name === "AbortError" || el !== activeMediaEl || mediaFailed) return;
+        if (error?.name === "AbortError" || !currentIsVideo || el !== activeVideoEl || mediaFailed) return;
         wasPlaying = false;
         if (playButton) playButton.hidden = false;
-        setStatus(poster && !poster.hidden ? "" : "Tap Play video to start.");
+        setStatus("");
       });
     };
     playButton?.addEventListener("click", () => {
@@ -389,7 +390,15 @@
       media.addEventListener("loadedmetadata", scheduleHitArea);
       if (!reserved) return;
       const ready = (event) => {
+        if (pendingMediaEl && media !== pendingMediaEl) return;
+        // Keep the outgoing frame in place until the next image is decoded or
+        // video actually starts. Metadata/data readiness alone can flash black.
+        if (media === pendingMediaEl) {
+          if (media.tagName === "VIDEO" && event.type !== "playing") return;
+          presentMedia(media);
+        }
         if (media !== activeMediaEl) return;
+        if (media.tagName === "VIDEO" && event.type !== "playing") return;
         mediaFailed = false;
         root.classList.remove("is-media-failed");
         media.classList.remove("is-orientation-pending");
@@ -400,7 +409,7 @@
       media.addEventListener(media.tagName === "VIDEO" ? "loadeddata" : "load", ready);
       media.addEventListener("playing", ready);
       media.addEventListener("error", () => {
-        if (media !== activeMediaEl) return;
+        if (media !== activeMediaEl && media !== pendingMediaEl) return;
         mediaFailed = true;
         root.classList.add("is-media-failed");
         setStatus("Media unavailable. Try another slide.");
@@ -412,7 +421,7 @@
     });
     poster?.addEventListener("error", () => {
       poster.hidden = true;
-      if (currentIsVideo && !mediaFailed && activeVideoEl?.readyState < 2) setStatus("Loading video…");
+      if (currentIsVideo && !mediaFailed) setStatus("");
     });
     window.addEventListener("resize", scheduleHitArea);
 
@@ -555,6 +564,27 @@
       scheduleHitArea();
     };
 
+    const presentMedia = (el, immediate = false) => {
+      pendingMediaEl = null;
+      if (reserved && activeMediaEl && activeMediaEl !== el) {
+        if (poster) poster.hidden = true;
+        root.classList.add("is-transitioning");
+        setActiveMedia(el);
+        window.setTimeout(() => root.classList.remove("is-transitioning"), transitionDuration);
+      } else setActiveMedia(el, immediate);
+      scheduleVideoCleanup();
+    };
+
+    const stageMedia = (el, immediate) => {
+      if (!reserved || !activeMediaEl || activeMediaEl === el) {
+        presentMedia(el, immediate);
+        return;
+      }
+      pendingMediaEl = el;
+      hideMedia(el);
+      if (el.tagName === "IMG" && el.complete && el.naturalWidth) presentMedia(el, immediate);
+    };
+
     const scheduleVideoCleanup = () => {
       window.setTimeout(() => {
         videoSlots.forEach((vid) => {
@@ -576,7 +606,8 @@
       wasPlaying = false;
       playingVideoEl = null;
 
-      const nextImageEl = activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
+      const nextImageEl = reserved ? imageSlots.find(media => media !== activeMediaEl)
+        : activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
       activeImageEl = nextImageEl;
       nextImageEl.loading = "eager";
       nextImageEl.fetchPriority = root.dataset.priority || "auto";
@@ -584,7 +615,7 @@
       updatePortraitFlag(nextImageEl, src).then(scheduleHitArea);
 
       videoSlots.forEach(pauseVideo);
-      setActiveMedia(nextImageEl, immediate);
+      stageMedia(nextImageEl, immediate);
       scheduleVideoCleanup();
     };
 
@@ -597,7 +628,8 @@
       wasPlaying = false;
       playingVideoEl = null;
 
-      const nextVideoEl = activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
+      const nextVideoEl = reserved ? videoSlots.find(media => media !== activeMediaEl)
+        : activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
       activeVideoEl = nextVideoEl;
       ensureVideoSrc(nextVideoEl, src);
       updatePortraitFlag(nextVideoEl, src).then(scheduleHitArea);
@@ -615,7 +647,7 @@
         if (vid !== nextVideoEl) pauseVideo(vid);
       });
 
-      setActiveMedia(nextVideoEl, immediate);
+      stageMedia(nextVideoEl, immediate);
       scheduleVideoCleanup();
     };
 
@@ -630,10 +662,10 @@
       if (reserved) {
         mediaFailed = false;
         root.classList.remove("is-media-failed");
-        setStatus("Loading media…");
+        setStatus("");
         playButton.hidden = true;
         const posterSrc = isVideo(current) && layout?.poster(current);
-        if (poster) {
+        if (poster && !activeMediaEl) {
           poster.hidden = !posterSrc;
           if (posterSrc) {
             poster.classList.toggle("is-portrait", layout.aspect(current) < 1);
@@ -661,6 +693,10 @@
       if (!hasShown) {
         hasShown = true;
         showImmediate(nextIndex);
+        return;
+      }
+      if (reserved) {
+        applySlide(nextIndex);
         return;
       }
       root.classList.add("is-transitioning");
