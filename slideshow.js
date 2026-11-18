@@ -566,11 +566,9 @@
 
     const presentMedia = (el, immediate = false) => {
       pendingMediaEl = null;
-      if (reserved && activeMediaEl && activeMediaEl !== el) {
-        if (poster) poster.hidden = true;
-        root.classList.add("is-transitioning");
-        setActiveMedia(el);
-        window.setTimeout(() => root.classList.remove("is-transitioning"), transitionDuration);
+      if (reserved) {
+        if (poster && activeMediaEl && activeMediaEl !== el) poster.hidden = true;
+        setActiveMedia(el, true);
       } else setActiveMedia(el, immediate);
       scheduleVideoCleanup();
     };
