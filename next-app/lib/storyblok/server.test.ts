@@ -313,3 +313,14 @@ it.each([404,200])('rejects missing or wrong-type Site story (status %s)', async
   };
   await expect(loadHomePage({searchParams:{},environment:{STORYBLOK_PUBLIC_TOKEN:'public'},fetchImpl})).rejects.toThrow(status===404?/404/:/site_settings/);
 });
+
+ it("uses draft delivery on an explicitly enabled production preview", async () => {
+  const {requests,fetchImpl}=requestRecorder();
+  const data=await loadHomePage({ searchParams:signedParams(),fetchImpl,now:NOW,
+    environment:{NODE_ENV:"production",STORYBLOK_PREVIEW_ENABLED:"true",STORYBLOK_SPACE_ID:"313862",
+      STORYBLOK_PUBLIC_TOKEN:"public-sentinel",STORYBLOK_PREVIEW_TOKEN:PREVIEW_TOKEN}});
+  expect(data?.isPreview).toBe(true);
+  expect(requests.every(url=>url.searchParams.get("version")==="draft")).toBe(true);
+  expect(requests.every(url=>url.searchParams.get("token")===PREVIEW_TOKEN)).toBe(true);
+  expect(JSON.stringify(data)).not.toContain(PREVIEW_TOKEN);
+ });

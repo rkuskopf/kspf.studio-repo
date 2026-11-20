@@ -1,13 +1,13 @@
-# Next.js Storyblok homepage tracer
+# Next.js Storyblok application
 
 This directory contains the App Router replacement being developed alongside
 the current static site. The static homepage and GitHub Pages workflows remain
 the production path until the migration is ready to cut over.
 
 The `/` route reads the existing `home` story directly from Storyblok. Normal
-requests use published content. Saved draft content is available only inside
-the local Storyblok Visual Editor while `next dev` is running; non-development
-runtimes always stay published-only.
+requests use published content. Saved draft content is available in the local Storyblok Visual Editor and in an
+explicitly configured deployed preview. Production-mode runtimes default to
+published-only. See [deployment setup](../docs/nextjs-preview.md).
 
 ## Local environment
 
@@ -58,18 +58,19 @@ Storyblok appends its signed `_storyblok` and `_storyblok_tk[...]` parameters
 to the iframe URL. The Next.js server validates the complete signature with the
 preview token before requesting `version=draft`. This applies to the homepage
 and an enabled project page. Arbitrary, partial, invalid, expired, or repeated
-parameters render published content instead. Every non-development runtime also
-renders published content, even if a request contains otherwise valid Visual
-Editor parameters.
+parameters render published content instead. Production-mode draft requests additionally require
+`STORYBLOK_PREVIEW_ENABLED=true` and a matching `STORYBLOK_SPACE_ID`; otherwise
+they render published content.
 
 Select **Save** after editing the story. The Storyblok Bridge reloads the iframe
 and the server fetches the latest saved draft without using generated JSON or
 the legacy preview server. Publish events reload in the same way. Unsaved
 keystroke-by-keystroke rendering is outside this slice.
 
-There is intentionally no deployable Draft Mode endpoint, preview cookie, or
-preview toolbar in #58. Those belong with the later production-like preview and
-deployment work.
+There is no preview cookie or persistent Draft Mode session. Issue #74 extends
+the existing signed-request boundary to deployed previews; removing editor
+parameters returns to published content. Hosting, environment and rollback
+instructions are in [the preview guide](../docs/nextjs-preview.md).
 
 ## Project-page delivery
 

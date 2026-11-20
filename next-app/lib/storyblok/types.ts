@@ -13,6 +13,8 @@ export type StoryblokEnvironment = {
   NODE_ENV?: string;
   STORYBLOK_PUBLIC_TOKEN?: string;
   STORYBLOK_PREVIEW_TOKEN?: string;
+  STORYBLOK_PREVIEW_ENABLED?: string;
+  STORYBLOK_SPACE_ID?: string;
   STORYBLOK_REGION?: string;
 };
 

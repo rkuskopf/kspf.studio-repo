@@ -1,0 +1,31 @@
+name: Next.js Preview Checks
+
+on:
+  pull_request:
+    paths:
+      - 'next-app/**'
+      - 'scripts/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.mts'
+      - '.github/workflows/next-preview-checks.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: node --test scripts/tests/*.test.mjs
+      - name: Build the deployable workspace without CMS credentials
+        working-directory: next-app
+        run: npm run build

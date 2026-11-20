@@ -11,18 +11,14 @@
     "test": "vitest run",
     "storyblok:project-page": "node scripts/setup-project-page.mjs"
   },
-  "dependencies": {
-    "@storyblok/react": "^7.3.1",
-    "next": "16.3.3",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
-    "server-only": "^0.0.1"
-  },
   "devDependencies": {
     "@types/node": "^22.0.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "7.0.2",
     "vitest": "4.1.11"
-  }
+  },
+  "workspaces": [
+    "next-app"
+  ]
 }

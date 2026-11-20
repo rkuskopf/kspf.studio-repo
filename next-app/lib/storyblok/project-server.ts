@@ -26,6 +26,8 @@ export async function loadProjectPage({
     nodeEnv: environment.NODE_ENV,
     searchParams,
     previewToken: environment.STORYBLOK_PREVIEW_TOKEN,
+    previewEnabled: environment.STORYBLOK_PREVIEW_ENABLED,
+    spaceId: environment.STORYBLOK_SPACE_ID,
     now,
   });
   const token =

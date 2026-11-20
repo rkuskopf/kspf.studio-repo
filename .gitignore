@@ -8,3 +8,5 @@ next-app/.next/
 next-app/next-env.d.ts
 coverage/
 .storyblok-backups/
+
+.vercel/

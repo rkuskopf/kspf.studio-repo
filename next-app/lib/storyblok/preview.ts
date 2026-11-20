@@ -23,14 +23,19 @@ export function resolveStoryblokVersion({
   nodeEnv,
   searchParams,
   previewToken,
+  previewEnabled,
+  spaceId: expectedSpaceId,
   now = Date.now(),
 }: {
   nodeEnv?: string;
   searchParams: StoryblokSearchParams;
   previewToken?: string;
+  previewEnabled?: string;
+  spaceId?: string;
   now?: number;
 }): StoryblokVersion {
-  if (nodeEnv !== "development") return "published";
+  const isDeployed = nodeEnv !== "development";
+  if (isDeployed && previewEnabled !== "true") return "published";
 
   const storyId = scalar(searchParams[STORY_ID_PARAM]);
   const spaceId = scalar(searchParams[SPACE_ID_PARAM]);
@@ -46,9 +51,16 @@ export function resolveStoryblokVersion({
     return "published";
   }
 
+  if (isDeployed && !/^[1-9]\d*$/.test(expectedSpaceId ?? "")) {
+    throw new StoryblokConfigurationError(
+      "STORYBLOK_SPACE_ID is required for deployed Storyblok Visual Editor preview."
+    );
+  }
+  if (expectedSpaceId && spaceId !== expectedSpaceId) return "published";
+
   if (!previewToken) {
     throw new StoryblokConfigurationError(
-      "STORYBLOK_PREVIEW_TOKEN is required for local Storyblok Visual Editor preview."
+      "STORYBLOK_PREVIEW_TOKEN is required for Storyblok Visual Editor preview."
     );
   }
 
