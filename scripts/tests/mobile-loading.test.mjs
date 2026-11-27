@@ -210,6 +210,32 @@ test('rapid next clicks never overwrite the still-visible image source', async t
   assert.equal(visible.src, originalSrc, 'the visible slot stays intact while the newest requested slide loads');
 });
 
+test('slide counter follows presented media through slow loads and rapid navigation', async t => {
+  const second = image.replace('image.jpg', 'second.jpg');
+  const third = image.replace('image.jpg', 'third.jpg');
+  const { document, window } = await setup(t, [{ title: 'Slow images', showSlideshowCounter: true, slides: [image, second, third] }]);
+  const hero = document.querySelector('.hero');
+  const counter = document.querySelector('.project__slide-current');
+  const outgoing = hero.querySelector('img.is-active');
+  hero.querySelector('.hero__hit--next').click();
+  assert.equal(counter.textContent, '001', 'loading slide 2 must not relabel visible slide 1');
+  hero.querySelector('.hero__hit--next').click();
+  assert.equal(counter.textContent, '001');
+  const incoming = [...hero.querySelectorAll('.hero__img')].find(media => media !== outgoing);
+  incoming.dispatchEvent(new window.Event('load'));
+  assert.equal(counter.textContent, '003');
+  assert.equal(hero.querySelector('img.is-active'), incoming);
+  assert.match(incoming.src, /third.jpg/);
+});
+
+test('visible project warms only its next image using the displayed delivery URL', async t => {
+  const { document, observers, probes } = await setup(t, [{ title: 'Next image', slides: [video, image] }]);
+  const hero = document.querySelector('.hero');
+  const observer = observers.find(observer => observer.targets.includes(hero));
+  observer.callback([{ target: hero, isIntersecting: true }]);
+  assert.deepEqual(probes, ['https://a.storyblok.com/f/123/1200x800/hash/image.jpg/m/1080x0/filters:quality(80)']);
+});
+
 test('late outgoing readiness cannot clear a failed incoming slide', async t => {
   const second = image.replace('image.jpg', 'second.jpg');
   const { document, window } = await setup(t, [{ title: 'Late image', slides: [image, second] }]);
