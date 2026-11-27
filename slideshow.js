@@ -346,6 +346,16 @@
 
     let index = 0;
     let isInView = false;
+    const warmedImages = new Set();
+    const warmNextImage = () => {
+      if (!reserved || !isInView || slides.length < 2) return;
+      const source = slides[(index + 1) % slides.length];
+      if (isVideo(source)) return;
+      const delivery = layout?.image(source) || source;
+      if (warmedImages.has(delivery)) return;
+      warmedImages.add(delivery);
+      preload(delivery);
+    };
     let currentIsVideo = false;
     let currentSrc = null;
     let hasShown = false;
@@ -561,6 +571,13 @@
       hideAllExcept(el);
       showMedia(el, immediate);
       activeMediaEl = el;
+      const presentedIndex = Number(el.dataset.slideIndex);
+      const counter = projectBlock?.querySelector(".project__slide-counter");
+      if (counter && Number.isInteger(presentedIndex)) {
+        counter.querySelector(".project__slide-current").textContent = String(presentedIndex + 1).padStart(3, "0");
+        counter.setAttribute("aria-label", `Slide ${presentedIndex + 1} of ${slides.length}`);
+      }
+      warmNextImage();
       scheduleHitArea();
     };
 
@@ -607,6 +624,7 @@
       const nextImageEl = reserved ? imageSlots.find(media => media !== activeMediaEl)
         : activeImageEl === imageSlots[0] ? imageSlots[1] : imageSlots[0];
       activeImageEl = nextImageEl;
+      nextImageEl.dataset.slideIndex = String(index);
       nextImageEl.loading = "eager";
       nextImageEl.fetchPriority = root.dataset.priority || "auto";
       nextImageEl.src = reserved ? layout?.image(src) || src : src;
@@ -629,6 +647,7 @@
       const nextVideoEl = reserved ? videoSlots.find(media => media !== activeMediaEl)
         : activeVideoEl === videoSlots[0] ? videoSlots[1] : videoSlots[0];
       activeVideoEl = nextVideoEl;
+      nextVideoEl.dataset.slideIndex = String(index);
       ensureVideoSrc(nextVideoEl, src);
       updatePortraitFlag(nextVideoEl, src).then(scheduleHitArea);
 
@@ -651,11 +670,6 @@
 
     const applySlide = (nextIndex, immediate = false) => {
       index = (nextIndex + slides.length) % slides.length;
-      const counter = root.closest(".project-block")?.querySelector(".project__slide-counter");
-      if (counter) {
-        counter.querySelector(".project__slide-current").textContent = String(index + 1).padStart(3, "0");
-        counter.setAttribute("aria-label", `Slide ${index + 1} of ${slides.length}`);
-      }
       const current = slides[index];
       if (reserved) {
         mediaFailed = false;
@@ -798,6 +812,7 @@
         entries.forEach((entry) => {
           if (entry.target !== root) return;
           isInView = entry.isIntersecting;
+          warmNextImage();
           updatePlayback();
           schedulePickMostVisible();
         });
